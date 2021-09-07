@@ -1,5 +1,6 @@
 import { BoxPanel } from '@lumino/widgets';
 import { createSearchEntry } from './searchoverlay';
+import { SearchTable } from './searchTable';
 import { requestAPI } from './handler';
 
 export class SearchReplaceModel {
@@ -28,6 +29,9 @@ export class SearchReplaceView extends BoxPanel {
   constructor() {
     super({ direction: 'top-to-bottom' });
     this.addWidget(createSearchEntry());
+    const searchTable = new SearchTable();
+    this.addWidget(searchTable);
     this.addClass('jp-search-replace-tab');
+    // this.node.appendChild(document.createElement('div'));
   }
 }
