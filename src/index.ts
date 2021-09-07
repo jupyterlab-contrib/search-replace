@@ -5,8 +5,8 @@ import {
 
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 
-import { requestAPI } from './handler';
-import { SearchReplaceView } from './searchReplace';
+import { SearchReplaceView, SearchReplaceModel } from './searchReplace';
+// import { SearchReplaceView, SearchReplaceModel } from './searchReplace';
 
 /**
  * Initialization data for the search-replace extension.
@@ -32,17 +32,10 @@ const plugin: JupyterFrontEndPlugin<void> = {
         });
     }
 
-    requestAPI<any>('get_example')
-      .then(data => {
-        console.log(data);
-      })
-      .catch(reason => {
-        console.error(
-          `The search_replace server extension appears to be missing.\n${reason}`
-        );
-      });
-
     const searchReplacePlugin = new SearchReplaceView();
+    const searchReplaceModel = new SearchReplaceModel();
+
+    searchReplaceModel.getSearchString('🌈');
 
     searchReplacePlugin.title.caption = 'Search and replace';
     searchReplacePlugin.id = 'jp-search-replace';
