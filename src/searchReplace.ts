@@ -7,14 +7,15 @@ export class SearchReplaceModel {
   constructor() {
     this._searchString = '';
   }
-  _searchString: string;
 
   async getSearchString(search: string): Promise<void> {
     try {
-      const data = await requestAPI<any>('get_search_string', {
-        body: JSON.stringify({ search }),
-        method: 'POST'
-      });
+      const data = await requestAPI<any>(
+        '?' + new URLSearchParams([['regex', search]]).toString(),
+        {
+          method: 'GET'
+        }
+      );
       console.log(data);
     } catch (reason) {
       console.error(
@@ -22,6 +23,7 @@ export class SearchReplaceModel {
       );
     }
   }
+  _searchString: string;
 }
 
 //TODO: fix css issue with buttons

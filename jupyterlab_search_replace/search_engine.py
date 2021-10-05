@@ -14,6 +14,7 @@ from subprocess import Popen, PIPE
 from typing import List, Optional, Tuple
 
 import tornado
+from jupyter_server.utils import url2path
 
 from .log import get_logger
 
@@ -32,7 +33,7 @@ class SearchEngine:
         Args:
             root_dir (str): Server root path
         """
-        self._root_dir = root_dir
+        self._root_dir = os.path.expanduser(root_dir)
 
     async def _execute(
         self, cmd: List[str], cwd: Optional[str] = None
@@ -47,7 +48,7 @@ class SearchEngine:
             (int, str): (return code, output) or (return code, error)
         """
 
-        self.log.debug("command: {!s}".format(" ".join(cmd)))
+        self.log.debug("run '{!s}' in {!s}".format(" ".join(cmd), cwd))
 
         current_loop = tornado.ioloop.IOLoop.current()
         process = await current_loop.run_in_executor(
@@ -85,9 +86,8 @@ class SearchEngine:
         """"""
         # JSON output is described at https://docs.rs/grep-printer/0.1.0/grep_printer/struct.JSON.html
         command = ["rg", "-e", regex, "--json", f"--max-count={max_count}"]
-        code, output = await self._execute(
-            command, cwd=os.path.join(self._root_dir, path)
-        )
+        cwd = os.path.join(self._root_dir, url2path(path))
+        code, output = await self._execute(command, cwd=cwd)
 
         if code == 0:
             matches_per_files = []

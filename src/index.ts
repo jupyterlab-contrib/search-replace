@@ -4,6 +4,7 @@ import {
 } from '@jupyterlab/application';
 
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
+import { searchIcon } from '@jupyterlab/ui-components';
 
 import { SearchReplaceView, SearchReplaceModel } from './searchReplace';
 
@@ -34,10 +35,11 @@ const plugin: JupyterFrontEndPlugin<void> = {
     const searchReplacePlugin = new SearchReplaceView();
     const searchReplaceModel = new SearchReplaceModel();
 
-    searchReplaceModel.getSearchString('🌈');
+    searchReplaceModel.getSearchString('strange');
 
     searchReplacePlugin.title.caption = 'Search and replace';
     searchReplacePlugin.id = 'jp-search-replace';
+    searchReplacePlugin.title.icon = searchIcon;
     app.shell.add(searchReplacePlugin, 'left');
     //get an icon
   }
