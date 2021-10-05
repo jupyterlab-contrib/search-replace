@@ -1,4 +1,4 @@
-# Making a new release of search_replace
+# Making a new release of jupyterlab_search_replace
 
 The extension can be published to `PyPI` and `npm` manually or using the [Jupyter Releaser](https://github.com/jupyter-server/jupyter_releaser).
 
@@ -15,7 +15,7 @@ Python package. Before generating a package, we first need to install `build`.
 pip install build twine
 ```
 
-To create a Python source package (``.tar.gz``) and the binary package (`.whl`) in the `dist/` directory, do:
+To create a Python source package (`.tar.gz`) and the binary package (`.whl`) in the `dist/` directory, do:
 
 ```bash
 python -m build

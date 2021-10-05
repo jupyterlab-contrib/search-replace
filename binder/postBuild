@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" perform a development install of search_replace
+""" perform a development install of jupyterlab_search_replace
 
     On Binder, this will run _after_ the environment has been fully created from
     the environment.yml in this directory.
@@ -15,16 +15,18 @@ from pathlib import Path
 
 ROOT = Path.cwd()
 
-def _(*args, **kwargs):
-    """ Run a command, echoing the args
 
-        fails hard if something goes wrong
+def _(*args, **kwargs):
+    """Run a command, echoing the args
+
+    fails hard if something goes wrong
     """
     print("\n\t", " ".join(args), "\n")
     return_code = subprocess.call(args, **kwargs)
     if return_code != 0:
         print("\nERROR", return_code, " ".join(args))
         sys.exit(return_code)
+
 
 # verify the environment is self-consistent before even starting
 _(sys.executable, "-m", "pip", "check")
@@ -43,5 +45,5 @@ _("jupyter", "server", "extension", "list")
 _("jupyter", "labextension", "list")
 
 
-print("JupyterLab with search_replace is ready to run with:\n")
+print("JupyterLab with jupyterlab_search_replace is ready to run with:\n")
 print("\tjupyter lab\n")
