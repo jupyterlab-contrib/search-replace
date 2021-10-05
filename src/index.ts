@@ -6,13 +6,12 @@ import {
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 
 import { SearchReplaceView, SearchReplaceModel } from './searchReplace';
-// import { SearchReplaceView, SearchReplaceModel } from './searchReplace';
 
 /**
  * Initialization data for the search-replace extension.
  */
 const plugin: JupyterFrontEndPlugin<void> = {
-  id: 'search-replace:plugin',
+  id: 'jupyterlab-search-replace:plugin',
   autoStart: true,
   optional: [ISettingRegistry],
   activate: (
