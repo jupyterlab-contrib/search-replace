@@ -1,5 +1,5 @@
 {
-  "name": "search-replace",
+  "name": "jupyterlab-search-replace",
   "version": "0.1.0",
   "description": "Search and replace accross files",
   "keywords": [
@@ -36,7 +36,7 @@
     "build:lib": "tsc",
     "clean": "jlpm run clean:lib",
     "clean:lib": "rimraf lib tsconfig.tsbuildinfo",
-    "clean:labextension": "rimraf search_replace/labextension",
+    "clean:labextension": "rimraf jupyterlab_search_replace/labextension",
     "clean:all": "jlpm run clean:lib && jlpm run clean:labextension",
     "eslint": "eslint . --ext .ts,.tsx --fix",
     "eslint:check": "eslint . --ext .ts,.tsx",
@@ -54,8 +54,10 @@
     "@jupyterlab/settingregistry": "^3.1.0",
     "@jupyterlab/translation": "^3.1.9",
     "@jupyterlab/ui-components": "^3.1.9",
+    "@lumino/messaging": "^1.7.2",
     "@lumino/widgets": "^1.26.2",
-    "react": "^17.0.2"
+    "react": "^17.0.2",
+    "regular-table": "^0.4.1"
   },
   "devDependencies": {
     "@jupyterlab/builder": "^3.1.0",
@@ -82,12 +84,12 @@
           "pip"
         ],
         "base": {
-          "name": "search_replace"
+          "name": "jupyterlab_search_replace"
         }
       }
     },
     "extension": true,
-    "outputDir": "search_replace/labextension",
+    "outputDir": "jupyterlab_search_replace/labextension",
     "schemaDir": "schema"
   },
   "jupyter-releaser": {

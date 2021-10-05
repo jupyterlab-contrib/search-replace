@@ -1,4 +1,4 @@
-# search_replace
+# jupyterlab_search_replace
 
 **WIP this is very early work in progress and nothing is yet working.** But don't hesitate to open issues and PRs if you want to help.
 
@@ -7,22 +7,20 @@
 
 Search and replace accross files
 
-
-This extension is composed of a Python package named `search_replace`
+This extension is composed of a Python package named `jupyterlab_search_replace`
 for the server extension and a NPM package named `search-replace`
 for the frontend extension.
 
-
 ## Requirements
 
-* JupyterLab >= 3.0
+- JupyterLab >= 3.0
 
 ## Install
 
 To install the extension, execute:
 
 ```bash
-pip install search_replace
+pip install jupyterlab_search_replace
 ```
 
 ## Uninstall
@@ -30,9 +28,8 @@ pip install search_replace
 To remove the extension, execute:
 
 ```bash
-pip uninstall search_replace
+pip uninstall jupyterlab_search_replace
 ```
-
 
 ## Troubleshoot
 
@@ -50,7 +47,6 @@ the frontend extension, check the frontend extension is installed:
 jupyter labextension list
 ```
 
-
 ## Contributing
 
 ### Development install
@@ -63,13 +59,13 @@ The `jlpm` command is JupyterLab's pinned version of
 
 ```bash
 # Clone the repo to your local environment
-# Change directory to the search_replace directory
+# Change directory to the jupyterlab_search_replace directory
 # Install package in development mode
 pip install -e .
 # Link your development version of the extension with JupyterLab
 jupyter labextension develop . --overwrite
 # Server extension must be manually installed in develop mode
-jupyter server extension enable search_replace
+jupyter server extension enable jupyterlab_search_replace
 # Rebuild extension Typescript source after making changes
 jlpm run build
 ```
@@ -95,8 +91,8 @@ jupyter lab build --minimize=False
 
 ```bash
 # Server extension must be manually disabled in develop mode
-jupyter server extension disable search_replace
-pip uninstall search_replace
+jupyter server extension disable jupyterlab_search_replace
+pip uninstall jupyterlab_search_replace
 ```
 
 In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
