@@ -19,13 +19,13 @@ const plugin: JupyterFrontEndPlugin<void> = {
     const searchReplaceModel = new SearchReplaceModel();
     const searchReplacePlugin = new SearchReplaceView(searchReplaceModel);
 
+    // Test call
     searchReplaceModel.getSearchString('strange');
 
     searchReplacePlugin.title.caption = 'Search and replace';
     searchReplacePlugin.id = 'jp-search-replace';
     searchReplacePlugin.title.icon = searchIcon;
     app.shell.add(searchReplacePlugin, 'left');
-    //get an icon
   }
 };
 
