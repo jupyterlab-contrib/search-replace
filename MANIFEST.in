@@ -4,6 +4,8 @@ include RELEASE.md
 include pyproject.toml
 recursive-include jupyter-config *.json
 
+include jupyterlab_search_replace/tests/conftest.py
+
 include package.json
 include install.json
 include ts*.json
