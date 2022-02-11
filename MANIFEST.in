@@ -3,15 +3,14 @@ include README.md
 include RELEASE.md
 include pyproject.toml
 recursive-include jupyter-config *.json
-
-include jupyterlab_search_replace/tests/conftest.py
+include conftest.py
 
 include package.json
 include install.json
 include ts*.json
 include yarn.lock
 
-graft search_replace/labextension
+graft jupyterlab_search_replace/labextension
 
 # Javascript files
 graft src
