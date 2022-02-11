@@ -29,7 +29,7 @@ def _load_jupyter_server_extension(server_app):
         JupyterLab application instance
     """
     setup_handlers(server_app.web_app)
-    server_app.log.info("Registered HelloWorld extension at URL path /search-replace")
+    server_app.log.info("Registered search-replace extension")
 
 
 # For backward compatibility with notebook server - useful for Binder/JupyterHub

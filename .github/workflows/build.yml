@@ -52,9 +52,11 @@ jobs:
           python -m pip install .[tests]
           python -m pre_commit run --all
 
+          jupyter server extension list
           jupyter server extension list 2>&1 | grep -ie "jupyterlab_search_replace.*OK"
 
-          jupyter labextension list 2>&1 | grep -ie "search-replace.*OK"
+          jupyter labextension list
+          jupyter labextension list 2>&1 | grep -ie "jupyterlab-search-replace.*OK"
           python -m jupyterlab.browser_check
 
           check-manifest -v

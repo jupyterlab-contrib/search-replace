@@ -1,7 +1,5 @@
 import { BoxPanel } from '@lumino/widgets';
-import { SearchReplaceInputs } from './searchoverlay';
 import { requestAPI } from './handler';
-import { TreeTableModel, TreeTableView } from './treetable';
 import { VDomModel } from '@jupyterlab/apputils';
 
 export class SearchReplaceModel extends VDomModel {
@@ -44,19 +42,6 @@ export class SearchReplaceModel extends VDomModel {
 export class SearchReplaceView extends BoxPanel {
   constructor(searchModel: SearchReplaceModel) {
     super({ direction: 'top-to-bottom' });
-    this.addWidget(new SearchReplaceInputs(searchModel));
-    const model = new TreeTableModel({
-      dataListener: (x0, x1, y0, y1) =>
-        Promise.resolve({
-          num_rows: 0,
-          num_columns: 0,
-          column_headers: [['A']],
-          row_headers: [['1']],
-          data: [['22']]
-        })
-    });
-    const searchTable = new TreeTableView({ model });
-    this.addWidget(searchTable);
     this.addClass('jp-search-replace-tab');
   }
 }
