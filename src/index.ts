@@ -3,7 +3,6 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
-import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { searchIcon } from '@jupyterlab/ui-components';
 
 import { SearchReplaceView, SearchReplaceModel } from './searchReplace';
@@ -14,26 +13,11 @@ import { SearchReplaceView, SearchReplaceModel } from './searchReplace';
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab-search-replace:plugin',
   autoStart: true,
-  optional: [ISettingRegistry],
-  activate: (
-    app: JupyterFrontEnd,
-    settingRegistry: ISettingRegistry | null
-  ) => {
+  activate: (app: JupyterFrontEnd) => {
     console.log('JupyterLab extension search-replace is activated!');
 
-    if (settingRegistry) {
-      settingRegistry
-        .load(plugin.id)
-        .then(settings => {
-          console.log('search-replace settings loaded:', settings.composite);
-        })
-        .catch(reason => {
-          console.error('Failed to load settings for search-replace.', reason);
-        });
-    }
-
-    const searchReplacePlugin = new SearchReplaceView();
     const searchReplaceModel = new SearchReplaceModel();
+    const searchReplacePlugin = new SearchReplaceView(searchReplaceModel);
 
     searchReplaceModel.getSearchString('strange');
 
