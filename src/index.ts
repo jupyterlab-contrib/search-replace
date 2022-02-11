@@ -20,7 +20,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     const searchReplacePlugin = new SearchReplaceView(searchReplaceModel);
 
     // Test call
-    searchReplaceModel.getSearchString('strange');
+    // searchReplaceModel.getSearchString('strange');
 
     searchReplacePlugin.title.caption = 'Search and replace';
     searchReplacePlugin.id = 'jp-search-replace';

@@ -16,9 +16,11 @@
     "name": "Frederic Collonval",
     "email": "fcollonval@gmail.com"
   },
-  "contributors": [{
-    "name": "Mariana Meireles"
-  }],
+  "contributors": [
+    {
+      "name": "Mariana Meireles"
+    }
+  ],
   "files": [
     "lib/**/*.{d.ts,eot,gif,html,jpg,js,js.map,json,png,svg,woff2,ttf}",
     "style/**/*.{css,js,eot,gif,html,jpg,json,png,svg,woff2,ttf}",
