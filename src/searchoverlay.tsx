@@ -1,7 +1,7 @@
 // Copyright (c) Jupyter Development Team.
 // Distributed under the terms of the Modified BSD License.
 
-import { ReactWidget } from '@jupyterlab/apputils';
+import { VDomRenderer } from '@jupyterlab/apputils';
 import {
   ITranslator,
   nullTranslator,
@@ -15,8 +15,8 @@ import {
   ellipsesIcon,
   regexIcon
 } from '@jupyterlab/ui-components';
-import { Widget } from '@lumino/widgets';
 import * as React from 'react';
+import { SearchReplaceModel } from './searchReplace';
 
 const INPUT_CLASS = 'jp-DocumentSearch-input';
 const INPUT_WRAPPER_CLASS = 'jp-DocumentSearch-input-wrapper';
@@ -39,23 +39,30 @@ const FOCUSED_INPUT = 'jp-DocumentSearch-focused-input';
 const BUTTON_CONTENT_CLASS = 'jp-DocumentSearch-button-content';
 const BUTTON_WRAPPER_CLASS = 'jp-DocumentSearch-button-wrapper';
 
-export function createSearchEntry(): Widget {
-  return ReactWidget.create(
-    <SearchEntry
-      onCaseSensitiveToggled={() => void 0}
-      onRegexToggled={() => void 0}
-      onKeydown={(e: React.KeyboardEvent<HTMLInputElement>) => void 0}
-      onChange={(e: React.ChangeEvent<HTMLInputElement>) => void 0}
-      onInputFocus={() => void 0}
-      onInputBlur={() => void 0}
-      inputFocused={false}
-      caseSensitive={false}
-      useRegex={false}
-      searchText={''}
-      forceFocus={false}
-    />
-  );
+export class SearchReplaceInputs extends VDomRenderer<SearchReplaceModel> {
+  render(): JSX.Element {
+    return (
+      <SearchEntry
+        onCaseSensitiveToggled={() => void 0}
+        onRegexToggled={() => void 0}
+        onKeydown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+          this.model.searchString = (e.target as HTMLInputElement).value;
+        }}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          this.model.searchString = e.target.value;
+        }}
+        onInputFocus={() => void 0}
+        onInputBlur={() => void 0}
+        inputFocused={false}
+        caseSensitive={false}
+        useRegex={false}
+        searchText={this.model.searchString}
+        forceFocus={false}
+      />
+    );
+  }
 }
+
 interface ISearchEntryProps {
   onCaseSensitiveToggled: () => void;
   onRegexToggled: () => void;
