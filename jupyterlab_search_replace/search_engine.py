@@ -82,10 +82,10 @@ class SearchEngine:
         """logging.Logger : Extension logger"""
         return get_logger()
 
-    async def search(self, regex: str, path: str = "", max_count: int = 100):
+    async def search(self, query: str, path: str = "", max_count: int = 100):
         """"""
         # JSON output is described at https://docs.rs/grep-printer/0.1.0/grep_printer/struct.JSON.html
-        command = ["rg", "-e", regex, "--json", f"--max-count={max_count}"]
+        command = ["rg", "-e", query, "--json", f"--max-count={max_count}"]
         cwd = os.path.join(self._root_dir, url2path(path))
         code, output = await self._execute(command, cwd=cwd)
 

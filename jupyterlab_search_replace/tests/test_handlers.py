@@ -3,7 +3,7 @@ import json
 
 async def test_search_get(test_content, jp_fetch):
     # When
-    response = await jp_fetch("search-regex", params={"regex": "strange"}, method="GET")
+    response = await jp_fetch("search", params={"query": "strange"}, method="GET")
 
     # Then
     assert response.code == 200
