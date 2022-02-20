@@ -123,6 +123,11 @@ class SearchEngine:
             output = json.loads(output)
             if output["type"] == "summary":
                 stats = output["data"]["stats"]
-                if stats["matched_lines"] == 0 and stats["matches"] == 0 and stats["searches"] == 0 and stats["searches_with_match"] == 0:
+                if (
+                    stats["matched_lines"] == 0
+                    and stats["matches"] == 0
+                    and stats["searches"] == 0
+                    and stats["searches_with_match"] == 0
+                ):
                     return {"matches": []}
             return {"code": code, "command": command, "message": output}
