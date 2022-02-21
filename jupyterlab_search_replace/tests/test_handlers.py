@@ -1,18 +1,17 @@
 import json
+from jsonschema import validate
 
 
-async def test_search_get(test_content, jp_fetch):
-    # When
-    response = await jp_fetch("search-regex", params={"regex": "strange"}, method="GET")
+async def test_search_get(test_content, schema, jp_fetch):
+    response = await jp_fetch("search", params={"query": "strange"}, method="GET")
 
-    # Then
     assert response.code == 200
     payload = json.loads(response.body)
-    print(payload)
+    validate(instance=payload, schema=schema)
     assert len(payload["matches"]) == 2
     assert len(payload["matches"][0]["matches"]) == 3
     assert len(payload["matches"][1]["matches"]) == 3
-    assert payload["matches"] == [
+    assert sorted(payload["matches"], key=lambda x: x["path"]) == [
         {
             "path": "test_lab_search_replace/subfolder/text_sub.txt",
             "matches": [
@@ -62,8 +61,8 @@ async def test_search_get(test_content, jp_fetch):
                     "absolute_offset": 0,
                 },
                 {
-                    "line": "Is that strange enough?",
-                    "match": "strange",
+                    "line": "Is that Strange enough?",
+                    "match": "Strange",
                     "start": 8,
                     "end": 15,
                     "line_number": 3,
@@ -71,4 +70,38 @@ async def test_search_get(test_content, jp_fetch):
                 },
             ],
         },
+    ]
+
+
+async def test_search_no_match(test_content, schema, jp_fetch):
+    response = await jp_fetch("search", params={"query": "hello"}, method="GET")
+    assert response.code == 200
+    payload = json.loads(response.body)
+    validate(instance=payload, schema=schema)
+    assert len(payload["matches"]) == 0
+
+
+async def test_search_case_sensitive(test_content, schema, jp_fetch):
+    response = await jp_fetch(
+        "search", params={"query": "Strange", "case_sensitive": True}, method="GET"
+    )
+    assert response.code == 200
+    payload = json.loads(response.body)
+    validate(instance=payload, schema=schema)
+    assert len(payload["matches"]) == 1
+    assert len(payload["matches"][0]["matches"]) == 1
+    assert sorted(payload["matches"], key=lambda x: x["path"]) == [
+        {
+            "path": "test_lab_search_replace/text_1.txt",
+            "matches": [
+                {
+                    "line": "Is that Strange enough?",
+                    "match": "Strange",
+                    "start": 8,
+                    "end": 15,
+                    "line_number": 3,
+                    "absolute_offset": 55,
+                },
+            ],
+        }
     ]

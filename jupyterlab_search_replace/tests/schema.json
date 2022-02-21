@@ -1,0 +1,77 @@
+{
+  "title": "Model",
+  "type": "object",
+  "properties": {
+    "matches": {
+      "title": "Matches",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/fileMatches"
+      }
+    }
+  },
+  "required": [
+    "matches"
+  ],
+  "definitions": {
+    "match": {
+      "title": "match",
+      "type": "object",
+      "properties": {
+        "line": {
+          "title": "Line",
+          "type": "string"
+        },
+        "match": {
+          "title": "Match",
+          "type": "string"
+        },
+        "start": {
+          "title": "Start",
+          "type": "integer"
+        },
+        "end": {
+          "title": "End",
+          "type": "integer"
+        },
+        "line_number": {
+          "title": "Line Number",
+          "type": "integer"
+        },
+        "absolute_offset": {
+          "title": "Absolute Offset",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "line",
+        "match",
+        "start",
+        "end",
+        "line_number",
+        "absolute_offset"
+      ]
+    },
+    "fileMatches": {
+      "title": "fileMatches",
+      "type": "object",
+      "properties": {
+        "path": {
+          "title": "Path",
+          "type": "string"
+        },
+        "matches": {
+          "title": "Matches",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/match"
+          }
+        }
+      },
+      "required": [
+        "path",
+        "matches"
+      ]
+    }
+  }
+}

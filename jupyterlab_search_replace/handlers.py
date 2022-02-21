@@ -13,9 +13,10 @@ class RouteHandler(APIHandler):
 
     @tornado.web.authenticated
     async def get(self, path: str = ""):
-        regex = self.get_query_argument("regex")
+        query = self.get_query_argument("query")
         max_count = self.get_query_argument("max_count", 100)
-        r = await self._engine.search(regex, path, max_count)
+        case_sensitive = self.get_query_argument("case_sensitive", False)
+        r = await self._engine.search(query, path, max_count, case_sensitive)
 
         if r.get("code") is not None:
             self.set_status(500)
@@ -29,6 +30,6 @@ def setup_handlers(web_app):
     host_pattern = ".*$"
 
     base_url = web_app.settings["base_url"]
-    route_pattern = url_path_join(base_url, "search-regex" + path_regex)
+    route_pattern = url_path_join(base_url, "search" + path_regex)
     handlers = [(route_pattern, RouteHandler)]
     web_app.add_handlers(host_pattern, handlers)
