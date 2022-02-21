@@ -22,10 +22,12 @@ from .log import get_logger
 MAX_LOG_OUTPUT = 6000  # type: int
 
 
-def construct_command(query, max_count, case_sensitive):
+def construct_command(query, max_count, case_sensitive, whole_word):
     command = ["rg", "-e", query, "--json", f"--max-count={max_count}"]
     if not case_sensitive:
         command.append("--ignore-case")
+    if whole_word:
+        command.append("--word-regexp")
     return command
 
 
@@ -95,10 +97,11 @@ class SearchEngine:
         path: str = "",
         max_count: int = 100,
         case_sensitive: bool = False,
+        whole_word: bool = False,
     ):
         """"""
         # JSON output is described at https://docs.rs/grep-printer/0.1.0/grep_printer/struct.JSON.html
-        command = construct_command(query, max_count, case_sensitive)
+        command = construct_command(query, max_count, case_sensitive, whole_word)
         cwd = os.path.join(self._root_dir, url2path(path))
         code, output = await self._execute(command, cwd=cwd)
 

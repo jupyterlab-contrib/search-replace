@@ -45,18 +45,18 @@ async def test_search_get(test_content, schema, jp_fetch):
             "path": "test_lab_search_replace/text_1.txt",
             "matches": [
                 {
-                    "line": "Unicode strange file, very strange\n",
+                    "line": "Unicode histrange file, very strange\n",
                     "match": "strange",
-                    "start": 8,
-                    "end": 15,
+                    "start": 10,
+                    "end": 17,
                     "line_number": 1,
                     "absolute_offset": 0,
                 },
                 {
-                    "line": "Unicode strange file, very strange\n",
+                    "line": "Unicode histrange file, very strange\n",
                     "match": "strange",
-                    "start": 27,
-                    "end": 34,
+                    "start": 29,
+                    "end": 36,
                     "line_number": 1,
                     "absolute_offset": 0,
                 },
@@ -66,7 +66,7 @@ async def test_search_get(test_content, schema, jp_fetch):
                     "start": 8,
                     "end": 15,
                     "line_number": 3,
-                    "absolute_offset": 55,
+                    "absolute_offset": 57,
                 },
             ],
         },
@@ -100,8 +100,72 @@ async def test_search_case_sensitive(test_content, schema, jp_fetch):
                     "start": 8,
                     "end": 15,
                     "line_number": 3,
-                    "absolute_offset": 55,
+                    "absolute_offset": 57,
                 },
             ],
         }
+    ]
+
+
+async def test_search_whole_word(test_content, schema, jp_fetch):
+    response = await jp_fetch(
+        "search", params={"query": "strange", "whole_word": True}, method="GET"
+    )
+    assert response.code == 200
+    payload = json.loads(response.body)
+    validate(instance=payload, schema=schema)
+    assert len(payload["matches"]) == 2
+    assert len(payload["matches"][0]["matches"]) == 2
+    assert len(payload["matches"][1]["matches"]) == 3
+    assert sorted(payload["matches"], key=lambda x: x["path"]) == [
+        {
+            "path": "test_lab_search_replace/subfolder/text_sub.txt",
+            "matches": [
+                {
+                    "line": "Unicode strange sub file, very strange\n",
+                    "match": "strange",
+                    "start": 8,
+                    "end": 15,
+                    "line_number": 1,
+                    "absolute_offset": 0,
+                },
+                {
+                    "line": "Unicode strange sub file, very strange\n",
+                    "match": "strange",
+                    "start": 31,
+                    "end": 38,
+                    "line_number": 1,
+                    "absolute_offset": 0,
+                },
+                {
+                    "line": "Is that λ strange enough?",
+                    "match": "strange",
+                    "start": 11,
+                    "end": 18,
+                    "line_number": 3,
+                    "absolute_offset": 57,
+                },
+            ],
+        },
+        {
+            "path": "test_lab_search_replace/text_1.txt",
+            "matches": [
+                {
+                    "line": "Unicode histrange file, very strange\n",
+                    "match": "strange",
+                    "start": 29,
+                    "end": 36,
+                    "line_number": 1,
+                    "absolute_offset": 0,
+                },
+                {
+                    "line": "Is that Strange enough?",
+                    "match": "Strange",
+                    "start": 8,
+                    "end": 15,
+                    "line_number": 3,
+                    "absolute_offset": 57,
+                },
+            ],
+        },
     ]

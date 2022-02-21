@@ -16,7 +16,10 @@ class RouteHandler(APIHandler):
         query = self.get_query_argument("query")
         max_count = self.get_query_argument("max_count", 100)
         case_sensitive = self.get_query_argument("case_sensitive", False)
-        r = await self._engine.search(query, path, max_count, case_sensitive)
+        whole_word = self.get_query_argument("whole_word", False)
+        r = await self._engine.search(
+            query, path, max_count, case_sensitive, whole_word
+        )
 
         if r.get("code") is not None:
             self.set_status(500)
