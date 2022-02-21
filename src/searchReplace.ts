@@ -22,7 +22,7 @@ export class SearchReplaceModel extends VDomModel {
   async getSearchString(search: string): Promise<void> {
     try {
       const data = await requestAPI<any>(
-        '?' + new URLSearchParams([['regex', search]]).toString(),
+        '?' + new URLSearchParams([['query', search]]).toString(),
         {
           method: 'GET'
         }

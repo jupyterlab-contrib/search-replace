@@ -3,6 +3,7 @@ include README.md
 include RELEASE.md
 include pyproject.toml
 recursive-include jupyter-config *.json
+recursive-include jupyterlab_search_replace *.json
 include conftest.py
 
 include package.json
