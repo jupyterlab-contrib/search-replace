@@ -15,7 +15,8 @@ class RouteHandler(APIHandler):
     async def get(self, path: str = ""):
         query = self.get_query_argument("query")
         max_count = self.get_query_argument("max_count", 100)
-        r = await self._engine.search(query, path, max_count)
+        case_sensitive = self.get_query_argument("case_sensitive", False)
+        r = await self._engine.search(query, path, max_count, case_sensitive)
 
         if r.get("code") is not None:
             self.set_status(500)

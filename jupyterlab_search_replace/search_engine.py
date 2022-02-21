@@ -22,6 +22,13 @@ from .log import get_logger
 MAX_LOG_OUTPUT = 6000  # type: int
 
 
+def construct_command(query, max_count, case_sensitive):
+    command = ["rg", "-e", query, "--json", f"--max-count={max_count}"]
+    if not case_sensitive:
+        command.append("--ignore-case")
+    return command
+
+
 class SearchEngine:
     """Engine to search recursively for a regex pattern in text files of a directory.
 
@@ -82,10 +89,16 @@ class SearchEngine:
         """logging.Logger : Extension logger"""
         return get_logger()
 
-    async def search(self, query: str, path: str = "", max_count: int = 100):
+    async def search(
+        self,
+        query: str,
+        path: str = "",
+        max_count: int = 100,
+        case_sensitive: bool = False,
+    ):
         """"""
         # JSON output is described at https://docs.rs/grep-printer/0.1.0/grep_printer/struct.JSON.html
-        command = ["rg", "-e", query, "--json", f"--max-count={max_count}"]
+        command = construct_command(query, max_count, case_sensitive)
         cwd = os.path.join(self._root_dir, url2path(path))
         code, output = await self._execute(command, cwd=cwd)
 

@@ -7,6 +7,7 @@ from pathlib import Path
 SCHEMA_FILE = Path(__file__).parent / "schema.json"
 TEST_PATH = "test_lab_search_replace"
 
+
 @pytest.fixture
 def schema():
     return json.load(open(SCHEMA_FILE, "r"))
@@ -22,7 +23,7 @@ def test_content(jp_root_dir):
             [
                 "Unicode strange file, very strange",
                 "ü notebook with λ",
-                "Is that strange enough?",
+                "Is that Strange enough?",
             ]
         )
     )
