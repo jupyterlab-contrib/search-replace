@@ -120,14 +120,19 @@ class SearchEngine:
 
             return {"matches": matches_per_files}
         else:
-            output = json.loads(output)
-            if output["type"] == "summary":
-                stats = output["data"]["stats"]
-                if (
-                    stats["matched_lines"] == 0
-                    and stats["matches"] == 0
-                    and stats["searches"] == 0
-                    and stats["searches_with_match"] == 0
-                ):
-                    return {"matches": []}
+            try:
+                output = json.loads(output)
+                if output["type"] == "summary":
+                    stats = output["data"]["stats"]
+                    if (
+                        stats["matched_lines"] == 0
+                        and stats["matches"] == 0
+                        and stats["searches"] == 0
+                        and stats["searches_with_match"] == 0
+                    ):
+                        return {"matches": []}
+            except (json.JSONDecodeError, KeyError):
+                # If parsing the JSON fails or one key is missing
+                # consider the output as invalid
+                pass
             return {"code": code, "command": command, "message": output}

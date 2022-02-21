@@ -1,12 +1,13 @@
 import json
+from jsonschema import validate
 
 
-async def test_search_get(test_content, jp_fetch):
+async def test_search_get(test_content, schema, jp_fetch):
     response = await jp_fetch("search", params={"query": "strange"}, method="GET")
 
     assert response.code == 200
     payload = json.loads(response.body)
-    print(payload)
+    validate(instance=payload, schema=schema)
     assert len(payload["matches"]) == 2
     assert len(payload["matches"][0]["matches"]) == 3
     assert len(payload["matches"][1]["matches"]) == 3

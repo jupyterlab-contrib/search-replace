@@ -1,8 +1,15 @@
+import json
 import shutil
 
 import pytest
+from pathlib import Path
 
+SCHEMA_FILE = Path(__file__).parent / "schema.json"
 TEST_PATH = "test_lab_search_replace"
+
+@pytest.fixture
+def schema():
+    return json.load(open(SCHEMA_FILE, "r"))
 
 
 @pytest.fixture
