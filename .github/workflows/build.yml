@@ -56,8 +56,20 @@ jobs:
           jlpm
           jlpm run eslint:check
           python -m pip install .[tests]
+
+      - name: Linter check
+        run: |
+          set -eux
           python -m pre_commit run --all
 
+      - name: Test
+        run: |
+          set -eux
+          python -m pytest -vv -r ap --cov jupyterlab_search_replace
+
+      - name: Check JupyterLab installation
+        run: |
+          set -eux
           jupyter server extension list
           jupyter server extension list 2>&1 | grep -ie "jupyterlab_search_replace.*OK"
 
@@ -65,6 +77,9 @@ jobs:
           jupyter labextension list 2>&1 | grep -ie "jupyterlab-search-replace.*OK"
           python -m jupyterlab.browser_check
 
+      - name: Build package
+        run: |
+          set -eux
           check-manifest -v
 
           pip install build
