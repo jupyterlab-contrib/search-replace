@@ -21,7 +21,7 @@ def test_content(jp_root_dir):
     test_file.write_text(
         "\n".join(
             [
-                "Unicode histrange file, very strange",
+                "Unicode histrange file, very str.*ange",
                 "ü notebook with λ",
                 "Is that Strange enough?",
             ]
