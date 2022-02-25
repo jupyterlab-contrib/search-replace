@@ -25,9 +25,9 @@ MAX_LOG_OUTPUT = 6000  # type: int
 def construct_command(
     query, max_count, case_sensitive, whole_word, include, exclude, use_regex
 ):
-    command = ["rg", query, "--json", f"--max-count={max_count}"]
-    if not use_regex:
-        command.insert(1, "-F")
+    command = ["rg", "-F", query, "--json", f"--max-count={max_count}"]
+    if use_regex:
+        command.remove("-F")
     if not case_sensitive:
         command.append("--ignore-case")
     if whole_word:
