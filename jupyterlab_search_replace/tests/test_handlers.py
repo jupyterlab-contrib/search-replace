@@ -1,4 +1,5 @@
-import json, pytest
+import json
+import pytest
 from jsonschema import validate
 from tornado.httpclient import HTTPClientError
 
