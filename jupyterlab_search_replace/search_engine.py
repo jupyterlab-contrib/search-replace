@@ -22,12 +22,20 @@ from .log import get_logger
 MAX_LOG_OUTPUT = 6000  # type: int
 
 
-def construct_command(query, max_count, case_sensitive, whole_word):
+def construct_command(query, max_count, case_sensitive, whole_word, include, exclude):
     command = ["rg", "-e", query, "--json", f"--max-count={max_count}"]
     if not case_sensitive:
         command.append("--ignore-case")
     if whole_word:
         command.append("--word-regexp")
+    if include and exclude:
+        raise ValueError("cannot use include and exclude simultaneously")
+    if include and type(include) == str:
+        command.append("-g")
+        command.append(f"{include}")
+    if exclude and type(exclude) == str:
+        command.append("-g")
+        command.append(f"!{exclude}")
     return command
 
 
@@ -77,7 +85,8 @@ class SearchEngine:
             output = output.decode("utf-8")
         else:
             self.log.debug("exit code: {!s}".format(returncode))
-            output = error.decode("utf-8") + output.decode("utf-8")
+            self.log.debug("error: {!s}".format(error.decode("utf-8")))
+            output = output.decode("utf-8")
 
         self.log.debug("output: {!s}".format(output[:MAX_LOG_OUTPUT]))
 
@@ -98,10 +107,14 @@ class SearchEngine:
         max_count: int = 100,
         case_sensitive: bool = False,
         whole_word: bool = False,
+        include: Optional[str] = None,
+        exclude: Optional[str] = None,
     ):
         """"""
         # JSON output is described at https://docs.rs/grep-printer/0.1.0/grep_printer/struct.JSON.html
-        command = construct_command(query, max_count, case_sensitive, whole_word)
+        command = construct_command(
+            query, max_count, case_sensitive, whole_word, include, exclude
+        )
         cwd = os.path.join(self._root_dir, url2path(path))
         code, output = await self._execute(command, cwd=cwd)
 
