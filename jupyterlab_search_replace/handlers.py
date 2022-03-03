@@ -33,7 +33,7 @@ class RouteHandler(APIHandler):
                 use_regex,
             )
         except asyncio.exceptions.CancelledError:
-+            r = {"code": 1, "message": "task was cancelled"}
+            r = {"code": 1, "message": "task was cancelled"}
 
         if r.get("code") is not None:
             self.set_status(500)

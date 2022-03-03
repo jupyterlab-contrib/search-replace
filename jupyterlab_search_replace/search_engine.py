@@ -49,6 +49,7 @@ class SearchEngine:
 
     The implementation is using `ripgrep <https://github.com/BurntSushi/ripgrep>`_.
     """
+
     search_task: ClassVar[Optional[asyncio.Task]] = None
 
     def __init__(self, root_dir: str) -> None:
