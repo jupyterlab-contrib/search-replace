@@ -11,7 +11,7 @@ import os
 
 from functools import partial
 from subprocess import Popen, PIPE
-from typing import List, Optional, Tuple
+from typing import ClassVar, List, Optional, Tuple
 
 import tornado
 from jupyter_server.utils import url2path
@@ -49,6 +49,7 @@ class SearchEngine:
 
     The implementation is using `ripgrep <https://github.com/BurntSushi/ripgrep>`_.
     """
+    search_task: ClassVar[Optional[asyncio.Task]] = None
 
     def __init__(self, root_dir: str) -> None:
         """
@@ -122,7 +123,10 @@ class SearchEngine:
             query, max_count, case_sensitive, whole_word, include, exclude, use_regex
         )
         cwd = os.path.join(self._root_dir, url2path(path))
-        code, output = await self._execute(command, cwd=cwd)
+        if SearchEngine.search_task is not None:
+            SearchEngine.search_task.cancel()
+        SearchEngine.search_task = asyncio.create_task(self._execute(command, cwd=cwd))
+        code, output = await SearchEngine.search_task
 
         if code == 0:
             matches_per_files = []

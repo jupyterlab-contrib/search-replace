@@ -1,6 +1,7 @@
 import json
 
 import tornado
+import asyncio
 from jupyter_server.base.handlers import APIHandler, path_regex
 from jupyter_server.utils import url_path_join
 
@@ -20,16 +21,19 @@ class RouteHandler(APIHandler):
         include = self.get_query_argument("include", None)
         exclude = self.get_query_argument("exclude", None)
         use_regex = self.get_query_argument("use_regex", False)
-        r = await self._engine.search(
-            query,
-            path,
-            max_count,
-            case_sensitive,
-            whole_word,
-            include,
-            exclude,
-            use_regex,
-        )
+        try:
+            r = await self._engine.search(
+                query,
+                path,
+                max_count,
+                case_sensitive,
+                whole_word,
+                include,
+                exclude,
+                use_regex,
+            )
+        except asyncio.exceptions.CancelledError:
++            r = {"code": 1, "message": "task was cancelled"}
 
         if r.get("code") is not None:
             self.set_status(500)
