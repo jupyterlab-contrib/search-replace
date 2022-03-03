@@ -2,7 +2,7 @@ import React from 'react';
 import { Debouncer } from '@lumino/polling';
 import { requestAPI } from './handler';
 import { VDomModel, VDomRenderer } from '@jupyterlab/apputils';
-import { Search } from '@jupyter-notebook/react-components'
+import { Search } from '@jupyter-notebook/react-components';
 
 export class SearchReplaceModel extends VDomModel {
   constructor() {
@@ -21,9 +21,11 @@ export class SearchReplaceModel extends VDomModel {
     if (v !== this._searchString) {
       this._searchString = v;
       this.stateChanged.emit();
-      this._debouncedStartSearch.invoke().catch((reason)=>
-        console.error(`failed query for ${v} due to ${reason}`)
-      )
+      this._debouncedStartSearch
+        .invoke()
+        .catch(reason =>
+          console.error(`failed query for ${v} due to ${reason}`)
+        );
     }
   }
 
@@ -34,7 +36,7 @@ export class SearchReplaceModel extends VDomModel {
   async getSearchString(search: string): Promise<void> {
     try {
       const data = await requestAPI<any>(
-        '?' + new URLSearchParams([['query', search] ]).toString(),
+        '?' + new URLSearchParams([['query', search]]).toString(),
         {
           method: 'GET'
         }
@@ -62,16 +64,18 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
   }
 
   render(): JSX.Element | null {
-      return (
-        <>
-          <Search
-            appearance="outline"
-            placeholder="<pre>{matches}</pre>"
-            label='Search'
-            onInput={(event: any)=> this.model.searchString = event.target.value}
-          />
-          <pre>{JSON.stringify(this.model.queryResults, undefined, 4)}</pre>
-        </>
-      );
+    return (
+      <>
+        <Search
+          appearance="outline"
+          placeholder="<pre>{matches}</pre>"
+          label="Search"
+          onInput={(event: any) =>
+            (this.model.searchString = event.target.value)
+          }
+        />
+        <pre>{JSON.stringify(this.model.queryResults, undefined, 4)}</pre>
+      </>
+    );
   }
 }
