@@ -1,7 +1,7 @@
+import asyncio
 import json
 
 import tornado
-import asyncio
 from jupyter_server.base.handlers import APIHandler, path_regex
 from jupyter_server.utils import url_path_join
 
