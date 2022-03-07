@@ -66,6 +66,11 @@ jobs:
         run: |
           set -eux
           python -m pytest -vv -r ap --cov jupyterlab_search_replace
+      
+      - name: Playwright Tests
+        run: |
+          set -eux
+          jlpm playwright test
 
       - name: Check JupyterLab installation
         run: |
