@@ -125,7 +125,7 @@ class SearchEngine:
             query, max_count, case_sensitive, whole_word, include, exclude, use_regex
         )
         cwd = os.path.join(self._root_dir, url2path(path))
-        if SearchEngine.search_task is not None and not SearchEngine.done():
+        if SearchEngine.search_task is not None and not SearchEngine.search_task.done():
             SearchEngine.search_task.cancel()
         SearchEngine.search_task = asyncio.create_task(self._execute(command, cwd=cwd))
         code, output = await SearchEngine.search_task
