@@ -1,9 +1,11 @@
-import json
-import pytest
 import asyncio
-from ..search_engine import SearchEngine
+import json
+
+import pytest
 from jsonschema import validate
 from tornado.httpclient import HTTPClientError
+
+from ..search_engine import SearchEngine
 
 
 async def test_search_get(test_content, schema, jp_fetch):
