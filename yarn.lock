@@ -122,6 +122,26 @@
     gud "^1.0.0"
     warning "^4.0.3"
 
+"@jupyter-notebook/react-components@^0.6.2":
+  version "0.6.2"
+  resolved "https://registry.yarnpkg.com/@jupyter-notebook/react-components/-/react-components-0.6.2.tgz#98968941ce885e17bda74ff10432c44d900aa78b"
+  integrity sha512-sckLjEV7Vdrj6k/QruJDntlqxb5UD7NC4AJ6P+tdQmdUod0za5Aot0MVdBuL9KrrGs8YwOCH1NRsg4gHwbDTPA==
+  dependencies:
+    "@jupyter-notebook/web-components" "^0.6.1"
+    "@microsoft/fast-react-wrapper" "^0.1.17"
+    react "^17.0.0"
+
+"@jupyter-notebook/web-components@^0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@jupyter-notebook/web-components/-/web-components-0.6.1.tgz#0eef72ae3c74c57bc35d9920609755f4673ffceb"
+  integrity sha512-NT20X4xxO3o4uiA1zvp7MZRmZ0bvkkP08LJrdpqzu4xWm+vhEl4vk7ExMphhQJ8PVm5hdw2mXJjXOjvbb7ipoQ==
+  dependencies:
+    "@microsoft/fast-colors" "^5.1.4"
+    "@microsoft/fast-components" "^2.17.1"
+    "@microsoft/fast-element" "^1.6.0"
+    "@microsoft/fast-foundation" "^2.21.0"
+    "@microsoft/fast-web-utilities" "^5.1.0"
+
 "@jupyterlab/application@^3.1.0":
   version "3.2.9"
   resolved "https://registry.yarnpkg.com/@jupyterlab/application/-/application-3.2.9.tgz#750bf46fd72bf86db58d09bbc17621d2a9e6db34"
@@ -600,6 +620,53 @@
     "@lumino/properties" "^1.8.1"
     "@lumino/signaling" "^1.10.1"
     "@lumino/virtualdom" "^1.14.1"
+
+"@microsoft/fast-colors@^5.1.4", "@microsoft/fast-colors@^5.1.5":
+  version "5.1.5"
+  resolved "https://registry.yarnpkg.com/@microsoft/fast-colors/-/fast-colors-5.1.5.tgz#3d7dacae85c263030c793ba457991d4cdcec7538"
+  integrity sha512-g8FByhbmRxibSpHkDE90CLCsh61HzH4ujPBG5N1zWXgM8LtzaF6OYBzfd8uGJ/md+SGeHf3aH9fcT8HTCbarXw==
+
+"@microsoft/fast-components@^2.17.1":
+  version "2.21.9"
+  resolved "https://registry.yarnpkg.com/@microsoft/fast-components/-/fast-components-2.21.9.tgz#a36f8b3226207bcbb2e201043fc833a64d5f6c89"
+  integrity sha512-j6Q6Po6pENi8GG66cn9D+mjwhPurmsQtxPyOYu/LUepSlQ9A81YRtZdj2PJRSDYW/9bQJ6PFRBbBwvXO56nXSA==
+  dependencies:
+    "@microsoft/fast-colors" "^5.1.5"
+    "@microsoft/fast-element" "^1.7.2"
+    "@microsoft/fast-foundation" "^2.34.0"
+    "@microsoft/fast-web-utilities" "^5.1.0"
+    tslib "^1.13.0"
+    vscode-html-languageservice "^4.0.3"
+
+"@microsoft/fast-element@^1.6.0", "@microsoft/fast-element@^1.7.2":
+  version "1.7.2"
+  resolved "https://registry.yarnpkg.com/@microsoft/fast-element/-/fast-element-1.7.2.tgz#b381c95b1c0f04faa5819785e1cd92b4d9f9ae8a"
+  integrity sha512-bV+wFQUoMtyd1ccwE6k8CVjWSWQv9wgMj6nA2j2l5EtcN8+/XT23Ljce98GaMdIBARYpb35RQwCQq7stVWZUTg==
+
+"@microsoft/fast-foundation@^2.21.0", "@microsoft/fast-foundation@^2.34.0":
+  version "2.34.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/fast-foundation/-/fast-foundation-2.34.0.tgz#e50c5b05f11bb799e2b9d49f8b735b59100e20d8"
+  integrity sha512-G5EnbeAvzzJJ3xxuO9CJhPYf/Hp6o96nfI1LBStjxUVa1CZOAuRu/TN5cGoF0dAFEGuLQrptd6j02tEN/6FxpA==
+  dependencies:
+    "@microsoft/fast-element" "^1.7.2"
+    "@microsoft/fast-web-utilities" "^5.1.0"
+    tabbable "^5.2.0"
+    tslib "^1.13.0"
+
+"@microsoft/fast-react-wrapper@^0.1.17":
+  version "0.1.34"
+  resolved "https://registry.yarnpkg.com/@microsoft/fast-react-wrapper/-/fast-react-wrapper-0.1.34.tgz#87977e01354c89b4df49341b4eedbd252ef94766"
+  integrity sha512-+aUwaJxtpYKjLmgM3N9sTyBz3e4APHjijXF/369DieD9a/BxdrfGoBxqVzy6w7KQN4aviHAOTDKRKk8ST0ypgg==
+  dependencies:
+    "@microsoft/fast-element" "^1.7.2"
+    "@microsoft/fast-foundation" "^2.34.0"
+
+"@microsoft/fast-web-utilities@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@microsoft/fast-web-utilities/-/fast-web-utilities-5.1.0.tgz#e060fea2b47c2dcfb4a9ba90a55559f0844d1cdb"
+  integrity sha512-S2PCxI4XqtIxLM1N7i/NuIAgx+mJM01+mDzyB3vZlYibAkOT0bzp5YZCp+coXowokSin/nK5T2kqShMXEzI6Jg==
+  dependencies:
+    exenv-es6 "^1.0.0"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -2299,6 +2366,11 @@ execa@^5.0.0:
     onetime "^5.1.2"
     signal-exit "^3.0.3"
     strip-final-newline "^2.0.0"
+
+exenv-es6@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/exenv-es6/-/exenv-es6-1.0.0.tgz#bd459136369af17cf33f959b5af58803d4068c80"
+  integrity sha512-fcG/TX8Ruv9Ma6PBaiNsUrHRJzVzuFMP6LtPn/9iqR+nr9mcLeEOGzXQGLC5CVQSXGE98HtzW2mTZkrCA3XrDg==
 
 express-rate-limit@5.5.1:
   version "5.5.1"
@@ -4540,9 +4612,9 @@ react-transition-group@^2.9.0:
     prop-types "^15.6.2"
     react-lifecycles-compat "^3.0.4"
 
-react@^17.0.1:
+react@^17.0.0, react@^17.0.1:
   version "17.0.2"
-  resolved "https://registry.npmjs.org/react/-/react-17.0.2.tgz"
+  resolved "https://registry.yarnpkg.com/react/-/react-17.0.2.tgz#d0b5cc516d29eb3eee383f75b62864cfb6800037"
   integrity sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==
   dependencies:
     loose-envify "^1.1.0"
@@ -5216,6 +5288,11 @@ symbol-tree@^3.2.2:
   resolved "https://registry.yarnpkg.com/symbol-tree/-/symbol-tree-3.2.4.tgz#430637d248ba77e078883951fb9aa0eed7c63fa2"
   integrity sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==
 
+tabbable@^5.2.0:
+  version "5.2.1"
+  resolved "https://registry.yarnpkg.com/tabbable/-/tabbable-5.2.1.tgz#e3fda7367ddbb172dcda9f871c0fdb36d1c4cd9c"
+  integrity sha512-40pEZ2mhjaZzK0BnI+QGNjJO8UYx9pP5v7BGe17SORTO0OEuuaAwQTkAp8whcZvqon44wKFOikD+Al11K3JICQ==
+
 table@^6.0.9:
   version "6.7.1"
   resolved "https://registry.npmjs.org/table/-/table-6.7.1.tgz"
@@ -5366,9 +5443,9 @@ tr46@~0.0.3:
   resolved "https://registry.yarnpkg.com/tr46/-/tr46-0.0.3.tgz#8184fd347dac9cdc185992f3a6622e14b9d9ab6a"
   integrity sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=
 
-tslib@^1.8.1, tslib@^1.9.0:
+tslib@^1.13.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.14.1"
-  resolved "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
 tslib@~1.13.0:
@@ -5663,6 +5740,36 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
+
+vscode-html-languageservice@^4.0.3:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/vscode-html-languageservice/-/vscode-html-languageservice-4.2.2.tgz#e580b8f22b1b8c1dc0d6aaeda5a861f8b4120e4e"
+  integrity sha512-4ICwlpplGbiNQq6D/LZr4qLbPZuMmnSQeX/57UAYP7jD1LOvKeru4lVI+f6d6Eyd7uS46nLJ5DUY4AAlq35C0g==
+  dependencies:
+    vscode-languageserver-textdocument "^1.0.3"
+    vscode-languageserver-types "^3.16.0"
+    vscode-nls "^5.0.0"
+    vscode-uri "^3.0.3"
+
+vscode-languageserver-textdocument@^1.0.3:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/vscode-languageserver-textdocument/-/vscode-languageserver-textdocument-1.0.4.tgz#3cd56dd14cec1d09e86c4bb04b09a246cb3df157"
+  integrity sha512-/xhqXP/2A2RSs+J8JNXpiiNVvvNM0oTosNVmQnunlKvq9o4mupHOBAnnzH0lwIPKazXKvAKsVp1kr+H/K4lgoQ==
+
+vscode-languageserver-types@^3.16.0:
+  version "3.16.0"
+  resolved "https://registry.yarnpkg.com/vscode-languageserver-types/-/vscode-languageserver-types-3.16.0.tgz#ecf393fc121ec6974b2da3efb3155644c514e247"
+  integrity sha512-k8luDIWJWyenLc5ToFQQMaSrqCHiLwyKPHKPQZ5zz21vM+vIVUSvsRpcbiECH4WR88K2XZqc4ScRcZ7nk/jbeA==
+
+vscode-nls@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/vscode-nls/-/vscode-nls-5.0.0.tgz#99f0da0bd9ea7cda44e565a74c54b1f2bc257840"
+  integrity sha512-u0Lw+IYlgbEJFF6/qAqG2d1jQmJl0eyAGJHoAJqr2HT4M2BNuQYSEiSE75f52pXHSJm8AlTjnLLbBFPrdz2hpA==
+
+vscode-uri@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/vscode-uri/-/vscode-uri-3.0.3.tgz#a95c1ce2e6f41b7549f86279d19f47951e4f4d84"
+  integrity sha512-EcswR2S8bpR7fD0YPeS7r2xXExrScVMxg4MedACaWHEtx9ftCF/qHG1xGkolzTPcEmjTavCQgbVzHUIdTMzFGA==
 
 w3c-hr-time@^1.0.1:
   version "1.0.2"

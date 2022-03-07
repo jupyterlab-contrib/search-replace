@@ -1,7 +1,11 @@
+import asyncio
 import json
+
 import pytest
 from jsonschema import validate
 from tornado.httpclient import HTTPClientError
+
+from ..search_engine import SearchEngine
 
 
 async def test_search_get(test_content, schema, jp_fetch):
@@ -317,6 +321,32 @@ async def test_search_regex(test_content, schema, jp_fetch):
                     "end": 23,
                     "line_number": 3,
                     "absolute_offset": 59,
+                },
+            ],
+        },
+    ]
+
+
+@pytest.mark.asyncio
+async def test_two_search_operations(test_content, schema, jp_root_dir):
+    engine = SearchEngine(jp_root_dir)
+    task_1 = asyncio.create_task(engine.search(query="s"))
+    payload = await asyncio.create_task(engine.search(query="str.*"))
+    assert task_1.cancelled() == True
+    validate(instance=payload, schema=schema)
+    assert len(payload["matches"]) == 1
+    assert len(payload["matches"][0]["matches"]) == 1
+    assert sorted(payload["matches"], key=lambda x: x["path"]) == [
+        {
+            "path": "test_lab_search_replace/text_1.txt",
+            "matches": [
+                {
+                    "line": "Unicode histrange file, very str.*ange\n",
+                    "match": "str.*",
+                    "start": 29,
+                    "end": 34,
+                    "line_number": 1,
+                    "absolute_offset": 0,
                 },
             ],
         },
