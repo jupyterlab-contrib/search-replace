@@ -50,6 +50,7 @@ class SearchEngine:
     The implementation is using `ripgrep <https://github.com/BurntSushi/ripgrep>`_.
     """
 
+    # Keep track of the previous search task to run only one task at a time
     search_task: ClassVar[Optional[asyncio.Task]] = None
 
     def __init__(self, root_dir: str) -> None:
