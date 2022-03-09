@@ -173,7 +173,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v2
         with:
-          name: {{ cookiecutter.python_name }}-playwright-tests
+          name: search-replace-playwright-tests
           path: |
             ui-tests/test-results
             ui-tests/playwright-report
