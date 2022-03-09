@@ -3,7 +3,7 @@ import { expect } from '@playwright/test';
 
 test('test', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('#tab-key-0 .lm-TabBar-tabIcon svg').first().click();
+  await page.locator('[title="Search and replace"]').click();
   // Click input[type="search"]
   await page.locator('input[type="search"]').click();
   // Fill input[type="search"]
