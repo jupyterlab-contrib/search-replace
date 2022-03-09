@@ -125,7 +125,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      PLAYWRIGHT_BROWSERS_PATH: ${{ "{{ github.workspace }}" }}/pw-browsers
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/pw-browsers
 
     steps:
       - name: Checkout
