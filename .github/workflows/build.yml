@@ -138,6 +138,12 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: myextension-sdist
+
+      - name: Install ripgrep
+        run: |
+          set -eux
+          sudo apt-get update
+          sudo apt-get install ripgrep
         
       - name: Install the extension
         run: |
