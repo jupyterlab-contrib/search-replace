@@ -74,7 +74,13 @@ function createTreeView(results: IResults[]): JSX.Element {
     </TreeItem>
   })
 
-  return <TreeView>{items}</TreeView>
+  if (items.length === 0)
+  {
+    return <pre>No Matches Found</pre>
+  }
+  else {
+    return <TreeView>{items}</TreeView>
+  }
 }
 
 //TODO: fix css issue with buttons
