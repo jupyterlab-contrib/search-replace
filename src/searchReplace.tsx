@@ -2,7 +2,12 @@ import React from 'react';
 import { Debouncer } from '@lumino/polling';
 import { requestAPI } from './handler';
 import { VDomModel, VDomRenderer } from '@jupyterlab/apputils';
-import { Search, TreeView, TreeItem, Badge } from '@jupyter-notebook/react-components';
+import {
+  Search,
+  TreeView,
+  TreeItem,
+  Badge
+} from '@jupyter-notebook/react-components';
 
 export class SearchReplaceModel extends VDomModel {
   constructor() {
@@ -58,28 +63,42 @@ export class SearchReplaceModel extends VDomModel {
 }
 
 interface IQueryResult {
-  matches: IResults[]
+  matches: IResults[];
 }
 
 interface IResults {
   path: string;
-  matches: {line: string; start: number; end: number; match: string; line_number: number; absolute_offset: number}[]
+  matches: {
+    line: string;
+    start: number;
+    end: number;
+    match: string;
+    line_number: number;
+    absolute_offset: number;
+  }[];
 }
 
 function createTreeView(results: IResults[]): JSX.Element {
   const items = results.map(file => {
-    return <TreeItem className='search-tree-files'>{file.path}<Badge slot="end">{file.matches.length}</Badge>
-      {file.matches.map(match => <TreeItem className='search-tree-matches'>{match.line.slice(0, match.start)}<mark>{match.match}</mark>{match.line.slice(match.end)}
-      </TreeItem>)}
-    </TreeItem>
-  })
+    return (
+      <TreeItem className="search-tree-files">
+        {file.path}
+        <Badge slot="end">{file.matches.length}</Badge>
+        {file.matches.map(match => (
+          <TreeItem className="search-tree-matches">
+            {match.line.slice(0, match.start)}
+            <mark>{match.match}</mark>
+            {match.line.slice(match.end)}
+          </TreeItem>
+        ))}
+      </TreeItem>
+    );
+  });
 
-  if (items.length === 0)
-  {
-    return <pre>No Matches Found</pre>
-  }
-  else {
-    return <TreeView>{items}</TreeView>
+  if (items.length === 0) {
+    return <pre>No Matches Found</pre>;
+  } else {
+    return <TreeView>{items}</TreeView>;
   }
 }
 
