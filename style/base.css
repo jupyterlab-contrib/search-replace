@@ -1,7 +1,33 @@
 .jp-search-replace-tab {
   background: var(--jp-layout-color0);
+  display: flex;
+  flex-direction: column;
 }
 
-.search-tree-matches, .search-tree-files {
+.jp-search-replace-tab > * {
+  padding: 5px;
+}
+
+.jp-search-replace-list {
+  overflow-y: auto;
+  flex-grow: 1;
+}
+
+.jp-search-replace-list > jp-tree-view {
+  min-width: auto;
+}
+
+.jp-search-replace-list jp-tree-item {
+  background: none;
+}
+
+.search-tree-files > span,
+.search-tree-matches > span {
   text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
+}
+
+.search-tree-files > span {
+  flex-grow: 1;
 }

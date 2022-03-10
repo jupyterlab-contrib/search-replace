@@ -81,14 +81,16 @@ interface IResults {
 function createTreeView(results: IResults[]): JSX.Element {
   const items = results.map(file => {
     return (
-      <TreeItem className="search-tree-files">
-        {file.path}
+      <TreeItem className="search-tree-files" expanded>
+        <span title={file.path}>{file.path}</span>
         <Badge slot="end">{file.matches.length}</Badge>
         {file.matches.map(match => (
           <TreeItem className="search-tree-matches">
-            {match.line.slice(0, match.start)}
-            <mark>{match.match}</mark>
-            {match.line.slice(match.end)}
+            <span title={match.line}>
+              {match.line.slice(0, match.start)}
+              <mark>{match.match}</mark>
+              {match.line.slice(match.end)}
+            </span>
           </TreeItem>
         ))}
       </TreeItem>
@@ -96,9 +98,13 @@ function createTreeView(results: IResults[]): JSX.Element {
   });
 
   if (items.length === 0) {
-    return <pre>No Matches Found</pre>;
+    return <p>No Matches Found</p>;
   } else {
-    return <TreeView>{items}</TreeView>;
+    return (
+      <div className="jp-search-replace-list">
+        <TreeView>{items}</TreeView>
+      </div>
+    );
   }
 }
 
@@ -114,13 +120,13 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
       <>
         <Search
           appearance="outline"
-          placeholder="<pre>{matches}</pre>"
-          label="Search"
+          placeholder="Search"
+          aria-label="Search files for text"
           onInput={(event: any) =>
             (this.model.searchString = event.target.value)
           }
         />
-        {createTreeView(this.model.queryResults)}
+        {this.model.searchString && createTreeView(this.model.queryResults)}
       </>
     );
   }
