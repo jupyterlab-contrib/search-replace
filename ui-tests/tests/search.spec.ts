@@ -20,6 +20,6 @@ test('test', async ({ page }) => {
   ]);
 
   expect(
-    await page.waitForSelector(`#jp-search-replace >> text=${JSON.stringify({"matches":[]}, undefined, 4)}`)
+    await page.waitForSelector('#jp-search-replace >> text="No Matches Found"')
   ).toBeTruthy();
 });
