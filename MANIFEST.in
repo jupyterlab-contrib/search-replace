@@ -4,11 +4,13 @@ include RELEASE.md
 include pyproject.toml
 recursive-include jupyter-config *.json
 recursive-include jupyterlab_search_replace *.json
+include jupyter_server_test_config.py
 include conftest.py
 
 include package.json
 include install.json
 include ts*.json
+include *.config.js
 include yarn.lock
 
 graft jupyterlab_search_replace/labextension
@@ -17,6 +19,7 @@ graft jupyterlab_search_replace/labextension
 graft src
 graft style
 graft schema
+graft ui-tests
 prune **/node_modules
 prune lib
 prune binder
