@@ -122,19 +122,19 @@
     gud "^1.0.0"
     warning "^4.0.3"
 
-"@jupyter-notebook/react-components@^0.6.2":
-  version "0.6.2"
-  resolved "https://registry.yarnpkg.com/@jupyter-notebook/react-components/-/react-components-0.6.2.tgz#98968941ce885e17bda74ff10432c44d900aa78b"
-  integrity sha512-sckLjEV7Vdrj6k/QruJDntlqxb5UD7NC4AJ6P+tdQmdUod0za5Aot0MVdBuL9KrrGs8YwOCH1NRsg4gHwbDTPA==
+"@jupyter-notebook/react-components@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@jupyter-notebook/react-components/-/react-components-0.8.0.tgz#0b7fa021c8a7f87e246299a8af7d7f2ed05e2746"
+  integrity sha512-uwjUGrE4wwf3RQJWPvghL/Eab8NAshZifCFnF7B348o+kCxTKqW0nagrtz50tWCdzmw7qOUkN8Pf4OqGBZAHwQ==
   dependencies:
-    "@jupyter-notebook/web-components" "^0.6.1"
+    "@jupyter-notebook/web-components" "^0.8.0"
     "@microsoft/fast-react-wrapper" "^0.1.17"
     react "^17.0.0"
 
-"@jupyter-notebook/web-components@^0.6.1":
-  version "0.6.1"
-  resolved "https://registry.yarnpkg.com/@jupyter-notebook/web-components/-/web-components-0.6.1.tgz#0eef72ae3c74c57bc35d9920609755f4673ffceb"
-  integrity sha512-NT20X4xxO3o4uiA1zvp7MZRmZ0bvkkP08LJrdpqzu4xWm+vhEl4vk7ExMphhQJ8PVm5hdw2mXJjXOjvbb7ipoQ==
+"@jupyter-notebook/web-components@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@jupyter-notebook/web-components/-/web-components-0.8.0.tgz#1120dff539deb1c1128a827d99d4e987e94b4c5e"
+  integrity sha512-nRrnFHwVnncWNhFCHxL+qbobXzz5aFtWhJgX0odp8bzs4PUgtfZPvs6zcRC9NxniDG7hKWdOjDATf5wrr2GVUA==
   dependencies:
     "@microsoft/fast-colors" "^5.1.4"
     "@microsoft/fast-components" "^2.17.1"

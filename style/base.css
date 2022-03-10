@@ -1,3 +1,7 @@
 .jp-search-replace-tab {
   background: var(--jp-layout-color0);
 }
+
+.search-tree-matches, .search-tree-files {
+  text-overflow: ellipsis;
+}
