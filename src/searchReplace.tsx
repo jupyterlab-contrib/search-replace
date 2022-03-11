@@ -1,5 +1,6 @@
 import React from 'react';
 import { Debouncer } from '@lumino/polling';
+import { CommandRegistry } from '@lumino/commands';
 import { requestAPI } from './handler';
 import { VDomModel, VDomRenderer } from '@jupyterlab/apputils';
 import {
@@ -90,7 +91,15 @@ interface IResults {
   }[];
 }
 
-function createTreeView(results: IResults[]): JSX.Element {
+function openFile(path: string, _commands: CommandRegistry) {
+  _commands.execute('docmanager:open', { path });
+  // _commands.execute('')
+}
+
+function createTreeView(
+  results: IResults[],
+  _commands: CommandRegistry
+): JSX.Element {
   results.sort((a, b) => (a.path > b.path ? 1 : -1));
   const items = results.map(file => {
     return (
@@ -98,7 +107,10 @@ function createTreeView(results: IResults[]): JSX.Element {
         <span title={file.path}>{file.path}</span>
         <Badge slot="end">{file.matches.length}</Badge>
         {file.matches.map(match => (
-          <TreeItem className="search-tree-matches">
+          <TreeItem
+            className="search-tree-matches"
+            onClick={() => openFile(file.path, _commands)}
+          >
             <span title={match.line}>
               {match.line.slice(0, match.start)}
               <mark>{match.match}</mark>
@@ -123,8 +135,11 @@ function createTreeView(results: IResults[]): JSX.Element {
 
 //TODO: fix css issue with buttons
 export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
-  constructor(searchModel: SearchReplaceModel) {
+  private _commands: CommandRegistry;
+
+  constructor(searchModel: SearchReplaceModel, commands: CommandRegistry) {
     super(searchModel);
+    this._commands = commands;
     this.addClass('jp-search-replace-tab');
   }
 
@@ -139,7 +154,8 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
             (this.model.searchString = event.target.value)
           }
         />
-        {this.model.searchString && createTreeView(this.model.queryResults)}
+        {this.model.searchString &&
+          createTreeView(this.model.queryResults, this._commands)}
       </>
     );
   }

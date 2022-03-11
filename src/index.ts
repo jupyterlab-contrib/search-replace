@@ -19,7 +19,10 @@ const plugin: JupyterFrontEndPlugin<void> = {
     addJupyterLabThemeChangeListener();
 
     const searchReplaceModel = new SearchReplaceModel();
-    const searchReplacePlugin = new SearchReplaceView(searchReplaceModel);
+    const searchReplacePlugin = new SearchReplaceView(
+      searchReplaceModel,
+      app.commands
+    );
 
     // Test call
     // searchReplaceModel.getSearchString('strange');
