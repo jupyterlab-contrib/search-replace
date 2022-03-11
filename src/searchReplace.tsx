@@ -66,6 +66,18 @@ interface IQueryResult {
   matches: IResults[];
 }
 
+/**
+ * Interface to represent matches in a file
+ * @interface IResults
+ * @member path -- path of file
+ * @member matches -- all matches within that file
+ * @field line -- line containing the match
+ * @field start -- starting offset of the match
+ * @field end -- ending offset of the match
+ * @field match -- the actual match itself
+ * @field line_number -- the line number where the match occurs
+ * @field absolute_offset -- the offset from the beginning of file
+ */
 interface IResults {
   path: string;
   matches: {
@@ -79,6 +91,7 @@ interface IResults {
 }
 
 function createTreeView(results: IResults[]): JSX.Element {
+  results.sort((a, b) => (a.path > b.path ? 1 : -1));
   const items = results.map(file => {
     return (
       <TreeItem className="search-tree-files" expanded>
