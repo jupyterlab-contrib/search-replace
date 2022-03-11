@@ -41,7 +41,7 @@ test('should get 5 matches', async ({ page }) => {
   ).toBeTruthy();
 
   await expect(page.locator('jp-tree-item:nth-child(4)')).toHaveText(
-    '                "Unicode strange sub file, very strange",'
+    '                "Is that Strange enough?",'
   );
 });
 
