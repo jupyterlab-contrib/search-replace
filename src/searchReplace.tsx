@@ -8,7 +8,8 @@ import {
   TreeView,
   TreeItem,
   Badge,
-  Progress
+  Progress,
+  Button
 } from '@jupyter-notebook/react-components';
 
 export class SearchReplaceModel extends VDomModel {
@@ -17,8 +18,16 @@ export class SearchReplaceModel extends VDomModel {
     this._isLoading = false;
     this._searchString = '';
     this._queryResults = [];
+    this._caseSensitive = false;
+    this._wholeWord = false;
+    this._useRegex = false;
     this._debouncedStartSearch = new Debouncer(() => {
-      this.getSearchString(this._searchString);
+      this.getSearchString(
+        this._searchString,
+        this._caseSensitive,
+        this._wholeWord,
+        this._useRegex
+      );
     });
   }
 
@@ -49,15 +58,53 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  get caseSensitive(): boolean {
+    return this._caseSensitive;
+  }
+
+  set caseSensitive(v: boolean) {
+    this._caseSensitive = v;
+    this.stateChanged.emit();
+  }
+
+  get wholeWord(): boolean {
+    return this._wholeWord;
+  }
+
+  set wholeWord(v: boolean) {
+    this._wholeWord = v;
+    this.stateChanged.emit();
+  }
+
+  get useRegex(): boolean {
+    return this._useRegex;
+  }
+
+  set useRegex(v: boolean) {
+    this._useRegex = v;
+    this.stateChanged.emit();
+  }
+
   get queryResults(): IResults[] {
     return this._queryResults;
   }
 
-  async getSearchString(search: string): Promise<void> {
+  async getSearchString(
+    search: string,
+    caseSensitive: boolean,
+    wholeWord: boolean,
+    useRegex: boolean
+  ): Promise<void> {
     try {
       this.isLoading = true;
       const data = await requestAPI<IQueryResult>(
-        '?' + new URLSearchParams([['query', search]]).toString(),
+        '?' +
+          new URLSearchParams([
+            ['query', search],
+            ['case_sensitive', caseSensitive.toString()],
+            ['whole_word', wholeWord.toString()],
+            ['use_regex', useRegex.toString()]
+          ]).toString(),
         {
           method: 'GET'
         }
@@ -75,6 +122,9 @@ export class SearchReplaceModel extends VDomModel {
 
   private _isLoading: boolean;
   private _searchString: string;
+  private _caseSensitive: boolean;
+  private _wholeWord: boolean;
+  private _useRegex: boolean;
   private _queryResults: IResults[];
   private _debouncedStartSearch: Debouncer;
 }
@@ -168,7 +218,32 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         commands={this._commands}
         isLoading={this.model.isLoading}
         queryResults={this.model.queryResults}
-      />
+      >
+        <Button
+          appearance={this.model.caseSensitive === true ? 'accent' : 'neutral'}
+          onClick={() => {
+            this.model.caseSensitive = !this.model.caseSensitive;
+          }}
+        >
+          Case Sensitive
+        </Button>
+        <Button
+          appearance={this.model.wholeWord === true ? 'accent' : 'neutral'}
+          onClick={() => {
+            this.model.wholeWord = !this.model.wholeWord;
+          }}
+        >
+          Whole World
+        </Button>
+        <Button
+          appearance={this.model.useRegex === true ? 'accent' : 'neutral'}
+          onClick={() => {
+            this.model.useRegex = !this.model.useRegex;
+          }}
+        >
+          Use Regex
+        </Button>
+      </SearchReplaceElement>
     );
   }
 }
@@ -184,6 +259,7 @@ const SearchReplaceElement = (props: any) => {
           props.onSearchChanged(event.target.value);
         }}
       />
+      {props.children}
       {props.isLoading ? (
         <Progress />
       ) : (
