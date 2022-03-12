@@ -43,6 +43,9 @@ test('should get 5 matches', async ({ page }) => {
   await expect(page.locator('jp-tree-item:nth-child(4)')).toHaveText(
     '                "Is that Strange enough?",'
   );
+
+  await page.locator('jp-tree-item:nth-child(4)').click();
+  await expect(page).toHaveURL('http://localhost:8888/lab/tree/search-replace-test/conftest.py');
 });
 
 test('should get no matches', async ({ page }) => {

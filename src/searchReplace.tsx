@@ -93,7 +93,6 @@ interface IResults {
 
 function openFile(path: string, _commands: CommandRegistry) {
   _commands.execute('docmanager:open', { path });
-  // _commands.execute('')
 }
 
 function createTreeView(
