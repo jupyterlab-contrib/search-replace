@@ -26,6 +26,11 @@ export class SearchReplaceModel extends VDomModel {
     return this._isLoading;
   }
 
+  set isLoading(v: boolean) {
+    this._isLoading = v;
+    this.stateChanged.emit();
+  }
+
   get searchString(): string {
     return this._searchString;
   }
@@ -58,7 +63,7 @@ export class SearchReplaceModel extends VDomModel {
       this._queryResults = data.matches;
       this.stateChanged.emit();
       console.log(data);
-      this._isLoading = false;
+      this.isLoading = false;
     } catch (reason) {
       console.error(
         `The jupyterlab_search_replace server extension appears to be missing.\n${reason}`
