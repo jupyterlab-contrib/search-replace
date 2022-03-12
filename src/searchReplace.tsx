@@ -7,17 +7,23 @@ import {
   Search,
   TreeView,
   TreeItem,
-  Badge
+  Badge,
+  Progress
 } from '@jupyter-notebook/react-components';
 
 export class SearchReplaceModel extends VDomModel {
   constructor() {
     super();
+    this._isLoading = false;
     this._searchString = '';
     this._queryResults = [];
     this._debouncedStartSearch = new Debouncer(() => {
       this.getSearchString(this._searchString);
     });
+  }
+
+  get isLoading(): boolean {
+    return this._isLoading;
   }
 
   get searchString(): string {
@@ -42,6 +48,7 @@ export class SearchReplaceModel extends VDomModel {
 
   async getSearchString(search: string): Promise<void> {
     try {
+      this._isLoading = true;
       const data = await requestAPI<IQueryResult>(
         '?' + new URLSearchParams([['query', search]]).toString(),
         {
@@ -51,6 +58,7 @@ export class SearchReplaceModel extends VDomModel {
       this._queryResults = data.matches;
       this.stateChanged.emit();
       console.log(data);
+      this._isLoading = false;
     } catch (reason) {
       console.error(
         `The jupyterlab_search_replace server extension appears to be missing.\n${reason}`
@@ -58,6 +66,7 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  private _isLoading: boolean;
   private _searchString: string;
   private _queryResults: IResults[];
   private _debouncedStartSearch: Debouncer;
@@ -153,6 +162,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
             (this.model.searchString = event.target.value)
           }
         />
+        {this.model.isLoading && <Progress />}
         {this.model.searchString &&
           createTreeView(this.model.queryResults, this._commands)}
       </>
