@@ -4,6 +4,7 @@ import {
 } from '@jupyterlab/application';
 
 import { searchIcon } from '@jupyterlab/ui-components';
+import { addJupyterLabThemeChangeListener } from '@jupyter-notebook/web-components';
 
 import { SearchReplaceView, SearchReplaceModel } from './searchReplace';
 
@@ -15,9 +16,13 @@ const plugin: JupyterFrontEndPlugin<void> = {
   autoStart: true,
   activate: (app: JupyterFrontEnd) => {
     console.log('JupyterLab extension search-replace is activated!');
+    addJupyterLabThemeChangeListener();
 
     const searchReplaceModel = new SearchReplaceModel();
-    const searchReplacePlugin = new SearchReplaceView(searchReplaceModel);
+    const searchReplacePlugin = new SearchReplaceView(
+      searchReplaceModel,
+      app.commands
+    );
 
     // Test call
     // searchReplaceModel.getSearchString('strange');
