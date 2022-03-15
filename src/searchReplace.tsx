@@ -8,7 +8,7 @@ import {
   TreeView,
   TreeItem,
   Badge,
-  Progress
+  ProgressRing
 } from '@jupyter-notebook/react-components';
 
 export class SearchReplaceModel extends VDomModel {
@@ -169,7 +169,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
             (this.model.searchString = event.target.value)
           }
         />
-        {this.model.isLoading && <Progress />}
+        {this.model.isLoading && <ProgressRing />}
         {this.model.searchString &&
           createTreeView(this.model.queryResults, this._commands)}
       </>
