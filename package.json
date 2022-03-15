@@ -1,7 +1,7 @@
 {
   "name": "jupyterlab-search-replace",
   "version": "0.1.0",
-  "description": "Search and replace accross files",
+  "description": "Search and replace across files",
   "keywords": [
     "jupyter",
     "jupyterlab",
