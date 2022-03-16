@@ -65,6 +65,9 @@ export class SearchReplaceModel extends VDomModel {
   set caseSensitive(v: boolean) {
     this._caseSensitive = v;
     this.stateChanged.emit();
+    this._debouncedStartSearch
+      .invoke()
+      .catch(reason => console.error(`failed query for ${v} due to ${reason}`));
   }
 
   get wholeWord(): boolean {
@@ -74,6 +77,9 @@ export class SearchReplaceModel extends VDomModel {
   set wholeWord(v: boolean) {
     this._wholeWord = v;
     this.stateChanged.emit();
+    this._debouncedStartSearch
+      .invoke()
+      .catch(reason => console.error(`failed query for ${v} due to ${reason}`));
   }
 
   get useRegex(): boolean {
@@ -83,13 +89,16 @@ export class SearchReplaceModel extends VDomModel {
   set useRegex(v: boolean) {
     this._useRegex = v;
     this.stateChanged.emit();
+    this._debouncedStartSearch
+      .invoke()
+      .catch(reason => console.error(`failed query for ${v} due to ${reason}`));
   }
 
   get queryResults(): IResults[] {
     return this._queryResults;
   }
 
-  async getSearchString(
+  private async getSearchString(
     search: string,
     caseSensitive: boolean,
     wholeWord: boolean,
