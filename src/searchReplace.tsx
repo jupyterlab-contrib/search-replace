@@ -55,7 +55,7 @@ export class SearchReplaceModel extends VDomModel {
 
   async getSearchString(search: string): Promise<void> {
     try {
-      this._isLoading = true;
+      this.isLoading = true;
       const data = await requestAPI<IQueryResult>(
         '?' + new URLSearchParams([['query', search]]).toString(),
         {
@@ -160,19 +160,27 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
 
   render(): JSX.Element | null {
     return (
-      <>
-        <Search
-          appearance="outline"
-          placeholder="Search"
-          aria-label="Search files for text"
-          onInput={(event: any) =>
-            (this.model.searchString = event.target.value)
-          }
-        />
-        {this.model.isLoading && <ProgressRing />}
-        {this.model.searchString &&
-          createTreeView(this.model.queryResults, this._commands)}
-      </>
+      <SearchReplaceElement
+        searchString={this.model.searchString}
+        commands={this._commands}
+        isLoading={this.model.isLoading}
+        queryResults={this.model.queryResults}
+      />
     );
   }
 }
+
+const SearchReplaceElement = (props: any) => {
+  return (
+    <>
+      <Search
+        appearance="outline"
+        placeholder="Search"
+        aria-label="Search files for text"
+        onInput={(event: any) => (props.searchString = event.target.value)}
+      />
+      {props.isLoading && <ProgressRing />}
+      {props.searchString && createTreeView(props.queryResults, props.commands)}
+    </>
+  );
+};
