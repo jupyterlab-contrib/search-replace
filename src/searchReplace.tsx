@@ -8,7 +8,7 @@ import {
   TreeView,
   TreeItem,
   Badge,
-  ProgressRing
+  Progress
 } from '@jupyter-notebook/react-components';
 
 export class SearchReplaceModel extends VDomModel {
@@ -179,8 +179,11 @@ const SearchReplaceElement = (props: any) => {
         aria-label="Search files for text"
         onInput={(event: any) => (props.searchString = event.target.value)}
       />
-      {props.isLoading && <ProgressRing />}
-      {props.searchString && createTreeView(props.queryResults, props.commands)}
+      {props.isLoading ? (
+        <Progress />
+      ) : (
+        props.searchString && createTreeView(props.queryResults, props.commands)
+      )}
     </>
   );
 };
