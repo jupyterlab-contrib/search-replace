@@ -36,7 +36,7 @@ test('should get 5 matches', async ({ page }) => {
     page.locator('input[type="search"]').press('Enter')
   ]);
 
-  await page.waitForSelector('.jp-search-replace-tab >> .jp-progress-ring', {
+  await page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
     state: 'hidden'
   })
 
