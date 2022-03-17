@@ -81,7 +81,7 @@ async def test_search_no_match(test_content, schema, jp_fetch):
 
 async def test_search_case_sensitive(test_content, schema, jp_fetch):
     response = await jp_fetch(
-        "search", params={"query": "Strange", "case_sensitive": True}, method="GET"
+        "search", params={"query": "Strange", "case_sensitive": "true"}, method="GET"
     )
     assert response.code == 200
     payload = json.loads(response.body)
