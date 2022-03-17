@@ -7,17 +7,30 @@ import {
   Search,
   TreeView,
   TreeItem,
-  Badge
+  Badge,
+  Progress
 } from '@jupyter-notebook/react-components';
 
 export class SearchReplaceModel extends VDomModel {
   constructor() {
     super();
+    this._isLoading = false;
     this._searchString = '';
     this._queryResults = [];
     this._debouncedStartSearch = new Debouncer(() => {
       this.getSearchString(this._searchString);
     });
+  }
+
+  get isLoading(): boolean {
+    return this._isLoading;
+  }
+
+  set isLoading(v: boolean) {
+    if (v !== this._isLoading) {
+      this._isLoading = v;
+      this.stateChanged.emit();
+    }
   }
 
   get searchString(): string {
@@ -42,6 +55,7 @@ export class SearchReplaceModel extends VDomModel {
 
   async getSearchString(search: string): Promise<void> {
     try {
+      this.isLoading = true;
       const data = await requestAPI<IQueryResult>(
         '?' + new URLSearchParams([['query', search]]).toString(),
         {
@@ -50,14 +64,16 @@ export class SearchReplaceModel extends VDomModel {
       );
       this._queryResults = data.matches;
       this.stateChanged.emit();
-      console.log(data);
     } catch (reason) {
       console.error(
         `The jupyterlab_search_replace server extension appears to be missing.\n${reason}`
       );
+    } finally {
+      this.isLoading = false;
     }
   }
 
+  private _isLoading: boolean;
   private _searchString: string;
   private _queryResults: IResults[];
   private _debouncedStartSearch: Debouncer;
@@ -144,18 +160,35 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
 
   render(): JSX.Element | null {
     return (
-      <>
-        <Search
-          appearance="outline"
-          placeholder="Search"
-          aria-label="Search files for text"
-          onInput={(event: any) =>
-            (this.model.searchString = event.target.value)
-          }
-        />
-        {this.model.searchString &&
-          createTreeView(this.model.queryResults, this._commands)}
-      </>
+      <SearchReplaceElement
+        searchString={this.model.searchString}
+        onSearchChanged={(s: string) => {
+          this.model.searchString = s;
+        }}
+        commands={this._commands}
+        isLoading={this.model.isLoading}
+        queryResults={this.model.queryResults}
+      />
     );
   }
 }
+
+const SearchReplaceElement = (props: any) => {
+  return (
+    <>
+      <Search
+        appearance="outline"
+        placeholder="Search"
+        aria-label="Search files for text"
+        onInput={(event: any) => {
+          props.onSearchChanged(event.target.value);
+        }}
+      />
+      {props.isLoading ? (
+        <Progress />
+      ) : (
+        props.searchString && createTreeView(props.queryResults, props.commands)
+      )}
+    </>
+  );
+};
