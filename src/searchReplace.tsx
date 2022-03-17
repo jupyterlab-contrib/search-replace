@@ -162,6 +162,9 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
     return (
       <SearchReplaceElement
         searchString={this.model.searchString}
+        onSearchChanged={(s: string) => {
+          this.model.searchString = s;
+        }}
         commands={this._commands}
         isLoading={this.model.isLoading}
         queryResults={this.model.queryResults}
@@ -177,7 +180,9 @@ const SearchReplaceElement = (props: any) => {
         appearance="outline"
         placeholder="Search"
         aria-label="Search files for text"
-        onInput={(event: any) => (props.searchString = event.target.value)}
+        onInput={(event: any) => {
+          props.onSearchChanged(event.target.value);
+        }}
       />
       {props.isLoading ? (
         <Progress />
