@@ -16,11 +16,11 @@ class RouteHandler(APIHandler):
     async def get(self, path: str = ""):
         query = self.get_query_argument("query")
         max_count = self.get_query_argument("max_count", 100)
-        case_sensitive = self.get_query_argument("case_sensitive", False)
-        whole_word = self.get_query_argument("whole_word", False)
+        case_sensitive = self.get_query_argument("case_sensitive", "false") == "true"
+        whole_word = self.get_query_argument("whole_word", "false") == "true"
         include = self.get_query_argument("include", None)
         exclude = self.get_query_argument("exclude", None)
-        use_regex = self.get_query_argument("use_regex", False)
+        use_regex = self.get_query_argument("use_regex", "false") == "true"
         try:
             r = await self._engine.search(
                 query,
