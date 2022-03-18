@@ -71,3 +71,28 @@ test('should get no matches', async ({ page }) => {
     await page.waitForSelector('#jp-search-replace >> text="No Matches Found"')
   ).toBeTruthy();
 });
+
+test('should test for case sensitive option', async ({ page }) => {
+  // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
+  await page.locator('[title="Search and replace"]').click();
+  // Fill input[type="search"]
+  await page.locator('input[type="search"]').fill('Strange');
+
+  let response_url: string;
+
+  await Promise.all([
+    page.waitForResponse(
+      response => {
+        response_url = response.url();
+        return /.*search\/\?query=Strange/.test(response.url()) &&
+        response.request().method() === 'GET'
+      }
+    ),
+    page.locator('input[type="search"]').press('Enter'),
+    page.locator('[title="button to enable case sensitive mode"]').click()
+  ]);
+
+  expect(/case_sensitive=true/.test(response_url)).toEqual(true);
+
+  expect(await page.waitForSelector('jp-tree-view[role="tree"] >> text=1')).toBeTruthy();
+});
