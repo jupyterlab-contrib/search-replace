@@ -107,7 +107,7 @@ async def test_search_case_sensitive(test_content, schema, jp_fetch):
 
 async def test_search_whole_word(test_content, schema, jp_fetch):
     response = await jp_fetch(
-        "search", params={"query": "strange", "whole_word": True}, method="GET"
+        "search", params={"query": "strange", "whole_word": "true"}, method="GET"
     )
     assert response.code == 200
     payload = json.loads(response.body)
@@ -273,7 +273,7 @@ async def test_search_literal(test_content, schema, jp_fetch):
 
 async def test_search_regex(test_content, schema, jp_fetch):
     response = await jp_fetch(
-        "search", params={"query": "str.*", "use_regex": True}, method="GET"
+        "search", params={"query": "str.*", "use_regex": "true"}, method="GET"
     )
     assert response.code == 200
     payload = json.loads(response.body)

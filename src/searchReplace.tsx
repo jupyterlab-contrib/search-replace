@@ -3,6 +3,7 @@ import { Debouncer } from '@lumino/polling';
 import { CommandRegistry } from '@lumino/commands';
 import { requestAPI } from './handler';
 import { VDomModel, VDomRenderer } from '@jupyterlab/apputils';
+import { wholeWordIcon } from './icon';
 import {
   Search,
   TreeView,
@@ -11,6 +12,7 @@ import {
   Progress,
   Button
 } from '@jupyter-notebook/react-components';
+import { caseSensitiveIcon, regexIcon } from '@jupyterlab/ui-components';
 
 export class SearchReplaceModel extends VDomModel {
   constructor() {
@@ -241,46 +243,60 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         queryResults={this.model.queryResults}
       >
         <Button
+          title="button to enable case sensitive mode"
           appearance={this.model.caseSensitive === true ? 'accent' : 'neutral'}
           onClick={() => {
             this.model.caseSensitive = !this.model.caseSensitive;
           }}
         >
-          Case Sensitive
+          <caseSensitiveIcon.react></caseSensitiveIcon.react>
         </Button>
         <Button
+          title="button to enable whole word mode"
           appearance={this.model.wholeWord === true ? 'accent' : 'neutral'}
           onClick={() => {
             this.model.wholeWord = !this.model.wholeWord;
           }}
         >
-          Whole World
+          <wholeWordIcon.react></wholeWordIcon.react>
         </Button>
         <Button
+          title="button to enable use regex mode"
           appearance={this.model.useRegex === true ? 'accent' : 'neutral'}
           onClick={() => {
             this.model.useRegex = !this.model.useRegex;
           }}
         >
-          Use Regex
+          <regexIcon.react></regexIcon.react>
         </Button>
       </SearchReplaceElement>
     );
   }
 }
 
-const SearchReplaceElement = (props: any) => {
+interface IProps {
+  searchString: string;
+  queryResults: IResults[];
+  commands: CommandRegistry;
+  isLoading: boolean;
+  onSearchChanged: (s: string) => void;
+  children: React.ReactNode;
+}
+
+const SearchReplaceElement = (props: IProps) => {
   return (
     <>
-      <Search
-        appearance="outline"
-        placeholder="Search"
-        aria-label="Search files for text"
-        onInput={(event: any) => {
-          props.onSearchChanged(event.target.value);
-        }}
-      />
-      {props.children}
+      <div className="search-bar-with-options">
+        <Search
+          appearance="outline"
+          placeholder="Search"
+          aria-label="Search files for text"
+          onInput={(event: any) => {
+            props.onSearchChanged(event.target.value);
+          }}
+        />
+        {props.children}
+      </div>
       {props.isLoading ? (
         <Progress />
       ) : (
