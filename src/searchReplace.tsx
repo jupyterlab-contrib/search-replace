@@ -12,7 +12,11 @@ import {
   Progress,
   Button
 } from '@jupyter-notebook/react-components';
-import { caseSensitiveIcon, regexIcon } from '@jupyterlab/ui-components';
+import {
+  caseSensitiveIcon,
+  regexIcon,
+  refreshIcon
+} from '@jupyterlab/ui-components';
 
 export class SearchReplaceModel extends VDomModel {
   constructor() {
@@ -31,6 +35,12 @@ export class SearchReplaceModel extends VDomModel {
         this._useRegex
       );
     });
+  }
+
+  refreshResults(): void {
+    this._debouncedStartSearch
+      .invoke()
+      .catch(reason => console.error(`failed query for due to ${reason}`));
   }
 
   get isLoading(): boolean {
@@ -241,6 +251,9 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         commands={this._commands}
         isLoading={this.model.isLoading}
         queryResults={this.model.queryResults}
+        refreshResults={() => {
+          this.model.refreshResults();
+        }}
       >
         <Button
           title="button to enable case sensitive mode"
@@ -281,11 +294,23 @@ interface IProps {
   isLoading: boolean;
   onSearchChanged: (s: string) => void;
   children: React.ReactNode;
+  refreshResults: () => void;
 }
 
 const SearchReplaceElement = (props: IProps) => {
   return (
     <>
+      <div className="search-title-with-refresh">
+        Search
+        <Button
+          title="button to refresh and reload results"
+          onClick={() => {
+            props.refreshResults();
+          }}
+        >
+          <refreshIcon.react></refreshIcon.react>
+        </Button>
+      </div>
       <div className="search-bar-with-options">
         <Search
           appearance="outline"
