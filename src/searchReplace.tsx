@@ -62,11 +62,7 @@ export class SearchReplaceModel extends VDomModel {
     if (v !== this._searchString) {
       this._searchString = v;
       this.stateChanged.emit();
-      this._debouncedStartSearch
-        .invoke()
-        .catch(reason =>
-          console.error(`failed query for ${v} due to ${reason}`)
-        );
+      this.refreshResults();
     }
   }
 
@@ -78,11 +74,7 @@ export class SearchReplaceModel extends VDomModel {
     if (v !== this._caseSensitive) {
       this._caseSensitive = v;
       this.stateChanged.emit();
-      this._debouncedStartSearch
-        .invoke()
-        .catch(reason =>
-          console.error(`failed query for ${v} due to ${reason}`)
-        );
+      this.refreshResults();
     }
   }
 
@@ -94,11 +86,7 @@ export class SearchReplaceModel extends VDomModel {
     if (v !== this._wholeWord) {
       this._wholeWord = v;
       this.stateChanged.emit();
-      this._debouncedStartSearch
-        .invoke()
-        .catch(reason =>
-          console.error(`failed query for ${v} due to ${reason}`)
-        );
+      this.refreshResults();
     }
   }
 
@@ -110,11 +98,7 @@ export class SearchReplaceModel extends VDomModel {
     if (v !== this._useRegex) {
       this._useRegex = v;
       this.stateChanged.emit();
-      this._debouncedStartSearch
-        .invoke()
-        .catch(reason =>
-          console.error(`failed query for ${v} due to ${reason}`)
-        );
+      this.refreshResults();
     }
   }
 
