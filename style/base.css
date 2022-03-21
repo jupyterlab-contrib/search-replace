@@ -31,3 +31,15 @@
 .search-tree-files > span {
   flex-grow: 1;
 }
+
+.search-bar-with-options {
+  display: flex;
+}
+
+.search-bar-with-options > * {
+  flex: 0 0 auto;
+}
+
+.search-bar-with-options > jp-search:first-child {
+  flex: 1 1 auto;
+}

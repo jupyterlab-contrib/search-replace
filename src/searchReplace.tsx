@@ -3,13 +3,16 @@ import { Debouncer } from '@lumino/polling';
 import { CommandRegistry } from '@lumino/commands';
 import { requestAPI } from './handler';
 import { VDomModel, VDomRenderer } from '@jupyterlab/apputils';
+import { wholeWordIcon } from './icon';
 import {
   Search,
   TreeView,
   TreeItem,
   Badge,
-  Progress
+  Progress,
+  Button
 } from '@jupyter-notebook/react-components';
+import { caseSensitiveIcon, regexIcon } from '@jupyterlab/ui-components';
 
 export class SearchReplaceModel extends VDomModel {
   constructor() {
@@ -17,8 +20,16 @@ export class SearchReplaceModel extends VDomModel {
     this._isLoading = false;
     this._searchString = '';
     this._queryResults = [];
+    this._caseSensitive = false;
+    this._wholeWord = false;
+    this._useRegex = false;
     this._debouncedStartSearch = new Debouncer(() => {
-      this.getSearchString(this._searchString);
+      this.getSearchString(
+        this._searchString,
+        this._caseSensitive,
+        this._wholeWord,
+        this._useRegex
+      );
     });
   }
 
@@ -49,15 +60,74 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  get caseSensitive(): boolean {
+    return this._caseSensitive;
+  }
+
+  set caseSensitive(v: boolean) {
+    if (v !== this._caseSensitive) {
+      this._caseSensitive = v;
+      this.stateChanged.emit();
+      this._debouncedStartSearch
+        .invoke()
+        .catch(reason =>
+          console.error(`failed query for ${v} due to ${reason}`)
+        );
+    }
+  }
+
+  get wholeWord(): boolean {
+    return this._wholeWord;
+  }
+
+  set wholeWord(v: boolean) {
+    if (v !== this._wholeWord) {
+      this._wholeWord = v;
+      this.stateChanged.emit();
+      this._debouncedStartSearch
+        .invoke()
+        .catch(reason =>
+          console.error(`failed query for ${v} due to ${reason}`)
+        );
+    }
+  }
+
+  get useRegex(): boolean {
+    return this._useRegex;
+  }
+
+  set useRegex(v: boolean) {
+    if (v !== this._useRegex) {
+      this._useRegex = v;
+      this.stateChanged.emit();
+      this._debouncedStartSearch
+        .invoke()
+        .catch(reason =>
+          console.error(`failed query for ${v} due to ${reason}`)
+        );
+    }
+  }
+
   get queryResults(): IResults[] {
     return this._queryResults;
   }
 
-  async getSearchString(search: string): Promise<void> {
+  private async getSearchString(
+    search: string,
+    caseSensitive: boolean,
+    wholeWord: boolean,
+    useRegex: boolean
+  ): Promise<void> {
     try {
       this.isLoading = true;
       const data = await requestAPI<IQueryResult>(
-        '?' + new URLSearchParams([['query', search]]).toString(),
+        '?' +
+          new URLSearchParams([
+            ['query', search],
+            ['case_sensitive', caseSensitive.toString()],
+            ['whole_word', wholeWord.toString()],
+            ['use_regex', useRegex.toString()]
+          ]).toString(),
         {
           method: 'GET'
         }
@@ -75,6 +145,9 @@ export class SearchReplaceModel extends VDomModel {
 
   private _isLoading: boolean;
   private _searchString: string;
+  private _caseSensitive: boolean;
+  private _wholeWord: boolean;
+  private _useRegex: boolean;
   private _queryResults: IResults[];
   private _debouncedStartSearch: Debouncer;
 }
@@ -168,22 +241,62 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         commands={this._commands}
         isLoading={this.model.isLoading}
         queryResults={this.model.queryResults}
-      />
+      >
+        <Button
+          title="button to enable case sensitive mode"
+          appearance={this.model.caseSensitive === true ? 'accent' : 'neutral'}
+          onClick={() => {
+            this.model.caseSensitive = !this.model.caseSensitive;
+          }}
+        >
+          <caseSensitiveIcon.react></caseSensitiveIcon.react>
+        </Button>
+        <Button
+          title="button to enable whole word mode"
+          appearance={this.model.wholeWord === true ? 'accent' : 'neutral'}
+          onClick={() => {
+            this.model.wholeWord = !this.model.wholeWord;
+          }}
+        >
+          <wholeWordIcon.react></wholeWordIcon.react>
+        </Button>
+        <Button
+          title="button to enable use regex mode"
+          appearance={this.model.useRegex === true ? 'accent' : 'neutral'}
+          onClick={() => {
+            this.model.useRegex = !this.model.useRegex;
+          }}
+        >
+          <regexIcon.react></regexIcon.react>
+        </Button>
+      </SearchReplaceElement>
     );
   }
 }
 
-const SearchReplaceElement = (props: any) => {
+interface IProps {
+  searchString: string;
+  queryResults: IResults[];
+  commands: CommandRegistry;
+  isLoading: boolean;
+  onSearchChanged: (s: string) => void;
+  children: React.ReactNode;
+}
+
+const SearchReplaceElement = (props: IProps) => {
   return (
     <>
-      <Search
-        appearance="outline"
-        placeholder="Search"
-        aria-label="Search files for text"
-        onInput={(event: any) => {
-          props.onSearchChanged(event.target.value);
-        }}
-      />
+      <div className="search-bar-with-options">
+        <Search
+          appearance="outline"
+          placeholder="Search"
+          aria-label="Search files for text"
+          onInput={(event: any) => {
+            props.onSearchChanged(event.target.value);
+          }}
+        />
+        {props.children}
+      </div>
       {props.isLoading ? (
         <Progress />
       ) : (
