@@ -146,3 +146,29 @@ test('should test for use regex option', async ({ page }) => {
 
   expect(await page.waitForSelector('jp-tree-view[role="tree"] >> text=5')).toBeTruthy();
 });
+
+
+test('should make a new request on refresh', async ({ page }) => {
+  // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
+  await page.locator('[title="Search and replace"]').click();
+  // Fill input[type="search"]
+  await page.locator('input[type="search"]').fill('strange');
+
+  await Promise.all([
+    page.waitForResponse(
+      response =>
+        /.*search\/\?query=strange/.test(response.url()) &&
+        response.request().method() === 'GET'
+    ),
+    page.locator('input[type="search"]').press('Enter')
+  ]);
+
+  await Promise.all([
+    page.waitForResponse(
+      response =>
+        /.*search\/\?query=strange/.test(response.url()) &&
+        response.request().method() === 'GET'
+    ),
+    page.locator('[title="button to refresh and reload results"]').click()
+  ]);
+});
