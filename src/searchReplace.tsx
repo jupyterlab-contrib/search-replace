@@ -283,12 +283,13 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         onSearchChanged={(s: string) => {
           this.model.searchString = s;
         }}
+        excludeToggle={this.model.excludeToggle}
         onExcludeToggle={(v: boolean) => {
           this.model.excludeToggle = v;
         }}
-        onFileFilter={(s: string, v: boolean) => {
+        fileFilter={this.model.filesFilter}
+        onFileFilter={(s: string) => {
           this.model.filesFilter = s;
-          this.model.excludeToggle = v;
         }}
         commands={this._commands}
         isLoading={this.model.isLoading}
@@ -335,8 +336,10 @@ interface IProps {
   commands: CommandRegistry;
   isLoading: boolean;
   onSearchChanged: (s: string) => void;
+  excludeToggle: boolean;
   onExcludeToggle: (v: boolean) => void;
-  onFileFilter: (s: string, v: boolean) => void;
+  fileFilter: string;
+  onFileFilter: (s: string) => void;
   children: React.ReactNode;
   refreshResults: () => void;
 }
@@ -387,6 +390,7 @@ const SearchReplaceElement = (props: IProps) => {
           onInput={(event: any) => {
             props.onSearchChanged(event.target.value);
           }}
+          value={props.searchString}
         />
         {props.children}
       </div>
@@ -395,22 +399,18 @@ const SearchReplaceElement = (props: IProps) => {
           appearance="outline"
           placeholder="files to"
           onInput={(event: any) => {
-            const excludeToggle = document
-              .getElementById('exclude-toggle')
-              ?.getAttribute('current-checked');
-            props.onFileFilter(event.target.value, excludeToggle === 'true');
+            props.onFileFilter(event.target.value);
           }}
+          value={props.fileFilter}
         >
           File filters
         </TextField>
         <Switch
           id="exclude-toggle"
-          onClick={() => {
-            const excludeToggle = document
-              .getElementById('exclude-toggle')
-              ?.getAttribute('current-checked');
-            props.onExcludeToggle(excludeToggle === 'true');
+          onChange={(event: any) => {
+            props.onExcludeToggle(event.target.checked);
           }}
+          checked={props.excludeToggle}
         >
           <span slot="checked-message">exclude</span>
           <span slot="unchecked-message">include</span>
