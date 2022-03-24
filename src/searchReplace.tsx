@@ -3,7 +3,7 @@ import { Debouncer } from '@lumino/polling';
 import { CommandRegistry } from '@lumino/commands';
 import { requestAPI } from './handler';
 import { VDomModel, VDomRenderer } from '@jupyterlab/apputils';
-import { wholeWordIcon } from './icon';
+import { wholeWordIcon, expandAllIcon } from './icon';
 import {
   Search,
   TreeView,
@@ -293,6 +293,23 @@ const SearchReplaceElement = (props: IProps) => {
           }}
         >
           <refreshIcon.react></refreshIcon.react>
+        </Button>
+        <Button
+          title="button to expand and collapse all results"
+          onClick={() => {
+            const elements =
+              document.getElementsByClassName('search-tree-files');
+            for (let i = 0; i < elements.length; i++) {
+              const treeItem = elements[i];
+              if (treeItem.hasAttribute('expanded')) {
+                treeItem.removeAttribute('expanded');
+              } else {
+                treeItem.setAttribute('expanded', '');
+              }
+            }
+          }}
+        >
+          <expandAllIcon.react></expandAllIcon.react>
         </Button>
       </div>
       <div className="search-bar-with-options">
