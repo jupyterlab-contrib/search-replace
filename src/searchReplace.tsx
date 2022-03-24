@@ -3,7 +3,7 @@ import { Debouncer } from '@lumino/polling';
 import { CommandRegistry } from '@lumino/commands';
 import { requestAPI } from './handler';
 import { VDomModel, VDomRenderer } from '@jupyterlab/apputils';
-import { wholeWordIcon, expandAllIcon } from './icon';
+import { wholeWordIcon, expandAllIcon, collapseAllIcon } from './icon';
 import {
   Search,
   TreeView,
@@ -314,7 +314,6 @@ const SearchReplaceElement = (props: IProps) => {
         </Button>
         <Button
           title="button to expand and collapse all results"
-          appearance={expandStatus.some(elem => elem) ? 'accent' : 'neutral'}
           onClick={() => {
             const expandStatusNew = new Array(props.queryResults.length).fill(
               !expandStatus.some(elem => elem)
@@ -322,7 +321,11 @@ const SearchReplaceElement = (props: IProps) => {
             setExpandStatus(expandStatusNew);
           }}
         >
-          <expandAllIcon.react></expandAllIcon.react>
+          {expandStatus.some(elem => elem) ? (
+            <collapseAllIcon.react></collapseAllIcon.react>
+          ) : (
+            <expandAllIcon.react></expandAllIcon.react>
+          )}
         </Button>
       </div>
       <div className="search-bar-with-options">
