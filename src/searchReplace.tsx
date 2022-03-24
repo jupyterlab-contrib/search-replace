@@ -10,7 +10,9 @@ import {
   TreeItem,
   Badge,
   Progress,
-  Button
+  Button,
+  TextField,
+  Switch
 } from '@jupyter-notebook/react-components';
 import {
   caseSensitiveIcon,
@@ -27,12 +29,16 @@ export class SearchReplaceModel extends VDomModel {
     this._caseSensitive = false;
     this._wholeWord = false;
     this._useRegex = false;
+    this._includeFilesFilter = '';
+    this._excludeFilesFilter = '';
     this._debouncedStartSearch = new Debouncer(() => {
       this.getSearchString(
         this._searchString,
         this._caseSensitive,
         this._wholeWord,
-        this._useRegex
+        this._useRegex,
+        this._includeFilesFilter,
+        this._excludeFilesFilter
       );
     });
   }
@@ -102,6 +108,30 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  get includeFilesFilter(): string {
+    return this._includeFilesFilter;
+  }
+
+  set includeFilesFilter(v: string) {
+    if (v !== this._includeFilesFilter) {
+      this._includeFilesFilter = v;
+      this.stateChanged.emit();
+      this.refreshResults();
+    }
+  }
+
+  get excludeFilesFilter(): string {
+    return this._excludeFilesFilter;
+  }
+
+  set excludeFilesFilter(v: string) {
+    if (v !== this._excludeFilesFilter) {
+      this._excludeFilesFilter = v;
+      this.stateChanged.emit();
+      this.refreshResults();
+    }
+  }
+
   get queryResults(): IResults[] {
     return this._queryResults;
   }
@@ -110,7 +140,9 @@ export class SearchReplaceModel extends VDomModel {
     search: string,
     caseSensitive: boolean,
     wholeWord: boolean,
-    useRegex: boolean
+    useRegex: boolean,
+    includeFiles: string,
+    excludeFiles: string
   ): Promise<void> {
     try {
       this.isLoading = true;
@@ -120,7 +152,9 @@ export class SearchReplaceModel extends VDomModel {
             ['query', search],
             ['case_sensitive', caseSensitive.toString()],
             ['whole_word', wholeWord.toString()],
-            ['use_regex', useRegex.toString()]
+            ['use_regex', useRegex.toString()],
+            ['include', includeFiles],
+            ['exclude', excludeFiles]
           ]).toString(),
         {
           method: 'GET'
@@ -142,6 +176,8 @@ export class SearchReplaceModel extends VDomModel {
   private _caseSensitive: boolean;
   private _wholeWord: boolean;
   private _useRegex: boolean;
+  private _includeFilesFilter: string;
+  private _excludeFilesFilter: string;
   private _queryResults: IResults[];
   private _debouncedStartSearch: Debouncer;
 }
@@ -339,6 +375,19 @@ const SearchReplaceElement = (props: IProps) => {
           }}
         />
         {props.children}
+      </div>
+      <div>
+        <TextField
+          appearance="outline"
+          placeholder="file filters"
+          onInput={(event: any) => {}}
+        >
+          files to
+        </TextField>
+        <Switch>
+          <span slot="checked-message">exclude</span>
+          <span slot="unchecked-message">include</span>
+        </Switch>
       </div>
       {props.isLoading ? (
         <Progress />
