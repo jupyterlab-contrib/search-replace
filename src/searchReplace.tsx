@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Debouncer } from '@lumino/polling';
 import { CommandRegistry } from '@lumino/commands';
 import { requestAPI } from './handler';
@@ -180,12 +180,22 @@ function openFile(path: string, _commands: CommandRegistry) {
 
 function createTreeView(
   results: IResults[],
-  _commands: CommandRegistry
+  _commands: CommandRegistry,
+  expandStatus: boolean[],
+  setExpandStatus: (v: boolean[]) => void
 ): JSX.Element {
   results.sort((a, b) => (a.path > b.path ? 1 : -1));
-  const items = results.map(file => {
+  const items = results.map((file, index) => {
     return (
-      <TreeItem className="search-tree-files" expanded>
+      <TreeItem
+        className="search-tree-files"
+        expanded={expandStatus[index]}
+        onClick={() => {
+          const expandStatusNew = [...expandStatus];
+          expandStatusNew[index] = !expandStatusNew[index];
+          setExpandStatus(expandStatusNew);
+        }}
+      >
         <span title={file.path}>{file.path}</span>
         <Badge slot="end">{file.matches.length}</Badge>
         {file.matches.map(match => (
@@ -282,6 +292,14 @@ interface IProps {
 }
 
 const SearchReplaceElement = (props: IProps) => {
+  const [expandStatus, setExpandStatus] = useState(
+    new Array(props.queryResults.length).fill(true)
+  );
+
+  useEffect(() => {
+    setExpandStatus(new Array(props.queryResults.length).fill(true));
+  }, [props.queryResults]);
+
   return (
     <>
       <div className="search-title-with-refresh">
@@ -297,16 +315,10 @@ const SearchReplaceElement = (props: IProps) => {
         <Button
           title="button to expand and collapse all results"
           onClick={() => {
-            const elements =
-              document.getElementsByClassName('search-tree-files');
-            for (let i = 0; i < elements.length; i++) {
-              const treeItem = elements[i];
-              if (treeItem.hasAttribute('expanded')) {
-                treeItem.removeAttribute('expanded');
-              } else {
-                treeItem.setAttribute('expanded', '');
-              }
-            }
+            const expandStatusNew = new Array(props.queryResults.length).fill(
+              !expandStatus.some(elem => elem)
+            );
+            setExpandStatus(expandStatusNew);
           }}
         >
           <expandAllIcon.react></expandAllIcon.react>
@@ -326,7 +338,13 @@ const SearchReplaceElement = (props: IProps) => {
       {props.isLoading ? (
         <Progress />
       ) : (
-        props.searchString && createTreeView(props.queryResults, props.commands)
+        props.searchString &&
+        createTreeView(
+          props.queryResults,
+          props.commands,
+          expandStatus,
+          setExpandStatus
+        )
       )}
     </>
   );
