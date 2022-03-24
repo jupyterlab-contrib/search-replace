@@ -314,6 +314,7 @@ const SearchReplaceElement = (props: IProps) => {
         </Button>
         <Button
           title="button to expand and collapse all results"
+          appearance={expandStatus.some(elem => elem) ? 'accent' : 'neutral'}
           onClick={() => {
             const expandStatusNew = new Array(props.queryResults.length).fill(
               !expandStatus.some(elem => elem)
