@@ -29,16 +29,16 @@ export class SearchReplaceModel extends VDomModel {
     this._caseSensitive = false;
     this._wholeWord = false;
     this._useRegex = false;
-    this._includeFilesFilter = '';
-    this._excludeFilesFilter = '';
+    this._filesFilter = '';
+    this._excludeToggle = false;
     this._debouncedStartSearch = new Debouncer(() => {
       this.getSearchString(
         this._searchString,
         this._caseSensitive,
         this._wholeWord,
         this._useRegex,
-        this._includeFilesFilter,
-        this._excludeFilesFilter
+        this._filesFilter,
+        this._excludeToggle
       );
     });
   }
@@ -108,25 +108,25 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
-  get includeFilesFilter(): string {
-    return this._includeFilesFilter;
+  get filesFilter(): string {
+    return this._filesFilter;
   }
 
-  set includeFilesFilter(v: string) {
-    if (v !== this._includeFilesFilter) {
-      this._includeFilesFilter = v;
+  set filesFilter(v: string) {
+    if (v !== this._filesFilter) {
+      this._filesFilter = v;
       this.stateChanged.emit();
       this.refreshResults();
     }
   }
 
-  get excludeFilesFilter(): string {
-    return this._excludeFilesFilter;
+  get excludeToggle(): boolean {
+    return this._excludeToggle;
   }
 
-  set excludeFilesFilter(v: string) {
-    if (v !== this._excludeFilesFilter) {
-      this._excludeFilesFilter = v;
+  set excludeToggle(v: boolean) {
+    if (v !== this._excludeToggle) {
+      this._excludeToggle = v;
       this.stateChanged.emit();
       this.refreshResults();
     }
@@ -142,10 +142,15 @@ export class SearchReplaceModel extends VDomModel {
     wholeWord: boolean,
     useRegex: boolean,
     includeFiles: string,
-    excludeFiles: string
+    excludeToggle: boolean
   ): Promise<void> {
     try {
       this.isLoading = true;
+      let excludeFiles = '';
+      if (excludeToggle) {
+        excludeFiles = includeFiles;
+        includeFiles = '';
+      }
       const data = await requestAPI<IQueryResult>(
         '?' +
           new URLSearchParams([
@@ -176,8 +181,8 @@ export class SearchReplaceModel extends VDomModel {
   private _caseSensitive: boolean;
   private _wholeWord: boolean;
   private _useRegex: boolean;
-  private _includeFilesFilter: string;
-  private _excludeFilesFilter: string;
+  private _filesFilter: string;
+  private _excludeToggle: boolean;
   private _queryResults: IResults[];
   private _debouncedStartSearch: Debouncer;
 }
@@ -278,6 +283,13 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         onSearchChanged={(s: string) => {
           this.model.searchString = s;
         }}
+        onExcludeToggle={(v: boolean) => {
+          this.model.excludeToggle = v;
+        }}
+        onFileFilter={(s: string, v: boolean) => {
+          this.model.filesFilter = s;
+          this.model.excludeToggle = v;
+        }}
         commands={this._commands}
         isLoading={this.model.isLoading}
         queryResults={this.model.queryResults}
@@ -323,6 +335,8 @@ interface IProps {
   commands: CommandRegistry;
   isLoading: boolean;
   onSearchChanged: (s: string) => void;
+  onExcludeToggle: (v: boolean) => void;
+  onFileFilter: (s: string, v: boolean) => void;
   children: React.ReactNode;
   refreshResults: () => void;
 }
@@ -379,12 +393,25 @@ const SearchReplaceElement = (props: IProps) => {
       <div>
         <TextField
           appearance="outline"
-          placeholder="file filters"
-          onInput={(event: any) => {}}
+          placeholder="files to"
+          onInput={(event: any) => {
+            const excludeToggle = document
+              .getElementById('exclude-toggle')
+              ?.getAttribute('current-checked');
+            props.onFileFilter(event.target.value, excludeToggle === 'true');
+          }}
         >
-          files to
+          File filters
         </TextField>
-        <Switch>
+        <Switch
+          id="exclude-toggle"
+          onClick={() => {
+            const excludeToggle = document
+              .getElementById('exclude-toggle')
+              ?.getAttribute('current-checked');
+            props.onExcludeToggle(excludeToggle === 'true');
+          }}
+        >
           <span slot="checked-message">exclude</span>
           <span slot="unchecked-message">include</span>
         </Switch>
