@@ -187,9 +187,12 @@ test('should expand and collapse tree view on clicking expand-collapse button', 
         response.request().method() === 'GET'
     ),
     page.locator('input[type="search"]').press('Enter'),
-    page.locator('[title="button to expand and collapse all results"]').click()
+    page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
+      state: 'hidden'
+    })
   ]);
 
+  await page.locator('[title="button to expand and collapse all results"]').click()
   expect(await page.locator('.search-tree-matches').count()).toEqual(0);
 
   await page.locator('[title="button to expand and collapse all results"]').click();
