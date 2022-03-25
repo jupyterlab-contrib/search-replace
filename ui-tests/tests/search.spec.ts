@@ -192,9 +192,13 @@ test('should expand and collapse tree view on clicking expand-collapse button', 
     })
   ]);
 
-  await page.locator('[title="button to expand and collapse all results"]').click()
-  expect(await page.locator('.search-tree-matches').count()).toEqual(0);
+  // added timeouts allowing DOM to update
+  await page.waitForTimeout(20);
+  await page.locator('[title="button to expand and collapse all results"]').click();
+  await page.waitForTimeout(20);
+  expect(await page.locator('.search-tree-files').getAttribute('aria-expanded')).toEqual("false");
 
   await page.locator('[title="button to expand and collapse all results"]').click();
-  expect(await page.locator('.search-tree-matches').count()).toEqual(5);
+  await page.waitForTimeout(20);
+  expect(await page.locator('.search-tree-files').getAttribute('aria-expanded')).toEqual("true");
 });
