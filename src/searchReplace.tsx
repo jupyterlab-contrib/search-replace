@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Debouncer } from '@lumino/polling';
 import { CommandRegistry } from '@lumino/commands';
 import { requestAPI } from './handler';
 import { VDomModel, VDomRenderer } from '@jupyterlab/apputils';
-import { wholeWordIcon } from './icon';
+import { wholeWordIcon, expandAllIcon, collapseAllIcon } from './icon';
 import {
   Search,
   TreeView,
@@ -180,12 +180,22 @@ function openFile(path: string, _commands: CommandRegistry) {
 
 function createTreeView(
   results: IResults[],
-  _commands: CommandRegistry
+  _commands: CommandRegistry,
+  expandStatus: boolean[],
+  setExpandStatus: (v: boolean[]) => void
 ): JSX.Element {
   results.sort((a, b) => (a.path > b.path ? 1 : -1));
-  const items = results.map(file => {
+  const items = results.map((file, index) => {
     return (
-      <TreeItem className="search-tree-files" expanded>
+      <TreeItem
+        className="search-tree-files"
+        expanded={expandStatus[index]}
+        onClick={() => {
+          const expandStatusNew = [...expandStatus];
+          expandStatusNew[index] = !expandStatusNew[index];
+          setExpandStatus(expandStatusNew);
+        }}
+      >
         <span title={file.path}>{file.path}</span>
         <Badge slot="end">{file.matches.length}</Badge>
         {file.matches.map(match => (
@@ -282,6 +292,14 @@ interface IProps {
 }
 
 const SearchReplaceElement = (props: IProps) => {
+  const [expandStatus, setExpandStatus] = useState(
+    new Array(props.queryResults.length).fill(true)
+  );
+
+  useEffect(() => {
+    setExpandStatus(new Array(props.queryResults.length).fill(true));
+  }, [props.queryResults]);
+
   return (
     <>
       <div className="search-title-with-refresh">
@@ -293,6 +311,22 @@ const SearchReplaceElement = (props: IProps) => {
           }}
         >
           <refreshIcon.react></refreshIcon.react>
+        </Button>
+        <Button
+          title="button to expand and collapse all results"
+          disabled={props.queryResults.length === 0}
+          onClick={() => {
+            const expandStatusNew = new Array(props.queryResults.length).fill(
+              !expandStatus.some(elem => elem)
+            );
+            setExpandStatus(expandStatusNew);
+          }}
+        >
+          {expandStatus.some(elem => elem) ? (
+            <collapseAllIcon.react></collapseAllIcon.react>
+          ) : (
+            <expandAllIcon.react></expandAllIcon.react>
+          )}
         </Button>
       </div>
       <div className="search-bar-with-options">
@@ -309,7 +343,13 @@ const SearchReplaceElement = (props: IProps) => {
       {props.isLoading ? (
         <Progress />
       ) : (
-        props.searchString && createTreeView(props.queryResults, props.commands)
+        props.searchString &&
+        createTreeView(
+          props.queryResults,
+          props.commands,
+          expandStatus,
+          setExpandStatus
+        )
       )}
     </>
   );
