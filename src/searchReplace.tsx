@@ -397,7 +397,7 @@ const SearchReplaceElement = (props: IProps) => {
       <div>
         <TextField
           appearance="outline"
-          placeholder="files to"
+          placeholder="Files filter"
           onInput={(event: any) => {
             props.onFileFilter(event.target.value);
           }}
@@ -406,14 +406,14 @@ const SearchReplaceElement = (props: IProps) => {
           File filters
         </TextField>
         <Switch
-          id="exclude-toggle"
+          title="switch to toggle the file filter mode"
           onChange={(event: any) => {
             props.onExcludeToggle(event.target.checked);
           }}
           checked={props.excludeToggle}
         >
-          <span slot="checked-message">exclude</span>
-          <span slot="unchecked-message">include</span>
+          <span slot="checked-message">Files to exclude</span>
+          <span slot="unchecked-message">Files to include</span>
         </Switch>
       </div>
       {props.isLoading ? (
