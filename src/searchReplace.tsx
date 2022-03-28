@@ -10,7 +10,9 @@ import {
   TreeItem,
   Badge,
   Progress,
-  Button
+  Button,
+  TextField,
+  Switch
 } from '@jupyter-notebook/react-components';
 import {
   caseSensitiveIcon,
@@ -27,12 +29,16 @@ export class SearchReplaceModel extends VDomModel {
     this._caseSensitive = false;
     this._wholeWord = false;
     this._useRegex = false;
+    this._filesFilter = '';
+    this._excludeToggle = false;
     this._debouncedStartSearch = new Debouncer(() => {
       this.getSearchString(
         this._searchString,
         this._caseSensitive,
         this._wholeWord,
-        this._useRegex
+        this._useRegex,
+        this._filesFilter,
+        this._excludeToggle
       );
     });
   }
@@ -102,6 +108,30 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  get filesFilter(): string {
+    return this._filesFilter;
+  }
+
+  set filesFilter(v: string) {
+    if (v !== this._filesFilter) {
+      this._filesFilter = v;
+      this.stateChanged.emit();
+      this.refreshResults();
+    }
+  }
+
+  get excludeToggle(): boolean {
+    return this._excludeToggle;
+  }
+
+  set excludeToggle(v: boolean) {
+    if (v !== this._excludeToggle) {
+      this._excludeToggle = v;
+      this.stateChanged.emit();
+      this.refreshResults();
+    }
+  }
+
   get queryResults(): IResults[] {
     return this._queryResults;
   }
@@ -110,17 +140,26 @@ export class SearchReplaceModel extends VDomModel {
     search: string,
     caseSensitive: boolean,
     wholeWord: boolean,
-    useRegex: boolean
+    useRegex: boolean,
+    includeFiles: string,
+    excludeToggle: boolean
   ): Promise<void> {
     try {
       this.isLoading = true;
+      let excludeFiles = '';
+      if (excludeToggle) {
+        excludeFiles = includeFiles;
+        includeFiles = '';
+      }
       const data = await requestAPI<IQueryResult>(
         '?' +
           new URLSearchParams([
             ['query', search],
             ['case_sensitive', caseSensitive.toString()],
             ['whole_word', wholeWord.toString()],
-            ['use_regex', useRegex.toString()]
+            ['use_regex', useRegex.toString()],
+            ['include', includeFiles],
+            ['exclude', excludeFiles]
           ]).toString(),
         {
           method: 'GET'
@@ -142,6 +181,8 @@ export class SearchReplaceModel extends VDomModel {
   private _caseSensitive: boolean;
   private _wholeWord: boolean;
   private _useRegex: boolean;
+  private _filesFilter: string;
+  private _excludeToggle: boolean;
   private _queryResults: IResults[];
   private _debouncedStartSearch: Debouncer;
 }
@@ -242,6 +283,14 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         onSearchChanged={(s: string) => {
           this.model.searchString = s;
         }}
+        excludeToggle={this.model.excludeToggle}
+        onExcludeToggle={(v: boolean) => {
+          this.model.excludeToggle = v;
+        }}
+        fileFilter={this.model.filesFilter}
+        onFileFilter={(s: string) => {
+          this.model.filesFilter = s;
+        }}
         commands={this._commands}
         isLoading={this.model.isLoading}
         queryResults={this.model.queryResults}
@@ -287,6 +336,10 @@ interface IProps {
   commands: CommandRegistry;
   isLoading: boolean;
   onSearchChanged: (s: string) => void;
+  excludeToggle: boolean;
+  onExcludeToggle: (v: boolean) => void;
+  fileFilter: string;
+  onFileFilter: (s: string) => void;
   children: React.ReactNode;
   refreshResults: () => void;
 }
@@ -337,8 +390,31 @@ const SearchReplaceElement = (props: IProps) => {
           onInput={(event: any) => {
             props.onSearchChanged(event.target.value);
           }}
+          value={props.searchString}
         />
         {props.children}
+      </div>
+      <div>
+        <TextField
+          appearance="outline"
+          placeholder="Files filter"
+          onInput={(event: any) => {
+            props.onFileFilter(event.target.value);
+          }}
+          value={props.fileFilter}
+        >
+          File filters
+        </TextField>
+        <Switch
+          title="switch to toggle the file filter mode"
+          onChange={(event: any) => {
+            props.onExcludeToggle(event.target.checked);
+          }}
+          checked={props.excludeToggle}
+        >
+          <span slot="checked-message">Files to exclude</span>
+          <span slot="unchecked-message">Files to include</span>
+        </Switch>
       </div>
       {props.isLoading ? (
         <Progress />
