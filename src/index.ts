@@ -6,7 +6,9 @@ import {
 import { searchIcon } from '@jupyterlab/ui-components';
 import { addJupyterLabThemeChangeListener } from '@jupyter-notebook/web-components';
 
+import { IChangedArgs } from '@jupyterlab/coreutils';
 import { SearchReplaceView, SearchReplaceModel } from './searchReplace';
+import { IFileBrowserFactory, FileBrowserModel } from '@jupyterlab/filebrowser';
 
 /**
  * Initialization data for the search-replace extension.
@@ -14,11 +16,25 @@ import { SearchReplaceView, SearchReplaceModel } from './searchReplace';
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab-search-replace:plugin',
   autoStart: true,
-  activate: (app: JupyterFrontEnd) => {
+  requires: [IFileBrowserFactory],
+  activate: (app: JupyterFrontEnd, factory: IFileBrowserFactory) => {
     console.log('JupyterLab extension search-replace is activated!');
     addJupyterLabThemeChangeListener();
 
+    const fileBrowser = factory.defaultBrowser;
     const searchReplaceModel = new SearchReplaceModel();
+    Promise.all([app.restored, fileBrowser.model.restored]).then(() => {
+      searchReplaceModel.path = fileBrowser.model.path;
+    });
+
+    const onPathChanged = (
+      model: FileBrowserModel,
+      change: IChangedArgs<string>
+    ) => {
+      searchReplaceModel.path = change.newValue;
+    };
+
+    fileBrowser.model.pathChanged.connect(onPathChanged);
     const searchReplacePlugin = new SearchReplaceView(
       searchReplaceModel,
       app.commands
