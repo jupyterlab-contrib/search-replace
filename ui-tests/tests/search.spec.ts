@@ -30,7 +30,7 @@ test('should get 5 matches', async ({ page }) => {
   await Promise.all([
     page.waitForResponse(
       response =>
-        /.*search\/\?query=strange/.test(response.url()) &&
+        /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
     page.locator('input[type="search"]').press('Enter')
@@ -61,7 +61,7 @@ test('should get no matches', async ({ page }) => {
   await Promise.all([
     page.waitForResponse(
       response =>
-        /.*search\/\?query=dhit/.test(response.url()) &&
+      /.*search\/[\w-]+\?query=dhit/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
     page.locator('input[type="search"]').press('Enter')
@@ -84,7 +84,7 @@ test('should test for case sensitive option', async ({ page }) => {
     page.waitForResponse(
       response => {
         response_url = response.url();
-        return /.*search\/\?query=Strange/.test(response.url()) &&
+        return /.*search\/[\w-]+\?query=Strange/.test(response.url()) &&
         response.request().method() === 'GET'
       }
     ),
@@ -109,7 +109,7 @@ test('should test for whole word option', async ({ page }) => {
     page.waitForResponse(
       response => {
         response_url = response.url();
-        return /.*search\/\?query=strange/.test(response.url()) &&
+        return /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
       }
     ),
@@ -134,7 +134,7 @@ test('should test for use regex option', async ({ page }) => {
     page.waitForResponse(
       response => {
         response_url = response.url();
-        return /.*search\/\?query=str.\*/.test(response.url()) &&
+        return /.*search\/[\w-]+\?query=str.\*/.test(response.url()) &&
         response.request().method() === 'GET'
       }
     ),
@@ -157,7 +157,7 @@ test('should make a new request on refresh', async ({ page }) => {
   await Promise.all([
     page.waitForResponse(
       response =>
-        /.*search\/\?query=strange/.test(response.url()) &&
+      /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
     page.locator('input[type="search"]').press('Enter')
@@ -166,7 +166,7 @@ test('should make a new request on refresh', async ({ page }) => {
   await Promise.all([
     page.waitForResponse(
       response =>
-        /.*search\/\?query=strange/.test(response.url()) &&
+      /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
     page.locator('[title="button to refresh and reload results"]').click()
@@ -183,7 +183,7 @@ test('should expand and collapse tree view on clicking expand-collapse button', 
   await Promise.all([
     page.waitForResponse(
       response =>
-        /.*search\/\?query=strange/.test(response.url()) &&
+      /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
     page.locator('input[type="search"]').press('Enter'),

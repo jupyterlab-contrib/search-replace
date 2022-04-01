@@ -22,6 +22,7 @@ import {
   refreshIcon,
   folderIcon
 } from '@jupyterlab/ui-components';
+import { PathExt } from '@jupyterlab/coreutils';
 
 export class SearchReplaceModel extends VDomModel {
   constructor() {
@@ -240,12 +241,13 @@ interface IResults {
   }[];
 }
 
-function openFile(path: string, _commands: CommandRegistry) {
-  _commands.execute('docmanager:open', { path });
+function openFile(prefixDir: string, path: string, _commands: CommandRegistry) {
+  _commands.execute('docmanager:open', { path: PathExt.join(prefixDir, path) });
 }
 
 function createTreeView(
   results: IResults[],
+  path: string,
   _commands: CommandRegistry,
   expandStatus: boolean[],
   setExpandStatus: (v: boolean[]) => void
@@ -267,7 +269,10 @@ function createTreeView(
         {file.matches.map(match => (
           <TreeItem
             className="search-tree-matches"
-            onClick={() => openFile(file.path, _commands)}
+            onClick={(event: React.MouseEvent) => {
+              openFile(path, file.path, _commands);
+              event.stopPropagation();
+            }}
           >
             <span title={match.line}>
               {match.line.slice(0, match.start)}
@@ -496,6 +501,7 @@ const SearchReplaceElement = (props: IProps) => {
         props.searchString &&
         createTreeView(
           props.queryResults,
+          props.path,
           props.commands,
           expandStatus,
           setExpandStatus
