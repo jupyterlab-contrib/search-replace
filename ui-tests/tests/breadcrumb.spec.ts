@@ -52,7 +52,8 @@ test('should switch directory and update results', async ({ page, tmpPath }) => 
     expect(await page.waitForSelector('jp-tree-view[role="tree"] >> text=aaa/bbb/test_handlers.py')).toBeTruthy();
     expect(await page.waitForSelector('jp-tree-view[role="tree"] >> text=aaa/conftest.py')).toBeTruthy();
 
-    await page.locator('[title="File Browser (⇧ ⌘ F)"]').click();
+    // Click on File Browser Tab
+    await page.locator('#tab-key-0').first().click();
     await page.locator('span:has-text("aaa")').first().dblclick();
     await expect(page).toHaveURL(`http://localhost:8888/lab/tree/${tmpPath}/aaa`);
     await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=bbb').dblclick();
@@ -85,7 +86,8 @@ test('should not update file browser on clicking of breadcrumb', async ({ page, 
     ]);
 
     await page.waitForTimeout(100);
-    await page.locator('[title="File Browser (⇧ ⌘ F)"]').click();
+    // Click on File Browser Tab
+    await page.locator('#tab-key-0').first().click();
     await page.locator('span:has-text("aaa")').first().dblclick();
     await expect(page).toHaveURL(`http://localhost:8888/lab/tree/${tmpPath}/aaa`);
     await page.locator('[aria-label="File\\ Browser\\ Section"] >> text=bbb').dblclick();
@@ -99,6 +101,7 @@ test('should not update file browser on clicking of breadcrumb', async ({ page, 
     expect(await page.waitForSelector('jp-tree-view[role="tree"] >> text=bbb/test_handlers.py')).toBeTruthy();
     expect(await page.waitForSelector('jp-tree-view[role="tree"] >> text=conftest.py')).toBeTruthy();
 
-    await page.locator('[title="File Browser (⇧ ⌘ F)"]').click();
+    // Click on File Browser Tab
+    await page.locator('#tab-key-0').first().click();
     expect(await page.waitForSelector('[aria-label="File\\ Browser\\ Section"] >> text=bbb')).toBeTruthy();
 });
