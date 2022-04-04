@@ -12,13 +12,17 @@ import {
   Progress,
   Button,
   TextField,
-  Switch
+  Switch,
+  Breadcrumb,
+  BreadcrumbItem
 } from '@jupyter-notebook/react-components';
 import {
   caseSensitiveIcon,
   regexIcon,
-  refreshIcon
+  refreshIcon,
+  folderIcon
 } from '@jupyterlab/ui-components';
+import { PathExt } from '@jupyterlab/coreutils';
 
 export class SearchReplaceModel extends VDomModel {
   constructor() {
@@ -31,6 +35,7 @@ export class SearchReplaceModel extends VDomModel {
     this._useRegex = false;
     this._filesFilter = '';
     this._excludeToggle = false;
+    this._path = '';
     this._debouncedStartSearch = new Debouncer(() => {
       this.getSearchString(
         this._searchString,
@@ -38,7 +43,8 @@ export class SearchReplaceModel extends VDomModel {
         this._wholeWord,
         this._useRegex,
         this._filesFilter,
-        this._excludeToggle
+        this._excludeToggle,
+        this._path
       );
     });
   }
@@ -136,14 +142,32 @@ export class SearchReplaceModel extends VDomModel {
     return this._queryResults;
   }
 
+  get path(): string {
+    return this._path;
+  }
+
+  set path(v: string) {
+    if (v !== this._path) {
+      this._path = v;
+      this.stateChanged.emit();
+      this.refreshResults();
+    }
+  }
+
   private async getSearchString(
     search: string,
     caseSensitive: boolean,
     wholeWord: boolean,
     useRegex: boolean,
     includeFiles: string,
-    excludeToggle: boolean
+    excludeToggle: boolean,
+    path: string
   ): Promise<void> {
+    if (search === '') {
+      this._queryResults = [];
+      this.stateChanged.emit();
+      return Promise.resolve();
+    }
     try {
       this.isLoading = true;
       let excludeFiles = '';
@@ -152,7 +176,8 @@ export class SearchReplaceModel extends VDomModel {
         includeFiles = '';
       }
       const data = await requestAPI<IQueryResult>(
-        '?' +
+        path +
+          '?' +
           new URLSearchParams([
             ['query', search],
             ['case_sensitive', caseSensitive.toString()],
@@ -183,6 +208,7 @@ export class SearchReplaceModel extends VDomModel {
   private _useRegex: boolean;
   private _filesFilter: string;
   private _excludeToggle: boolean;
+  private _path: string;
   private _queryResults: IResults[];
   private _debouncedStartSearch: Debouncer;
 }
@@ -215,12 +241,13 @@ interface IResults {
   }[];
 }
 
-function openFile(path: string, _commands: CommandRegistry) {
-  _commands.execute('docmanager:open', { path });
+function openFile(prefixDir: string, path: string, _commands: CommandRegistry) {
+  _commands.execute('docmanager:open', { path: PathExt.join(prefixDir, path) });
 }
 
 function createTreeView(
   results: IResults[],
+  path: string,
   _commands: CommandRegistry,
   expandStatus: boolean[],
   setExpandStatus: (v: boolean[]) => void
@@ -242,7 +269,10 @@ function createTreeView(
         {file.matches.map(match => (
           <TreeItem
             className="search-tree-matches"
-            onClick={() => openFile(file.path, _commands)}
+            onClick={(event: React.MouseEvent) => {
+              openFile(path, file.path, _commands);
+              event.stopPropagation();
+            }}
           >
             <span title={match.line}>
               {match.line.slice(0, match.start)}
@@ -297,6 +327,10 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         refreshResults={() => {
           this.model.refreshResults();
         }}
+        path={this.model.path}
+        onPathChanged={(s: string) => {
+          this.model.path = s;
+        }}
       >
         <Button
           title="button to enable case sensitive mode"
@@ -342,7 +376,46 @@ interface IProps {
   onFileFilter: (s: string) => void;
   children: React.ReactNode;
   refreshResults: () => void;
+  path: string;
+  onPathChanged: (s: string) => void;
 }
+
+interface IBreadcrumbProps {
+  path: string;
+  onPathChanged: (s: string) => void;
+}
+
+const Breadcrumbs = (props: IBreadcrumbProps) => {
+  const pathItems = props.path.split('/');
+  return (
+    <Breadcrumb>
+      <BreadcrumbItem>
+        <Button
+          onClick={() => {
+            props.onPathChanged('');
+          }}
+        >
+          <folderIcon.react></folderIcon.react>
+        </Button>
+      </BreadcrumbItem>
+      {props.path &&
+        pathItems.map((item, index) => {
+          return (
+            <BreadcrumbItem>
+              <Button
+                appearance="lightweight"
+                onClick={() => {
+                  props.onPathChanged(pathItems.slice(0, index + 1).join('/'));
+                }}
+              >
+                {item}
+              </Button>
+            </BreadcrumbItem>
+          );
+        })}
+    </Breadcrumb>
+  );
+};
 
 const SearchReplaceElement = (props: IProps) => {
   const [expandStatus, setExpandStatus] = useState(
@@ -381,6 +454,12 @@ const SearchReplaceElement = (props: IProps) => {
             <expandAllIcon.react></expandAllIcon.react>
           )}
         </Button>
+      </div>
+      <div className="breadcrumb-folder-paths">
+        <Breadcrumbs
+          path={props.path}
+          onPathChanged={props.onPathChanged}
+        ></Breadcrumbs>
       </div>
       <div className="search-bar-with-options">
         <Search
@@ -422,6 +501,7 @@ const SearchReplaceElement = (props: IProps) => {
         props.searchString &&
         createTreeView(
           props.queryResults,
+          props.path,
           props.commands,
           expandStatus,
           setExpandStatus

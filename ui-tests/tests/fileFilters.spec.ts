@@ -38,7 +38,7 @@ test('should test for include filter', async ({ page }) => {
     await Promise.all([
       page.waitForResponse(
         response =>
-          /.*search\/\?query=strange/.test(response.url()) &&
+        /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
           response.request().method() === 'GET'
       ),
       page.locator('input[type="search"]').press('Enter'),
@@ -50,7 +50,7 @@ test('should test for include filter', async ({ page }) => {
     await Promise.all([
       page.waitForResponse(
         response =>
-          /.*search\/\?query=strange/.test(response.url()) &&
+        /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
           response.request().method() === 'GET'
       ),
       await page.locator('text=File filters >> [placeholder="Files\\ filter"]').fill('conftest.py')
@@ -70,7 +70,7 @@ test('should test for exclude filter', async ({ page }) => {
     await Promise.all([
       page.waitForResponse(
         response =>
-          /.*search\/\?query=strange/.test(response.url()) &&
+        /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
           response.request().method() === 'GET'
       ),
       page.locator('input[type="search"]').press('Enter'),
@@ -84,7 +84,7 @@ test('should test for exclude filter', async ({ page }) => {
     await Promise.all([
       page.waitForResponse(
         response =>
-          /.*search\/\?query=strange/.test(response.url()) &&
+        /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
           response.request().method() === 'GET'
       ),
       await page.locator('text=File filters >> [placeholder="Files\\ filter"]').fill('conftest.py')
