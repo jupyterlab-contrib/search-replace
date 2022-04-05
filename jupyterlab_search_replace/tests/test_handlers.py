@@ -351,3 +351,54 @@ async def test_two_search_operations(test_content, schema, jp_root_dir):
             ],
         },
     ]
+
+
+async def test_replace_operation(test_content, schema, jp_fetch):
+    response = await jp_fetch(
+        "search", params={"query": "strange", "exclude": "*_1.txt"}, method="GET"
+    )
+    assert response.code == 200
+    payload = json.loads(response.body)
+    validate(instance=payload, schema=schema)
+    response = jp_fetch(
+        "search", body=json.dumps({"results": payload, "query": "hello"}), method="POST"
+    )
+    response = await jp_fetch(
+        "search", params={"query": "hello", "exclude": "*_1.txt"}, method="GET"
+    )
+    assert response.code == 200
+    payload = json.loads(response.body)
+    assert len(payload["matches"]) == 1
+    print(payload["matches"][0]["matches"])
+    assert len(payload["matches"][0]["matches"]) == 3
+    assert sorted(payload["matches"], key=lambda x: x["path"]) == [
+        {
+            "path": "test_lab_search_replace/subfolder/text_sub.txt",
+            "matches": [
+                {
+                    "line": "Unicode hello sub file, very hello\n",
+                    "match": "hello",
+                    "start": 8,
+                    "end": 13,
+                    "line_number": 1,
+                    "absolute_offset": 0,
+                },
+                {
+                    "line": "Unicode hello sub file, very hello\n",
+                    "match": "hello",
+                    "start": 29,
+                    "end": 34,
+                    "line_number": 1,
+                    "absolute_offset": 0,
+                },
+                {
+                    "line": "Is that λ hello enough?",
+                    "match": "hello",
+                    "start": 11,
+                    "end": 16,
+                    "line_number": 3,
+                    "absolute_offset": 53,
+                },
+            ],
+        },
+    ]
