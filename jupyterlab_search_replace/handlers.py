@@ -42,6 +42,15 @@ class RouteHandler(APIHandler):
 
         self.finish(json.dumps(r))
 
+    @tornado.web.authenticated
+    def post(self, path: str = ""):
+        json_body = self.get_json_body()
+        results = json_body["results"]
+        query = json_body["query"]
+        self._engine.replace(results, path, query)
+
+        self.set_status(201)
+
 
 def setup_handlers(web_app):
     host_pattern = ".*$"

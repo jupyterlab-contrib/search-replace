@@ -11,7 +11,7 @@ import os
 
 from functools import partial
 from subprocess import Popen, PIPE
-from typing import ClassVar, List, Optional, Tuple
+from typing import ClassVar, Dict, List, Optional, Tuple
 
 import tornado
 from jupyter_server.utils import url2path
@@ -177,3 +177,51 @@ class SearchEngine:
                 # consider the output as invalid
                 pass
             return {"code": code, "command": command, "message": output}
+
+    def group_matches_by_line(self, line_matches):
+        d = {}
+        for each_match in line_matches:
+            if each_match["line_number"] not in d:
+                d[each_match["line_number"]] = [
+                    (each_match["start"], each_match["end"])
+                ]
+            else:
+                d[each_match["line_number"]].append(
+                    (each_match["start"], each_match["end"])
+                )
+        for each_line_number in d:
+            d[each_line_number] = sorted(d[each_line_number], key=lambda tup: tup[0])
+        return d
+
+    def replace(self, results: Dict, prefix_path: str, query: str):
+        query = bytes(query, "utf-8")
+        if "matches" in results:
+            for file_match in results["matches"]:
+                file_path = file_match["path"]
+                line_matches = file_match["matches"]
+
+                file_path = os.path.join(
+                    self._root_dir, prefix_path, url2path(file_path)
+                )
+                grouped_line_matches = self.group_matches_by_line(line_matches)
+
+                with open(file_path, "rb") as fp:
+                    data = fp.readlines()
+                    for line_number, offsets in grouped_line_matches.items():
+                        original_line = data[line_number - 1]
+                        replaced_line = b""
+                        start = 0
+                        end = offsets[0][0]
+                        replaced_line += original_line[start:end] + query
+                        for i in range(len(offsets)):
+                            if i + 1 < len(offsets):
+                                end = offsets[i + 1][0]
+                            start = offsets[i][1]
+                            if start < end:
+                                replaced_line += original_line[start:end] + query
+                            else:
+                                replaced_line += original_line[start:]
+                        data[line_number - 1] = replaced_line
+
+                with open(file_path, "wb") as fp:
+                    fp.writelines(data)
