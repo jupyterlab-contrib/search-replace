@@ -361,7 +361,9 @@ async def test_replace_operation(test_content, schema, jp_fetch):
     payload = json.loads(response.body)
     validate(instance=payload, schema=schema)
     response = jp_fetch(
-        "search", body=json.dumps({"results": payload["matches"], "query": "hello"}), method="POST"
+        "search",
+        body=json.dumps({"results": payload["matches"], "query": "hello"}),
+        method="POST",
     )
     response = await jp_fetch(
         "search", params={"query": "hello", "exclude": "*_1.txt"}, method="GET"

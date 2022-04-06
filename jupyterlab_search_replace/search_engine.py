@@ -199,9 +199,7 @@ class SearchEngine:
             file_path = each_result["path"]
             line_matches = each_result["matches"]
 
-            file_path = os.path.join(
-                self._root_dir, prefix_path, url2path(file_path)
-            )
+            file_path = os.path.join(self._root_dir, prefix_path, url2path(file_path))
             grouped_line_matches = self.group_matches_by_line(line_matches)
 
             with open(file_path, "rb") as fp:
