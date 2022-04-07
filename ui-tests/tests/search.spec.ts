@@ -234,7 +234,6 @@ test('should replace results on replace-all button', async ({ page }) => {
   await page.locator('#jp-search-replace >> text=Replace >> [placeholder="Replace"]').fill('hello');
   await page.locator('[title="button to replace all matches with query"]').click();
 
-  await page.locator('[title="Search and replace"]').click();
   await page.locator('input[type="search"]').fill('hello');
   await Promise.all([
     page.waitForResponse(
