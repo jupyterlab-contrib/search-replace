@@ -3,7 +3,12 @@ import { Debouncer } from '@lumino/polling';
 import { CommandRegistry } from '@lumino/commands';
 import { requestAPI } from './handler';
 import { VDomModel, VDomRenderer } from '@jupyterlab/apputils';
-import { wholeWordIcon, expandAllIcon, collapseAllIcon } from './icon';
+import {
+  wholeWordIcon,
+  expandAllIcon,
+  collapseAllIcon,
+  replaceAllIcon
+} from './icon';
 import {
   Search,
   TreeView,
@@ -36,6 +41,7 @@ export class SearchReplaceModel extends VDomModel {
     this._filesFilter = '';
     this._excludeToggle = false;
     this._path = '';
+    this._replaceString = '';
     this._debouncedStartSearch = new Debouncer(() => {
       this.getSearchString(
         this._searchString,
@@ -154,6 +160,17 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  get replaceString(): string {
+    return this._replaceString;
+  }
+
+  set replaceString(v: string) {
+    if (v !== this._replaceString) {
+      this._replaceString = v;
+      this.stateChanged.emit();
+    }
+  }
+
   private async getSearchString(
     search: string,
     caseSensitive: boolean,
@@ -201,8 +218,27 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  async postReplaceString(results: IResults[]): Promise<void> {
+    try {
+      await requestAPI<void>(this.path, {
+        method: 'POST',
+        body: JSON.stringify({
+          results,
+          query: this.replaceString
+        })
+      });
+    } catch (reason) {
+      console.error(
+        `The jupyterlab_search_replace server extension appears to be missing.\n${reason}`
+      );
+    } finally {
+      this.refreshResults();
+    }
+  }
+
   private _isLoading: boolean;
   private _searchString: string;
+  private _replaceString: string;
   private _caseSensitive: boolean;
   private _wholeWord: boolean;
   private _useRegex: boolean;
@@ -317,6 +353,13 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         onExcludeToggle={(v: boolean) => {
           this.model.excludeToggle = v;
         }}
+        replaceString={this.model.replaceString}
+        onReplaceString={(s: string) => {
+          this.model.replaceString = s;
+        }}
+        onReplace={(r: IResults[]) => {
+          this.model.postReplaceString(r);
+        }}
         fileFilter={this.model.filesFilter}
         onFileFilter={(s: string) => {
           this.model.filesFilter = s;
@@ -374,6 +417,9 @@ interface IProps {
   onExcludeToggle: (v: boolean) => void;
   fileFilter: string;
   onFileFilter: (s: string) => void;
+  replaceString: string;
+  onReplaceString: (s: string) => void;
+  onReplace: (r: IResults[]) => void;
   children: React.ReactNode;
   refreshResults: () => void;
   path: string;
@@ -472,6 +518,26 @@ const SearchReplaceElement = (props: IProps) => {
           value={props.searchString}
         />
         {props.children}
+      </div>
+      <div className="replace-bar-with-button">
+        <TextField
+          appearance="outline"
+          placeholder="Replace"
+          onInput={(event: any) => {
+            props.onReplaceString(event.target.value);
+          }}
+          value={props.replaceString}
+        >
+          Replace
+        </TextField>
+        <Button
+          title="button to replace all matches with query"
+          onClick={() => {
+            props.onReplace(props.queryResults);
+          }}
+        >
+          <replaceAllIcon.react></replaceAllIcon.react>
+        </Button>
       </div>
       <div>
         <TextField

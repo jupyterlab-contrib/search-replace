@@ -36,6 +36,10 @@
   display: flex;
 }
 
+.replace-bar-with-button {
+  display: flex;
+}
+
 .search-title-with-refresh {
   display: flex;
 }
