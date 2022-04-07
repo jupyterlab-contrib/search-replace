@@ -202,3 +202,57 @@ test('should expand and collapse tree view on clicking expand-collapse button', 
   await page.waitForTimeout(20);
   expect(await page.locator('.search-tree-files').getAttribute('aria-expanded')).toEqual("true");
 });
+
+
+test('should replace results on replace-all button', async ({ page }) => {
+  // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
+  await page.locator('[title="Search and replace"]').click();
+  // Fill input[type="search"]
+  await page.locator('input[type="search"]').fill('strange');
+
+  await Promise.all([
+    page.waitForResponse(
+      response =>
+      /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
+        response.request().method() === 'GET'
+    ),
+    page.locator('input[type="search"]').press('Enter'),
+    page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
+      state: 'hidden'
+    })
+  ]);
+
+  expect(
+    await page.waitForSelector('jp-tree-view[role="tree"] >> text=5')
+  ).toBeTruthy();
+
+  await expect(page.locator('jp-tree-item:nth-child(4)')).toHaveText(
+    '                "Is that Strange enough?",'
+  );
+
+  await page.locator('#jp-search-replace >> text=Replace >> [placeholder="Replace"]').click();
+  await page.locator('#jp-search-replace >> text=Replace >> [placeholder="Replace"]').fill('hello');
+  await page.locator('[title="button to replace all matches with query"]').click();
+
+  await page.locator('[title="Search and replace"]').click();
+  await page.locator('input[type="search"]').fill('hello');
+  await Promise.all([
+    page.waitForResponse(
+      response =>
+      /.*search\/[\w-]+\?query=hello/.test(response.url()) &&
+        response.request().method() === 'GET'
+    ),
+    page.locator('input[type="search"]').press('Enter'),
+    page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
+      state: 'hidden'
+    })
+  ]);
+
+  expect(
+    await page.waitForSelector('jp-tree-view[role="tree"] >> text=5')
+  ).toBeTruthy();
+
+  await expect(page.locator('jp-tree-item:nth-child(4)')).toHaveText(
+    '                "Is that hello enough?",'
+  );
+});
