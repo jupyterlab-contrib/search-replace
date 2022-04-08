@@ -56,7 +56,7 @@ test('should test for include filter', async ({ page }) => {
       await page.locator('text=File filters >> [placeholder="Files\\ filter"]').fill('conftest.py')
     ]);
 
-    await page.waitForTimeout(20);
+    await page.waitForTimeout(60);
     expect(await page.locator('.search-tree-files').count()).toEqual(1);
     expect(await page.waitForSelector('jp-tree-view[role="tree"] >> text=conftest.py')).toBeTruthy();
 });
@@ -90,7 +90,7 @@ test('should test for exclude filter', async ({ page }) => {
       await page.locator('text=File filters >> [placeholder="Files\\ filter"]').fill('conftest.py')
     ]);
 
-    await page.waitForTimeout(20);
+    await page.waitForTimeout(60);
     expect(await page.locator('.search-tree-files').count()).toEqual(1);
     expect(await page.waitForSelector('jp-tree-view[role="tree"] >> text=test_handlers.py')).toBeTruthy();
 });

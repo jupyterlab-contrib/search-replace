@@ -304,7 +304,7 @@ function createTreeView(
       >
         <span title={file.path}>{file.path}</span>
         <Button
-          title="replace a particular result" // todo: use an index for unique title per file name
+          title="button to replace a results from a particular file"
           onClick={() => {
             const partialResult: IResults[] = [
               {
@@ -332,7 +332,7 @@ function createTreeView(
               {match.line.slice(match.end)}
             </span>
             <Button
-              title="replace a particular result" // todo: use an index for unique title per file match
+              title="button to replace a particular match"
               onClick={() => {
                 const partialResult: IResults[] = [
                   {
