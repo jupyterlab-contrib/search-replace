@@ -295,6 +295,7 @@ function createTreeView(
     return (
       <TreeItem
         className="search-tree-files"
+        id={`tree-item-file-${index}`}
         expanded={expandStatus[index]}
         onClick={() => {
           const expandStatusNew = [...expandStatus];
@@ -305,6 +306,7 @@ function createTreeView(
         <span title={file.path}>{file.path}</span>
         <Button
           title="button to replace a results from a particular file"
+          id={`replace-matches-in-file-button-${index}`}
           onClick={() => {
             const partialResult: IResults[] = [
               {
@@ -318,8 +320,9 @@ function createTreeView(
           <replaceAllIcon.react></replaceAllIcon.react>
         </Button>
         <Badge slot="end">{file.matches.length}</Badge>
-        {file.matches.map(match => (
+        {file.matches.map((match, match_index) => (
           <TreeItem
+            id={`tree-item-match-${match_index}`}
             className="search-tree-matches"
             onClick={(event: React.MouseEvent) => {
               openFile(path, file.path, _commands);
@@ -333,6 +336,7 @@ function createTreeView(
             </span>
             <Button
               title="button to replace a particular match"
+              id={`replace-match-button-${match_index}`}
               onClick={() => {
                 const partialResult: IResults[] = [
                   {
