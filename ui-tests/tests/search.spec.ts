@@ -44,11 +44,11 @@ test('should get 5 matches', async ({ page }) => {
     await page.waitForSelector('jp-tree-view[role="tree"] >> text=5')
   ).toBeTruthy();
 
-  await expect(page.locator('jp-tree-item:nth-child(4)')).toHaveText(
+  await expect(page.locator('jp-tree-item:nth-child(5)')).toHaveText(
     '                "Is that Strange enough?",'
   );
 
-  await page.locator('jp-tree-item:nth-child(4)').click();
+  await page.locator('jp-tree-item:nth-child(5)').click();
   await expect(page).toHaveURL('http://localhost:8888/lab/tree/search-replace-test/conftest.py');
 });
 
@@ -193,13 +193,13 @@ test('should expand and collapse tree view on clicking expand-collapse button', 
   ]);
 
   // added timeouts allowing DOM to update
-  await page.waitForTimeout(20);
+  await page.waitForTimeout(60);
   await page.locator('[title="button to expand and collapse all results"]').click();
-  await page.waitForTimeout(20);
+  await page.waitForTimeout(60);
   expect(await page.locator('.search-tree-files').getAttribute('aria-expanded')).toEqual("false");
 
   await page.locator('[title="button to expand and collapse all results"]').click();
-  await page.waitForTimeout(20);
+  await page.waitForTimeout(60);
   expect(await page.locator('.search-tree-files').getAttribute('aria-expanded')).toEqual("true");
 });
 
@@ -226,7 +226,7 @@ test('should replace results on replace-all button', async ({ page }) => {
     await page.waitForSelector('jp-tree-view[role="tree"] >> text=5')
   ).toBeTruthy();
 
-  await expect(page.locator('jp-tree-item:nth-child(4)')).toHaveText(
+  await expect(page.locator('jp-tree-item:nth-child(5)')).toHaveText(
     '                "Is that Strange enough?",'
   );
 
@@ -251,7 +251,7 @@ test('should replace results on replace-all button', async ({ page }) => {
     await page.waitForSelector('jp-tree-view[role="tree"] >> text=5')
   ).toBeTruthy();
 
-  await expect(page.locator('jp-tree-item:nth-child(4)')).toHaveText(
+  await expect(page.locator('jp-tree-item:nth-child(5)')).toHaveText(
     '                "Is that hello enough?",'
   );
 });

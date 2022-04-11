@@ -7,7 +7,8 @@ import {
   wholeWordIcon,
   expandAllIcon,
   collapseAllIcon,
-  replaceAllIcon
+  replaceAllIcon,
+  replaceIcon
 } from './icon';
 import {
   Search,
@@ -286,7 +287,8 @@ function createTreeView(
   path: string,
   _commands: CommandRegistry,
   expandStatus: boolean[],
-  setExpandStatus: (v: boolean[]) => void
+  setExpandStatus: (v: boolean[]) => void,
+  onReplace: (r: IResults[]) => void
 ): JSX.Element {
   results.sort((a, b) => (a.path > b.path ? 1 : -1));
   const items = results.map((file, index) => {
@@ -301,6 +303,20 @@ function createTreeView(
         }}
       >
         <span title={file.path}>{file.path}</span>
+        <Button
+          title="button to replace a results from a particular file"
+          onClick={() => {
+            const partialResult: IResults[] = [
+              {
+                path: file.path,
+                matches: file.matches
+              }
+            ];
+            onReplace(partialResult);
+          }}
+        >
+          <replaceAllIcon.react></replaceAllIcon.react>
+        </Button>
         <Badge slot="end">{file.matches.length}</Badge>
         {file.matches.map(match => (
           <TreeItem
@@ -315,6 +331,20 @@ function createTreeView(
               <mark>{match.match}</mark>
               {match.line.slice(match.end)}
             </span>
+            <Button
+              title="button to replace a particular match"
+              onClick={() => {
+                const partialResult: IResults[] = [
+                  {
+                    path: file.path,
+                    matches: [match]
+                  }
+                ];
+                onReplace(partialResult);
+              }}
+            >
+              <replaceIcon.react></replaceIcon.react>
+            </Button>
           </TreeItem>
         ))}
       </TreeItem>
@@ -570,7 +600,8 @@ const SearchReplaceElement = (props: IProps) => {
           props.path,
           props.commands,
           expandStatus,
-          setExpandStatus
+          setExpandStatus,
+          props.onReplace
         )
       )}
     </>
