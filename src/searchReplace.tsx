@@ -1,34 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import { Debouncer } from '@lumino/polling';
-import { CommandRegistry } from '@lumino/commands';
-import { requestAPI } from './handler';
-import { VDomModel, VDomRenderer } from '@jupyterlab/apputils';
 import {
-  wholeWordIcon,
-  expandAllIcon,
-  collapseAllIcon,
-  replaceAllIcon,
-  replaceIcon
-} from './icon';
-import {
-  Search,
-  TreeView,
-  TreeItem,
   Badge,
-  Progress,
-  Button,
-  TextField,
-  Switch,
   Breadcrumb,
-  BreadcrumbItem
+  BreadcrumbItem,
+  Button,
+  Progress,
+  Search,
+  Switch,
+  TextField,
+  Toolbar,
+  TreeItem,
+  TreeView
 } from '@jupyter-notebook/react-components';
+import { VDomModel, VDomRenderer } from '@jupyterlab/apputils';
+import { PathExt } from '@jupyterlab/coreutils';
+import { TranslationBundle } from '@jupyterlab/translation';
 import {
   caseSensitiveIcon,
-  regexIcon,
+  folderIcon,
   refreshIcon,
-  folderIcon
+  regexIcon
 } from '@jupyterlab/ui-components';
-import { PathExt } from '@jupyterlab/coreutils';
+import { CommandRegistry } from '@lumino/commands';
+import { Debouncer } from '@lumino/polling';
+import React, { useEffect, useState } from 'react';
+import { requestAPI } from './handler';
+import {
+  collapseAllIcon,
+  expandAllIcon,
+  replaceAllIcon,
+  replaceIcon,
+  wholeWordIcon
+} from './icon';
 
 export class SearchReplaceModel extends VDomModel {
   constructor() {
@@ -288,7 +290,8 @@ function createTreeView(
   _commands: CommandRegistry,
   expandStatus: boolean[],
   setExpandStatus: (v: boolean[]) => void,
-  onReplace: (r: IResults[]) => void
+  onReplace: (r: IResults[]) => void,
+  trans: TranslationBundle
 ): JSX.Element {
   results.sort((a, b) => (a.path > b.path ? 1 : -1));
   const items = results.map((file, index) => {
@@ -304,7 +307,7 @@ function createTreeView(
       >
         <span title={file.path}>{file.path}</span>
         <Button
-          title="button to replace a results from a particular file"
+          title={trans.__('Replace All in File')}
           onClick={() => {
             const partialResult: IResults[] = [
               {
@@ -332,7 +335,7 @@ function createTreeView(
               {match.line.slice(match.end)}
             </span>
             <Button
-              title="button to replace a particular match"
+              title={trans.__('Replace')}
               onClick={() => {
                 const partialResult: IResults[] = [
                   {
@@ -352,7 +355,7 @@ function createTreeView(
   });
 
   if (items.length === 0) {
-    return <p>No Matches Found</p>;
+    return <p>{trans.__('No Matches Found')}</p>;
   } else {
     return (
       <div className="jp-search-replace-list">
@@ -366,7 +369,11 @@ function createTreeView(
 export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
   private _commands: CommandRegistry;
 
-  constructor(searchModel: SearchReplaceModel, commands: CommandRegistry) {
+  constructor(
+    searchModel: SearchReplaceModel,
+    commands: CommandRegistry,
+    protected trans: TranslationBundle
+  ) {
     super(searchModel);
     this._commands = commands;
     this.addClass('jp-search-replace-tab');
@@ -379,20 +386,12 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         onSearchChanged={(s: string) => {
           this.model.searchString = s;
         }}
-        excludeToggle={this.model.excludeToggle}
-        onExcludeToggle={(v: boolean) => {
-          this.model.excludeToggle = v;
-        }}
         replaceString={this.model.replaceString}
         onReplaceString={(s: string) => {
           this.model.replaceString = s;
         }}
         onReplace={(r: IResults[]) => {
           this.model.postReplaceString(r);
-        }}
-        fileFilter={this.model.filesFilter}
-        onFileFilter={(s: string) => {
-          this.model.filesFilter = s;
         }}
         commands={this._commands}
         isLoading={this.model.isLoading}
@@ -404,49 +403,74 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         onPathChanged={(s: string) => {
           this.model.path = s;
         }}
+        options={
+          <>
+            <Button
+              title={this.trans.__('Match Case')}
+              appearance={this.model.caseSensitive ? 'accent' : 'neutral'}
+              onClick={() => {
+                this.model.caseSensitive = !this.model.caseSensitive;
+              }}
+            >
+              <caseSensitiveIcon.react></caseSensitiveIcon.react>
+            </Button>
+            <Button
+              title={this.trans.__('Match Whole Word')}
+              appearance={this.model.wholeWord ? 'accent' : 'neutral'}
+              onClick={() => {
+                this.model.wholeWord = !this.model.wholeWord;
+              }}
+            >
+              <wholeWordIcon.react></wholeWordIcon.react>
+            </Button>
+            <Button
+              title={this.trans.__('Use Regular Expression')}
+              appearance={this.model.useRegex ? 'accent' : 'neutral'}
+              onClick={() => {
+                this.model.useRegex = !this.model.useRegex;
+              }}
+            >
+              <regexIcon.react></regexIcon.react>
+            </Button>
+          </>
+        }
+        trans={this.trans}
       >
-        <Button
-          title="button to enable case sensitive mode"
-          appearance={this.model.caseSensitive === true ? 'accent' : 'neutral'}
-          onClick={() => {
-            this.model.caseSensitive = !this.model.caseSensitive;
+        <TextField
+          appearance="outline"
+          placeholder={this.trans.__('Files filter')}
+          onInput={(event: any) => {
+            this.model.filesFilter = event.target.value;
           }}
+          value={this.model.filesFilter}
         >
-          <caseSensitiveIcon.react></caseSensitiveIcon.react>
-        </Button>
-        <Button
-          title="button to enable whole word mode"
-          appearance={this.model.wholeWord === true ? 'accent' : 'neutral'}
-          onClick={() => {
-            this.model.wholeWord = !this.model.wholeWord;
+          {this.trans.__('File filters')}
+        </TextField>
+        <Switch
+          title={this.trans.__('Toggle File Filter Mode')}
+          onChange={(event: any) => {
+            this.model.excludeToggle = event.target.checked;
           }}
+          checked={this.model.excludeToggle}
         >
-          <wholeWordIcon.react></wholeWordIcon.react>
-        </Button>
-        <Button
-          title="button to enable use regex mode"
-          appearance={this.model.useRegex === true ? 'accent' : 'neutral'}
-          onClick={() => {
-            this.model.useRegex = !this.model.useRegex;
-          }}
-        >
-          <regexIcon.react></regexIcon.react>
-        </Button>
+          <span slot="checked-message">
+            {this.trans.__('Files to Exclude')}
+          </span>
+          <span slot="unchecked-message">
+            {this.trans.__('Files to Include')}
+          </span>
+        </Switch>
       </SearchReplaceElement>
     );
   }
 }
 
-interface IProps {
+interface ISearchReplaceProps {
   searchString: string;
   queryResults: IResults[];
   commands: CommandRegistry;
   isLoading: boolean;
   onSearchChanged: (s: string) => void;
-  excludeToggle: boolean;
-  onExcludeToggle: (v: boolean) => void;
-  fileFilter: string;
-  onFileFilter: (s: string) => void;
   replaceString: string;
   onReplaceString: (s: string) => void;
   onReplace: (r: IResults[]) => void;
@@ -454,6 +478,8 @@ interface IProps {
   refreshResults: () => void;
   path: string;
   onPathChanged: (s: string) => void;
+  options: React.ReactNode;
+  trans: TranslationBundle;
 }
 
 interface IBreadcrumbProps {
@@ -493,8 +519,8 @@ const Breadcrumbs = (props: IBreadcrumbProps) => {
   );
 };
 
-const SearchReplaceElement = (props: IProps) => {
-  const [expandStatus, setExpandStatus] = useState(
+const SearchReplaceElement = (props: ISearchReplaceProps) => {
+  const [expandStatus, setExpandStatus] = useState<boolean[]>(
     new Array(props.queryResults.length).fill(true)
   );
 
@@ -502,12 +528,14 @@ const SearchReplaceElement = (props: IProps) => {
     setExpandStatus(new Array(props.queryResults.length).fill(true));
   }, [props.queryResults]);
 
+  const collapseAll = expandStatus.some(elem => elem);
+
   return (
     <>
       <div className="search-title-with-refresh">
-        Search
+        <h2>{props.trans.__('Search')}</h2>
         <Button
-          title="button to refresh and reload results"
+          title={props.trans.__('Refresh')}
           onClick={() => {
             props.refreshResults();
           }}
@@ -515,16 +543,20 @@ const SearchReplaceElement = (props: IProps) => {
           <refreshIcon.react></refreshIcon.react>
         </Button>
         <Button
-          title="button to expand and collapse all results"
+          title={
+            collapseAll
+              ? props.trans.__('Collapse All')
+              : props.trans.__('Expand All')
+          }
           disabled={props.queryResults.length === 0}
           onClick={() => {
             const expandStatusNew = new Array(props.queryResults.length).fill(
-              !expandStatus.some(elem => elem)
+              !collapseAll
             );
             setExpandStatus(expandStatusNew);
           }}
         >
-          {expandStatus.some(elem => elem) ? (
+          {collapseAll ? (
             <collapseAllIcon.react></collapseAllIcon.react>
           ) : (
             <expandAllIcon.react></expandAllIcon.react>
@@ -540,28 +572,26 @@ const SearchReplaceElement = (props: IProps) => {
       <div className="search-bar-with-options">
         <Search
           appearance="outline"
-          placeholder="Search"
-          aria-label="Search files for text"
+          placeholder={props.trans.__('Search')}
+          aria-label={props.trans.__('Search Files for Text')}
           onInput={(event: any) => {
             props.onSearchChanged(event.target.value);
           }}
           value={props.searchString}
         />
-        {props.children}
+        <Toolbar>{props.options}</Toolbar>
       </div>
       <div className="replace-bar-with-button">
         <TextField
           appearance="outline"
-          placeholder="Replace"
+          placeholder={props.trans.__('Replace')}
           onInput={(event: any) => {
             props.onReplaceString(event.target.value);
           }}
           value={props.replaceString}
-        >
-          Replace
-        </TextField>
+        ></TextField>
         <Button
-          title="button to replace all matches with query"
+          title={props.trans.__('Replace All')}
           onClick={() => {
             props.onReplace(props.queryResults);
           }}
@@ -569,28 +599,7 @@ const SearchReplaceElement = (props: IProps) => {
           <replaceAllIcon.react></replaceAllIcon.react>
         </Button>
       </div>
-      <div>
-        <TextField
-          appearance="outline"
-          placeholder="Files filter"
-          onInput={(event: any) => {
-            props.onFileFilter(event.target.value);
-          }}
-          value={props.fileFilter}
-        >
-          File filters
-        </TextField>
-        <Switch
-          title="switch to toggle the file filter mode"
-          onChange={(event: any) => {
-            props.onExcludeToggle(event.target.checked);
-          }}
-          checked={props.excludeToggle}
-        >
-          <span slot="checked-message">Files to exclude</span>
-          <span slot="unchecked-message">Files to include</span>
-        </Switch>
-      </div>
+      <div>{props.children}</div>
       {props.isLoading ? (
         <Progress />
       ) : (
@@ -601,7 +610,8 @@ const SearchReplaceElement = (props: IProps) => {
           props.commands,
           expandStatus,
           setExpandStatus,
-          props.onReplace
+          props.onReplace,
+          props.trans
         )
       )}
     </>

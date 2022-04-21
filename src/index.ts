@@ -1,14 +1,13 @@
+import { addJupyterLabThemeChangeListener } from '@jupyter-notebook/web-components';
 import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
-
-import { searchIcon } from '@jupyterlab/ui-components';
-import { addJupyterLabThemeChangeListener } from '@jupyter-notebook/web-components';
-
 import { IChangedArgs } from '@jupyterlab/coreutils';
-import { SearchReplaceView, SearchReplaceModel } from './searchReplace';
-import { IFileBrowserFactory, FileBrowserModel } from '@jupyterlab/filebrowser';
+import { FileBrowserModel, IFileBrowserFactory } from '@jupyterlab/filebrowser';
+import { ITranslator, nullTranslator } from '@jupyterlab/translation';
+import { searchIcon } from '@jupyterlab/ui-components';
+import { SearchReplaceModel, SearchReplaceView } from './searchReplace';
 
 /**
  * Initialization data for the search-replace extension.
@@ -17,8 +16,13 @@ const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab-search-replace:plugin',
   autoStart: true,
   requires: [IFileBrowserFactory],
-  activate: (app: JupyterFrontEnd, factory: IFileBrowserFactory) => {
-    console.log('JupyterLab extension search-replace is activated!');
+  optional: [ITranslator],
+  activate: (
+    app: JupyterFrontEnd,
+    factory: IFileBrowserFactory,
+    translator: ITranslator | null
+  ) => {
+    const trans = (translator ?? nullTranslator).load('search-replace');
     addJupyterLabThemeChangeListener();
 
     const fileBrowser = factory.defaultBrowser;
@@ -37,13 +41,11 @@ const plugin: JupyterFrontEndPlugin<void> = {
     fileBrowser.model.pathChanged.connect(onPathChanged);
     const searchReplacePlugin = new SearchReplaceView(
       searchReplaceModel,
-      app.commands
+      app.commands,
+      trans
     );
 
-    // Test call
-    // searchReplaceModel.getSearchString('strange');
-
-    searchReplacePlugin.title.caption = 'Search and replace';
+    searchReplacePlugin.title.caption = trans.__('Search and Replace');
     searchReplacePlugin.id = 'jp-search-replace';
     searchReplacePlugin.title.icon = searchIcon;
     app.shell.add(searchReplacePlugin, 'left');
