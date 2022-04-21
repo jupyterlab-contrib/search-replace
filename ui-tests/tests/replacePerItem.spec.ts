@@ -69,7 +69,9 @@ test('should replace results for a particular file only', async ({ page }) => {
   await entry.locator('[title="Replace All in File"]').click();
 
   // new results for previous query 'strange' should only have `test_handlers.py`
-  await page.waitForTimeout(800);
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    '55 result(s) in 1 file'
+  );
   expect(await page.locator('.search-tree-files').count()).toEqual(1);
   expect(
     await page.waitForSelector(
@@ -141,7 +143,9 @@ test('should replace results for a particular match only', async ({ page }) => {
   await itemMatch.nth(1).locator('[title="Replace"]').click();
 
   // new results for previous query 'strange' should have one less result in `test_handlers.py`
-  await page.waitForTimeout(800);
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    '54 result(s) in 1 file'
+  );
   expect(
     await page.waitForSelector('jp-tree-view[role="tree"] >> text=54')
   ).toBeTruthy();

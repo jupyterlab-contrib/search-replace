@@ -47,6 +47,10 @@ test('should test for include filter', async ({ page }) => {
     })
   ]);
 
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    '60 results in 2 files'
+  );
+
   await page
     .locator('#jp-search-replace >> .jp-search-replace-filters-collapser')
     .click();
@@ -62,7 +66,9 @@ test('should test for include filter', async ({ page }) => {
       .fill('conftest.py')
   ]);
 
-  await page.waitForTimeout(60);
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    '5 result(s) in 1 file'
+  );
   expect(await page.locator('.search-tree-files').count()).toEqual(1);
   expect(
     await page.waitForSelector('jp-tree-view[role="tree"] >> text=conftest.py')
@@ -104,7 +110,9 @@ test('should test for exclude filter', async ({ page }) => {
       .fill('conftest.py')
   ]);
 
-  await page.waitForTimeout(60);
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    '55 result(s) in 1 file'
+  );
   expect(await page.locator('.search-tree-files').count()).toEqual(1);
   expect(
     await page.waitForSelector(

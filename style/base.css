@@ -93,6 +93,11 @@
   margin: 0;
 }
 
+.jp-search-replace-statistics {
+  color: var(--jp-ui-font-color2);
+  font-size: var(--jp-ui-font-size0);
+}
+
 .jp-search-replace-list {
   overflow-y: auto;
   flex-grow: 1;
