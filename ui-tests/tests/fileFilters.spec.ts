@@ -58,7 +58,7 @@ test('should test for include filter', async ({ page }) => {
         response.request().method() === 'GET'
     ),
     await page
-      .locator('text=File filters >> [placeholder="Files\\ filter"]')
+      .locator('text=File filters >> [placeholder="e.g. *.py, src/**/include"]')
       .fill('conftest.py')
   ]);
 
@@ -100,7 +100,7 @@ test('should test for exclude filter', async ({ page }) => {
         response.request().method() === 'GET'
     ),
     await page
-      .locator('text=File filters >> [placeholder="Files\\ filter"]')
+      .locator('text=File filters >> [placeholder="e.g. *.py, src/**/include"]')
       .fill('conftest.py')
   ]);
 
