@@ -47,6 +47,10 @@ test('should test for include filter', async ({ page }) => {
     })
   ]);
 
+  await page
+    .locator('#jp-search-replace >> .jp-search-replace-filters-collapser')
+    .click();
+
   await Promise.all([
     page.waitForResponse(
       response =>
@@ -54,7 +58,7 @@ test('should test for include filter', async ({ page }) => {
         response.request().method() === 'GET'
     ),
     await page
-      .locator('text=File filters >> [placeholder="Files\\ filter"]')
+      .locator('text=File filters >> [placeholder="e.g. *.py, src/**/include"]')
       .fill('conftest.py')
   ]);
 
@@ -83,6 +87,10 @@ test('should test for exclude filter', async ({ page }) => {
     })
   ]);
 
+  await page
+    .locator('#jp-search-replace >> .jp-search-replace-filters-collapser')
+    .click();
+
   await page.locator('[title="Toggle File Filter Mode"]').click();
 
   await Promise.all([
@@ -92,7 +100,7 @@ test('should test for exclude filter', async ({ page }) => {
         response.request().method() === 'GET'
     ),
     await page
-      .locator('text=File filters >> [placeholder="Files\\ filter"]')
+      .locator('text=File filters >> [placeholder="e.g. *.py, src/**/include"]')
       .fill('conftest.py')
   ]);
 

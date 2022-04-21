@@ -55,6 +55,7 @@ test('should replace results for a particular file only', async ({ page }) => {
     '.search-tree-files:has-text("conftest.py") >> .search-tree-matches:has-text(\'                "Is that Strange enough?",\')'
   );
 
+  await page.locator('#jp-search-replace >> [title="Toggle Replace"]').click();
   await page
     .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
     .click();
@@ -62,12 +63,10 @@ test('should replace results for a particular file only', async ({ page }) => {
     .locator('#jp-search-replace >> input[placeholder="Replace"]')
     .fill('hello');
 
+  const entry = page.locator('.search-tree-files:has-text("conftest.py")');
+  await entry.hover();
   // press replace all matches for `conftest.py` only
-  await page
-    .locator(
-      '.search-tree-files:has-text("conftest.py") >> [title="Replace All in File"]'
-    )
-    .click();
+  await entry.locator('[title="Replace All in File"]').click();
 
   // new results for previous query 'strange' should only have `test_handlers.py`
   await page.waitForTimeout(800);
@@ -129,6 +128,7 @@ test('should replace results for a particular match only', async ({ page }) => {
   );
   await itemMatch.first().waitFor();
 
+  await page.locator('#jp-search-replace >> [title="Toggle Replace"]').click();
   await page
     .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
     .click();
@@ -136,6 +136,7 @@ test('should replace results for a particular match only', async ({ page }) => {
     .locator('#jp-search-replace >> input[placeholder="Replace"]')
     .fill('helloqs');
 
+  await itemMatch.nth(1).hover();
   // press replace match for a particular match in `test_handlers.py` only
   await itemMatch.nth(1).locator('[title="Replace"]').click();
 

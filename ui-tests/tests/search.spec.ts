@@ -44,11 +44,11 @@ test('should get 5 matches', async ({ page }) => {
     await page.waitForSelector('jp-tree-view[role="tree"] >> text=5')
   ).toBeTruthy();
 
-  await expect(page.locator('jp-tree-item:nth-child(5)')).toHaveText(
+  await expect(page.locator('jp-tree-item').nth(2)).toHaveText(
     '                "Is that Strange enough?",'
   );
 
-  await page.locator('jp-tree-item:nth-child(5)').click();
+  await page.locator('jp-tree-item').nth(2).click();
   await expect(page).toHaveURL(
     'http://localhost:8888/lab/tree/search-replace-test/conftest.py'
   );
@@ -237,10 +237,11 @@ test('should replace results on replace-all button', async ({ page }) => {
     await page.waitForSelector('jp-tree-view[role="tree"] >> text=5')
   ).toBeTruthy();
 
-  await expect(page.locator('jp-tree-item:nth-child(5)')).toHaveText(
+  await expect(page.locator('jp-tree-item').nth(2)).toHaveText(
     '                "Is that Strange enough?",'
   );
 
+  await page.locator('#jp-search-replace >> [title="Toggle Replace"]').click();
   await page
     .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
     .click();
@@ -265,8 +266,7 @@ test('should replace results on replace-all button', async ({ page }) => {
   expect(
     await page.waitForSelector('jp-tree-view[role="tree"] >> text=5')
   ).toBeTruthy();
-
-  await expect(page.locator('jp-tree-item:nth-child(5)')).toHaveText(
+  await expect(page.locator('jp-tree-item').nth(2)).toHaveText(
     '                "Is that hello enough?",'
   );
 });
