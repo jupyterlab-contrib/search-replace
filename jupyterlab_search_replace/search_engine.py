@@ -11,7 +11,7 @@ import os
 
 from functools import partial
 from subprocess import Popen, PIPE
-from typing import ClassVar, List, Optional, Tuple
+from typing import ClassVar, Iterable, List, Optional, Tuple
 
 import tornado
 from jupyter_server.utils import url2path
@@ -23,8 +23,15 @@ MAX_LOG_OUTPUT = 6000  # type: int
 
 
 def construct_command(
-    query, max_count, case_sensitive, whole_word, include, exclude, use_regex
+    query: str,
+    max_count: int,
+    case_sensitive: bool,
+    whole_word: bool,
+    include: Optional[str],
+    exclude: Optional[str],
+    use_regex: bool,
 ):
+    """Helper to construct the ripgrep command line."""
     command = ["rg", "-F", query, "--json", f"--max-count={max_count}"]
     if use_regex:
         command.remove("-F")
@@ -34,14 +41,27 @@ def construct_command(
         command.append("--word-regexp")
     if include and exclude:
         raise ValueError("cannot use include and exclude simultaneously")
-    if include and type(include) == str:
+    if include is not None and include:
         command.append("-g")
         command.append(f"{include}")
-    if exclude and type(exclude) == str:
+    if exclude is not None and exclude:
         command.append("-g")
         command.append(f"!{exclude}")
 
     return command
+
+
+def get_utf8_positions(string: str, positions: Iterable[int]) -> List[int]:
+    """Get the utf-8 position within a ``string`` from its binary ``position``.
+
+    Args:
+        string: The utf-8 string
+        position: The binary position
+    Returns
+        The utf-8 position
+    """
+    bstring = string.encode("utf-8")
+    return [len(bstring[:position].decode("utf-8")) for position in positions]
 
 
 class SearchEngine:
@@ -118,8 +138,25 @@ class SearchEngine:
         include: Optional[str] = None,
         exclude: Optional[str] = None,
         use_regex: bool = False,
-    ):
-        """"""
+    ) -> dict:
+        """Search for ``query`` in files in ``path``.
+
+        Notes:
+            include and exclude cannot be defined simultaneously
+
+        Args:
+            query: The search term
+            path: The root folder to run the search in
+            max_count: The maximal number of matches to return
+            case_sensitive: Whether the search is case sensitive or not
+            whole_word: Whether the search is for whole words or not
+            include: Filter specifying files to include
+            exclude: Filter specifying files to exclude
+            use_regex: Whether the search term is a regular expression or not
+
+        Returns:
+            Dictionary with the matches or the error description
+        """
         # JSON output is described at https://docs.rs/grep-printer/0.1.0/grep_printer/struct.JSON.html
         command = construct_command(
             query, max_count, case_sensitive, whole_word, include, exclude, use_regex
@@ -150,6 +187,13 @@ class SearchEngine:
                                     "start": match.get("start"),
                                     "end": match.get("end"),
                                 }
+                                # Compute positions for utf-8 string
+                                positions = get_utf8_positions(
+                                    formatted_entry["line"],
+                                    [match["start"], match["end"]],
+                                )
+                                formatted_entry["start_utf8"] = positions[0]
+                                formatted_entry["end_utf8"] = positions[1]
                                 for key in ("line_number", "absolute_offset"):
                                     formatted_entry[key] = data.get(key)
 
@@ -178,7 +222,14 @@ class SearchEngine:
                 pass
             return {"code": code, "command": command, "message": output}
 
-    def group_matches_by_line(self, line_matches):
+    def group_matches_by_line(self, line_matches: List[dict]) -> dict:
+        """Group matches within a file by line.
+
+        Args:
+            line_matches: The matches to group by
+        Returns:
+            The mapping line/matches positions ``{line_number: List[Tuple[start, end]]}``
+        """
         d = {}
         for each_match in line_matches:
             if each_match["line_number"] not in d:
@@ -193,13 +244,20 @@ class SearchEngine:
             d[each_line_number] = sorted(d[each_line_number], key=lambda tup: tup[0])
         return d
 
-    def replace(self, results: List, prefix_path: str, query: str):
-        query = bytes(query, "utf-8")
-        for each_result in results:
+    def replace(self, matches: List, path: str, replace: str) -> None:
+        """Replace the ``matches`` within ``path`` by ``replace``.
+
+        Args:
+            matches: The search matches to replace
+            path: The root folder in which to apply the replace
+            replace: The replace text to use
+        """
+        replace = bytes(replace, "utf-8")
+        for each_result in matches:
             file_path = each_result["path"]
             line_matches = each_result["matches"]
 
-            file_path = os.path.join(self._root_dir, url2path(prefix_path), file_path)
+            file_path = os.path.join(self._root_dir, url2path(path), file_path)
             grouped_line_matches = self.group_matches_by_line(line_matches)
 
             with open(file_path, "rb") as fp:
@@ -209,13 +267,13 @@ class SearchEngine:
                     replaced_line = b""
                     start = 0
                     end = offsets[0][0]
-                    replaced_line += original_line[start:end] + query
+                    replaced_line += original_line[start:end] + replace
                     for i in range(len(offsets)):
                         if i + 1 < len(offsets):
                             end = offsets[i + 1][0]
                         start = offsets[i][1]
                         if start < end:
-                            replaced_line += original_line[start:end] + query
+                            replaced_line += original_line[start:end] + replace
                         else:
                             replaced_line += original_line[start:]
                     data[line_number - 1] = replaced_line

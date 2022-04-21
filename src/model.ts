@@ -23,7 +23,9 @@ export interface IResults {
   matches: {
     line: string;
     start: number;
+    start_utf8: number;
     end: number;
+    end_utf8: number;
     match: string;
     line_number: number;
     absolute_offset: number;
