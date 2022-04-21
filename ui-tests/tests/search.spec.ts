@@ -245,7 +245,7 @@ test('should replace results on replace-all button', async ({ page }) => {
     .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
     .click();
   await page
-    .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
+    .locator('#jp-search-replace >> input[placeholder="Replace"]')
     .fill('hello');
   await page.locator('[title="Replace All"]').click();
 

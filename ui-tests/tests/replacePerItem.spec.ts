@@ -59,7 +59,7 @@ test('should replace results for a particular file only', async ({ page }) => {
     .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
     .click();
   await page
-    .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
+    .locator('#jp-search-replace >> input[placeholder="Replace"]')
     .fill('hello');
 
   // press replace all matches for `conftest.py` only
@@ -133,7 +133,7 @@ test('should replace results for a particular match only', async ({ page }) => {
     .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
     .click();
   await page
-    .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
+    .locator('#jp-search-replace >> input[placeholder="Replace"]')
     .fill('helloqs');
 
   // press replace match for a particular match in `test_handlers.py` only
