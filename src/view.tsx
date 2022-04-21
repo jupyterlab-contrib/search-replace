@@ -24,6 +24,7 @@ import {
   regexIcon
 } from '@jupyterlab/ui-components';
 import { CommandRegistry } from '@lumino/commands';
+import { Widget } from '@lumino/widgets';
 import React, { useEffect, useState } from 'react';
 import {
   collapseAllIcon,
@@ -34,14 +35,39 @@ import {
 } from './icon';
 import { IResults, SearchReplaceModel } from './model';
 
-function openFile(prefixDir: string, path: string, _commands: CommandRegistry) {
-  _commands.execute('docmanager:open', { path: PathExt.join(prefixDir, path) });
+/**
+ * Open a file in JupyterLab
+ * @param prefixDir Root directory
+ * @param path File path relative to `prefixDir`
+ * @param commands Application commands registry
+ * @returns Widget opened for the given path
+ */
+function openFile(
+  prefixDir: string,
+  path: string,
+  commands: CommandRegistry
+): Promise<Widget> {
+  return commands.execute('docmanager:open', {
+    path: PathExt.join(prefixDir, path)
+  });
 }
 
+/**
+ * Create a tree view for the search query results
+ *
+ * @param results Search query results
+ * @param path Root directory of the query
+ * @param commands Application commands registry
+ * @param expandStatus Expansion status of the matches
+ * @param setExpandStatus Set the matches expansion status
+ * @param onReplace Callback on replace event
+ * @param trans Extension translation bundle
+ * @returns The tree view
+ */
 function createTreeView(
   results: IResults[],
   path: string,
-  _commands: CommandRegistry,
+  commands: CommandRegistry,
   expandStatus: boolean[],
   setExpandStatus: (v: boolean[]) => void,
   onReplace: ((r: IResults[]) => void) | null,
@@ -83,8 +109,8 @@ function createTreeView(
           <TreeItem
             className="search-tree-matches"
             onClick={(event: React.MouseEvent) => {
-              openFile(path, file.path, _commands);
               event.stopPropagation();
+              openFile(path, file.path, commands);
             }}
           >
             <span title={match.line}>
@@ -127,9 +153,10 @@ function createTreeView(
   }
 }
 
+/**
+ * Search and Replace Widget
+ */
 export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
-  private _commands: CommandRegistry;
-
   constructor(
     searchModel: SearchReplaceModel,
     commands: CommandRegistry,
@@ -140,6 +167,11 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
     this.addClass('jp-search-replace-tab');
   }
 
+  /**
+   * Render the widget content
+   *
+   * @returns The React component
+   */
   render(): JSX.Element | null {
     return (
       <SearchReplaceElement
@@ -152,7 +184,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
           this.model.replaceString = s;
         }}
         onReplace={(r: IResults[]) => {
-          this.model.postReplaceString(r);
+          this.model.replace(r);
         }}
         commands={this._commands}
         isLoading={this.model.isLoading}
@@ -214,6 +246,8 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
       </SearchReplaceElement>
     );
   }
+
+  private _commands: CommandRegistry;
 }
 
 interface IBreadcrumbProps {
