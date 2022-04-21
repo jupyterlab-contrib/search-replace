@@ -30,67 +30,77 @@ test.afterAll(async ({ baseURL, tmpPath }) => {
 });
 
 test('should test for include filter', async ({ page }) => {
-    // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-    await page.locator('[title="Search and replace"]').click();
-    // Fill input[type="search"]
-    await page.locator('input[type="search"]').fill('strange');
-  
-    await Promise.all([
-      page.waitForResponse(
-        response =>
-        /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
-          response.request().method() === 'GET'
-      ),
-      page.locator('input[type="search"]').press('Enter'),
-      page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
-        state: 'hidden'
-      })
-    ]);
-  
-    await Promise.all([
-      page.waitForResponse(
-        response =>
-        /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
-          response.request().method() === 'GET'
-      ),
-      await page.locator('text=File filters >> [placeholder="Files\\ filter"]').fill('conftest.py')
-    ]);
+  // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
+  await page.locator('[title="Search and Replace"]').click();
+  // Fill input[type="search"]
+  await page.locator('input[type="search"]').fill('strange');
 
-    await page.waitForTimeout(60);
-    expect(await page.locator('.search-tree-files').count()).toEqual(1);
-    expect(await page.waitForSelector('jp-tree-view[role="tree"] >> text=conftest.py')).toBeTruthy();
+  await Promise.all([
+    page.waitForResponse(
+      response =>
+        /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
+        response.request().method() === 'GET'
+    ),
+    page.locator('input[type="search"]').press('Enter'),
+    page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
+      state: 'hidden'
+    })
+  ]);
+
+  await Promise.all([
+    page.waitForResponse(
+      response =>
+        /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
+        response.request().method() === 'GET'
+    ),
+    await page
+      .locator('text=File filters >> [placeholder="Files\\ filter"]')
+      .fill('conftest.py')
+  ]);
+
+  await page.waitForTimeout(60);
+  expect(await page.locator('.search-tree-files').count()).toEqual(1);
+  expect(
+    await page.waitForSelector('jp-tree-view[role="tree"] >> text=conftest.py')
+  ).toBeTruthy();
 });
 
 test('should test for exclude filter', async ({ page }) => {
-    // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-    await page.locator('[title="Search and replace"]').click();
-    // Fill input[type="search"]
-    await page.locator('input[type="search"]').fill('strange');
-  
-    await Promise.all([
-      page.waitForResponse(
-        response =>
+  // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
+  await page.locator('[title="Search and Replace"]').click();
+  // Fill input[type="search"]
+  await page.locator('input[type="search"]').fill('strange');
+
+  await Promise.all([
+    page.waitForResponse(
+      response =>
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
-          response.request().method() === 'GET'
-      ),
-      page.locator('input[type="search"]').press('Enter'),
-      page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
-        state: 'hidden'
-      })
-    ]);
+        response.request().method() === 'GET'
+    ),
+    page.locator('input[type="search"]').press('Enter'),
+    page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
+      state: 'hidden'
+    })
+  ]);
 
-    await page.locator('[title="switch to toggle the file filter mode"]').click();
+  await page.locator('[title="Toggle File Filter Mode"]').click();
 
-    await Promise.all([
-      page.waitForResponse(
-        response =>
+  await Promise.all([
+    page.waitForResponse(
+      response =>
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
-          response.request().method() === 'GET'
-      ),
-      await page.locator('text=File filters >> [placeholder="Files\\ filter"]').fill('conftest.py')
-    ]);
+        response.request().method() === 'GET'
+    ),
+    await page
+      .locator('text=File filters >> [placeholder="Files\\ filter"]')
+      .fill('conftest.py')
+  ]);
 
-    await page.waitForTimeout(60);
-    expect(await page.locator('.search-tree-files').count()).toEqual(1);
-    expect(await page.waitForSelector('jp-tree-view[role="tree"] >> text=test_handlers.py')).toBeTruthy();
+  await page.waitForTimeout(60);
+  expect(await page.locator('.search-tree-files').count()).toEqual(1);
+  expect(
+    await page.waitForSelector(
+      'jp-tree-view[role="tree"] >> text=test_handlers.py'
+    )
+  ).toBeTruthy();
 });
