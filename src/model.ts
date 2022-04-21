@@ -2,36 +2,66 @@ import { VDomModel } from '@jupyterlab/apputils';
 import { Debouncer } from '@lumino/polling';
 import { requestAPI } from './handler';
 
+/**
+ * Search query results
+ */
 export interface IQueryResult {
+  /**
+   * Matches per file
+   */
   matches: IResults[];
 }
 
 /**
  * Interface to represent matches in a file
- * @interface IResults
- * @member path -- path of file
- * @member matches -- all matches within that file
- * @field line -- line containing the match
- * @field start -- starting offset of the match
- * @field end -- ending offset of the match
- * @field match -- the actual match itself
- * @field line_number -- the line number where the match occurs
- * @field absolute_offset -- the offset from the beginning of file
  */
 export interface IResults {
+  /**
+   * path of file
+   */
   path: string;
+  /**
+   * all matches within that file
+   */
   matches: {
+    /**
+     * line containing the match
+     */
     line: string;
+    /**
+     * starting offset of the match in binary format
+     */
     start: number;
+    /**
+     * starting offset of the match in utf-8 format
+     */
     start_utf8: number;
+    /**
+     * ending offset of the match in binary format
+     */
     end: number;
+    /**
+     * ending offset of the match in utf-8 format
+     */
     end_utf8: number;
+    /**
+     * the actual match itself
+     */
     match: string;
+    /**
+     * the line number where the match occurs
+     */
     line_number: number;
+    /**
+     * the offset from the beginning of file
+     */
     absolute_offset: number;
   }[];
 }
 
+/**
+ * Search and Replace Model
+ */
 export class SearchReplaceModel extends VDomModel {
   constructor() {
     super();
@@ -58,12 +88,18 @@ export class SearchReplaceModel extends VDomModel {
     });
   }
 
+  /**
+   * Refresh the search query.
+   */
   refreshResults(): void {
     this._debouncedStartSearch
       .invoke()
       .catch(reason => console.error(`failed query for due to ${reason}`));
   }
 
+  /**
+   * Whether a search query is happening or not
+   */
   get isLoading(): boolean {
     return this._isLoading;
   }
@@ -75,6 +111,9 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  /**
+   * The search query string
+   */
   get searchString(): string {
     return this._searchString;
   }
@@ -87,6 +126,9 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  /**
+   * Whether the search query is case sensitive or not.
+   */
   get caseSensitive(): boolean {
     return this._caseSensitive;
   }
@@ -99,6 +141,9 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  /**
+   * Whether the search query is for whole words only or not.
+   */
   get wholeWord(): boolean {
     return this._wholeWord;
   }
@@ -111,6 +156,9 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  /**
+   * Whether the search query is a regular expression or not.
+   */
   get useRegex(): boolean {
     return this._useRegex;
   }
@@ -123,6 +171,9 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  /**
+   * Files filter.
+   */
   get filesFilter(): string {
     return this._filesFilter;
   }
@@ -135,6 +186,9 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  /**
+   * Whether the files filter is to exclude or include files.
+   */
   get excludeToggle(): boolean {
     return this._excludeToggle;
   }
@@ -147,10 +201,16 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  /**
+   * Search query results
+   */
   get queryResults(): IResults[] {
     return this._queryResults;
   }
 
+  /**
+   * Path to apply the search query on.
+   */
   get path(): string {
     return this._path;
   }
@@ -163,6 +223,9 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  /**
+   * Replace string
+   */
   get replaceString(): string {
     return this._replaceString;
   }
@@ -221,12 +284,17 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
-  async postReplaceString(results: IResults[]): Promise<void> {
+  /**
+   * Replace some matches
+   *
+   * @param matches Matches to replace
+   */
+  async replace(matches: IResults[]): Promise<void> {
     try {
       await requestAPI<void>(this.path, {
         method: 'POST',
         body: JSON.stringify({
-          results,
+          results: matches,
           query: this.replaceString
         })
       });
