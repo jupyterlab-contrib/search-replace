@@ -55,6 +55,7 @@ test('should replace results for a particular file only', async ({ page }) => {
     '.search-tree-files:has-text("conftest.py") >> .search-tree-matches:has-text(\'                "Is that Strange enough?",\')'
   );
 
+  await page.locator('#jp-search-replace >> [title="Toggle Replace"]').click();
   await page
     .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
     .click();
@@ -129,6 +130,7 @@ test('should replace results for a particular match only', async ({ page }) => {
   );
   await itemMatch.first().waitFor();
 
+  await page.locator('#jp-search-replace >> [title="Toggle Replace"]').click();
   await page
     .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
     .click();

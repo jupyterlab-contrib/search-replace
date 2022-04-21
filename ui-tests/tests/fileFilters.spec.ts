@@ -47,6 +47,10 @@ test('should test for include filter', async ({ page }) => {
     })
   ]);
 
+  await page
+    .locator('#jp-search-replace >> .jp-search-replace-filters-collapser')
+    .click();
+
   await Promise.all([
     page.waitForResponse(
       response =>
@@ -82,6 +86,10 @@ test('should test for exclude filter', async ({ page }) => {
       state: 'hidden'
     })
   ]);
+
+  await page
+    .locator('#jp-search-replace >> .jp-search-replace-filters-collapser')
+    .click();
 
   await page.locator('[title="Toggle File Filter Mode"]').click();
 
