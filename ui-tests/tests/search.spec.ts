@@ -202,17 +202,13 @@ test('should expand and collapse tree view on clicking expand-collapse button', 
 
   // added timeouts allowing DOM to update
   await page.waitForTimeout(60);
-  await page
-    .locator('[title="button to expand and collapse all results"]')
-    .click();
+  await page.locator('[title="Collapse All"]').click();
   await page.waitForTimeout(60);
   expect(
     await page.locator('.search-tree-files').getAttribute('aria-expanded')
   ).toEqual('false');
 
-  await page
-    .locator('[title="button to expand and collapse all results"]')
-    .click();
+  await page.locator('[title="Expand All"]').click();
   await page.waitForTimeout(60);
   expect(
     await page.locator('.search-tree-files').getAttribute('aria-expanded')
@@ -246,10 +242,10 @@ test('should replace results on replace-all button', async ({ page }) => {
   );
 
   await page
-    .locator('#jp-search-replace >> text=Replace >> [placeholder="Replace"]')
+    .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
     .click();
   await page
-    .locator('#jp-search-replace >> text=Replace >> [placeholder="Replace"]')
+    .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
     .fill('hello');
   await page.locator('[title="Replace All"]').click();
 
