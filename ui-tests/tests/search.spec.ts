@@ -40,6 +40,10 @@ test('should get 5 matches', async ({ page }) => {
     state: 'hidden'
   });
 
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    '5 result(s) in 1 file'
+  );
+
   expect(
     await page.waitForSelector('jp-tree-view[role="tree"] >> text=5')
   ).toBeTruthy();
@@ -69,6 +73,9 @@ test('should get no matches', async ({ page }) => {
     page.locator('input[type="search"]').press('Enter')
   ]);
 
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    '0 results in 0 files'
+  );
   expect(
     await page.waitForSelector('#jp-search-replace >> text="No Matches Found"')
   ).toBeTruthy();

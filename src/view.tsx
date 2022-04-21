@@ -389,6 +389,19 @@ const SearchReplaceElement = (props: ISearchReplaceProps) => {
         </div>
       </div>
       {props.children}
+      {props.searchString && (
+        <p className="jp-search-replace-statistics">
+          {props.trans._n(
+            '%2 result(s) in %1 file',
+            '%2 results in %1 files',
+            props.queryResults.map(r => r.path).length,
+            props.queryResults.reduce(
+              (agg, current) => agg + current.matches.length,
+              0
+            )
+          )}
+        </p>
+      )}
       {props.isLoading ? (
         <Progress />
       ) : (

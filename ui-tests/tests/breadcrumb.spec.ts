@@ -50,7 +50,9 @@ test('should switch directory and update results', async ({
     })
   ]);
 
-  await page.waitForTimeout(100);
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    '60 results in 2 files'
+  );
   expect(await page.locator('.search-tree-files').count()).toEqual(2);
   expect(
     await page.waitForSelector(
@@ -64,7 +66,7 @@ test('should switch directory and update results', async ({
   ).toBeTruthy();
 
   // Click on File Browser Tab
-  await page.locator('#tab-key-0').first().click();
+  await page.locator('[title="File Browser (Ctrl+Shift+F)"]').click();
   await page.locator('span:has-text("aaa")').first().dblclick();
   await expect(page).toHaveURL(`http://localhost:8888/lab/tree/${tmpPath}/aaa`);
   await page
@@ -78,7 +80,9 @@ test('should switch directory and update results', async ({
     state: 'hidden'
   });
 
-  await page.waitForTimeout(800);
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    '55 result(s) in 1 file'
+  );
   expect(await page.locator('.search-tree-files').count()).toEqual(1);
   expect(
     await page.waitForSelector(
@@ -108,9 +112,11 @@ test('should not update file browser on clicking of breadcrumb', async ({
     })
   ]);
 
-  await page.waitForTimeout(100);
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    '60 results in 2 files'
+  );
   // Click on File Browser Tab
-  await page.locator('#tab-key-0').first().click();
+  await page.locator('[title="File Browser (Ctrl+Shift+F)"]').click();
   await page.locator('span:has-text("aaa")').first().dblclick();
   await expect(page).toHaveURL(`http://localhost:8888/lab/tree/${tmpPath}/aaa`);
   await page
@@ -127,7 +133,9 @@ test('should not update file browser on clicking of breadcrumb', async ({
   await page
     .locator('jp-breadcrumb[role="navigation"] >> text=aaa >> button')
     .click();
-  await page.waitForTimeout(800);
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    '60 results in 2 files'
+  );
   expect(await page.locator('.search-tree-files').count()).toEqual(2);
   expect(
     await page.waitForSelector(
@@ -139,7 +147,7 @@ test('should not update file browser on clicking of breadcrumb', async ({
   ).toBeTruthy();
 
   // Click on File Browser Tab
-  await page.locator('#tab-key-0').first().click();
+  await page.locator('[title="File Browser (Ctrl+Shift+F)"]').click();
   expect(
     await page.waitForSelector(
       '[aria-label="File\\ Browser\\ Section"] >> text=bbb'
