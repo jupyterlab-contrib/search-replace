@@ -75,7 +75,7 @@ jobs:
 
           jupyter labextension list
           jupyter labextension list 2>&1 | grep -ie "jupyterlab-search-replace.*OK"
-          python -m jupyterlab.browser_check
+          python -m jupyterlab.browser_check --no-browser-test
 
       - name: Build package
         run: |
@@ -118,7 +118,7 @@ jobs:
           pip install jupyterlab
           jupyter labextension list 2>&1 | grep -ie "search-replace.*OK"
           python -m jupyterlab.browser_check --no-chrome-test
-  
+
   integration-tests:
     name: Integration tests
     needs: build
@@ -144,7 +144,7 @@ jobs:
           set -eux
           sudo apt-get update
           sudo apt-get install ripgrep
-        
+
       - name: Install the extension
         run: |
           set -eux

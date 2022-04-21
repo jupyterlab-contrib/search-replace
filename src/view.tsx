@@ -88,9 +88,9 @@ function createTreeView(
             }}
           >
             <span title={match.line}>
-              {match.line.slice(0, match.start)}
+              {match.line.slice(0, match.start_utf8)}
               <mark>{match.match}</mark>
-              {match.line.slice(match.end)}
+              {match.line.slice(match.end_utf8)}
             </span>
             {onReplace && (
               <Button

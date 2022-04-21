@@ -14,6 +14,7 @@ class RouteHandler(APIHandler):
 
     @tornado.web.authenticated
     async def get(self, path: str = ""):
+        """GET request handler to perform a search."""
         query = self.get_query_argument("query")
         max_count = self.get_query_argument("max_count", 100)
         case_sensitive = self.get_query_argument("case_sensitive", "false") == "true"
@@ -44,6 +45,7 @@ class RouteHandler(APIHandler):
 
     @tornado.web.authenticated
     def post(self, path: str = ""):
+        """POST request handler to perform a replace action."""
         json_body = self.get_json_body()
         results = json_body["results"]
         query = json_body["query"]
