@@ -83,7 +83,7 @@ test('should test for exclude filter', async ({ page }) => {
     })
   ]);
 
-  await page.locator('[title="switch to toggle the file filter mode"]').click();
+  await page.locator('[title="Toggle File Filter Mode"]').click();
 
   await Promise.all([
     page.waitForResponse(

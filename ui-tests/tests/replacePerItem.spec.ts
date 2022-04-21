@@ -65,7 +65,7 @@ test('should replace results for a particular file only', async ({ page }) => {
   // press replace all matches for `conftest.py` only
   await page
     .locator(
-      '.search-tree-files:has-text("conftest.py") >> [title="button to replace a results from a particular file"]'
+      '.search-tree-files:has-text("conftest.py") >> [title="Replace All in File"]'
     )
     .click();
 
@@ -137,10 +137,7 @@ test('should replace results for a particular match only', async ({ page }) => {
     .fill('helloqs');
 
   // press replace match for a particular match in `test_handlers.py` only
-  await itemMatch
-    .nth(1)
-    .locator('[title="button to replace a particular match"]')
-    .click();
+  await itemMatch.nth(1).locator('[title="Replace"]').click();
 
   // new results for previous query 'strange' should have one less result in `test_handlers.py`
   await page.waitForTimeout(800);

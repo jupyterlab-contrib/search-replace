@@ -91,7 +91,7 @@ test('should test for case sensitive option', async ({ page }) => {
       );
     }),
     page.locator('input[type="search"]').press('Enter'),
-    page.locator('[title="button to enable case sensitive mode"]').click()
+    page.locator('[title="Match Case"]').click()
   ]);
 
   expect(/case_sensitive=true/.test(response_url)).toEqual(true);
@@ -118,7 +118,7 @@ test('should test for whole word option', async ({ page }) => {
       );
     }),
     page.locator('input[type="search"]').press('Enter'),
-    page.locator('[title="button to enable whole word mode"]').click()
+    page.locator('[title="Match Whole Word"]').click()
   ]);
 
   expect(/whole_word=true/.test(response_url)).toEqual(true);
@@ -145,7 +145,7 @@ test('should test for use regex option', async ({ page }) => {
       );
     }),
     page.locator('input[type="search"]').press('Enter'),
-    page.locator('[title="button to enable use regex mode"]').click()
+    page.locator('[title="Use Regular Expression"]').click()
   ]);
 
   expect(/use_regex=true/.test(response_url)).toEqual(true);
@@ -176,7 +176,7 @@ test('should make a new request on refresh', async ({ page }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('[title="button to refresh and reload results"]').click()
+    page.locator('[title="Refresh"]').click()
   ]);
 });
 
@@ -251,9 +251,7 @@ test('should replace results on replace-all button', async ({ page }) => {
   await page
     .locator('#jp-search-replace >> text=Replace >> [placeholder="Replace"]')
     .fill('hello');
-  await page
-    .locator('[title="button to replace all matches with query"]')
-    .click();
+  await page.locator('[title="Replace All"]').click();
 
   await page.locator('input[type="search"]').fill('hello');
   await Promise.all([
