@@ -7,7 +7,8 @@ import { IChangedArgs } from '@jupyterlab/coreutils';
 import { FileBrowserModel, IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 import { searchIcon } from '@jupyterlab/ui-components';
-import { SearchReplaceModel, SearchReplaceView } from './searchReplace';
+import { SearchReplaceView } from './view';
+import { SearchReplaceModel } from './model';
 
 /**
  * Initialization data for the search-replace extension.

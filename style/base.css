@@ -1,16 +1,102 @@
 .jp-search-replace-tab {
-  background: var(--jp-layout-color0);
+  --density: -3;
+  display: flex;
+  flex-direction: column;
+  background: var(--jp-layout-color1);
+  color: var(--jp-ui-font-color1);
+}
+
+.jp-search-replace-column {
   display: flex;
   flex-direction: column;
 }
 
-.jp-search-replace-tab > * {
-  padding: 5px;
+.jp-search-replace-row {
+  display: flex;
+  align-items: center;
+}
+
+.jp-search-replace-tab jp-toolbar {
+  background-color: inherit;
+}
+
+.jp-search-replace-tab jp-toolbar,
+.jp-search-replace-tab jp-button.jp-mod-icon-only {
+  --design-unit: 3.5;
+}
+
+.jp-search-replace-tab jp-button.jp-mod-icon-only::part(control) {
+  line-height: 0;
+  padding: 0;
+}
+
+.jp-search-replace-tab .jp-stack-panel-header {
+  border-bottom: solid var(--jp-border-width) var(--jp-border-color1);
+  box-shadow: var(--jp-toolbar-box-shadow);
+  display: flex;
+  flex-direction: column;
+  padding: 2px 8px;
+}
+
+.jp-search-replace-row > jp-search,
+.jp-search-replace-row > jp-text-field {
+  flex: 1 1 auto;
+}
+
+.jp-search-replace-row > jp-toolbar {
+  flex: 0 0 auto;
+}
+
+.jp-search-replace-header {
+  height: 24px;
+}
+
+.jp-search-replace-header > h2 {
+  text-transform: uppercase;
+  font-weight: 600;
+  font-size: var(--jp-ui-font-size1);
+  margin: 0;
+}
+
+.jp-search-replace-tab .jp-Toolbar-spacer {
+  flex: 1 1 0;
+}
+
+.jp-search-replace-row.jp-search-replace-collapser {
+  align-items: flex-start;
+  padding: 4px 4px 2px 0px;
+}
+
+/* Fix JupyterLab icons colors */
+.jp-search-replace-tab .jp-icon2[fill] {
+  fill: none;
+}
+
+.jp-search-replace-tab .jp-icon-accent2[fill] {
+  fill: currentColor;
+}
+
+.jp-search-replace-filtersBox {
+  flex: 0 0 auto;
+  position: relative;
+  padding: 4px 8px;
+  display: flex;
+  flex-direction: column;
+  min-height: 6px;
+}
+
+.jp-search-replace-filters-collapser {
+  position: absolute;
+  top: -4px;
+  right: 0;
+  max-height: 16px;
+  margin: 0;
 }
 
 .jp-search-replace-list {
   overflow-y: auto;
   flex-grow: 1;
+  flex-shrink: 1;
 }
 
 .jp-search-replace-list > jp-tree-view {
@@ -19,6 +105,14 @@
 
 .jp-search-replace-list jp-tree-item {
   background: none;
+}
+
+.jp-search-replace-tab > p {
+  padding: 4px 8px;
+}
+
+.jp-search-replace-tab > jp-progress {
+  padding: 4px;
 }
 
 .search-tree-files > span,
@@ -30,24 +124,17 @@
 
 .search-tree-files > span {
   flex-grow: 1;
+  flex-shrink: 1;
 }
 
-.search-bar-with-options {
+.jp-search-replace-item-button {
+  display: none;
+  margin-left: auto;
+}
+
+jp-tree-item:hover > .jp-search-replace-item-button,
+jp-tree-item:active > .jp-search-replace-item-button,
+jp-tree-item:focus-visible > .jp-search-replace-item-button,
+jp-tree-item:focus-within > .jp-search-replace-item-button {
   display: flex;
-}
-
-.replace-bar-with-button {
-  display: flex;
-}
-
-.search-title-with-refresh {
-  display: flex;
-}
-
-.search-bar-with-options > * {
-  flex: 0 0 auto;
-}
-
-.search-bar-with-options > jp-search:first-child {
-  flex: 1 1 auto;
 }
