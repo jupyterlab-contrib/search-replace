@@ -63,7 +63,7 @@ function createTreeView(
         {onReplace && (
           <Button
             className="jp-search-replace-item-button jp-mod-icon-only"
-            appearance="stealth"
+            appearance="neutral"
             title={trans.__('Replace All in File')}
             onClick={() => {
               const partialResult: IResults[] = [
@@ -95,7 +95,7 @@ function createTreeView(
             {onReplace && (
               <Button
                 className="jp-search-replace-item-button jp-mod-icon-only"
-                appearance="stealth"
+                appearance="neutral"
                 title={trans.__('Replace')}
                 onClick={() => {
                   const partialResult: IResults[] = [
