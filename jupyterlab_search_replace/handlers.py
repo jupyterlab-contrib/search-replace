@@ -47,9 +47,8 @@ class RouteHandler(APIHandler):
     def post(self, path: str = ""):
         """POST request handler to perform a replace action."""
         json_body = self.get_json_body()
-        results = json_body["results"]
-        query = json_body["query"]
-        self._engine.replace(results, path, query)
+        matches = json_body["matches"]
+        self._engine.replace(matches, path)
 
         self.set_status(201)
 

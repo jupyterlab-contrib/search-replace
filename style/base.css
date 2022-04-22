@@ -1,5 +1,7 @@
 .jp-search-replace-tab {
   --density: -3;
+  --jp-search-replace-added-color: rgba(155, 185, 85, 0.4);
+  --jp-search-replace-deleted-color: rgba(255, 0, 0, 0.4);
   display: flex;
   flex-direction: column;
   background: var(--jp-layout-color1);
@@ -125,6 +127,15 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow-x: hidden;
+}
+
+.search-tree-matches > span > del {
+  background-color: var(--jp-search-replace-deleted-color);
+}
+
+.search-tree-matches > span > ins {
+  background-color: var(--jp-search-replace-added-color);
+  text-decoration-line: none;
 }
 
 .search-tree-files > span {

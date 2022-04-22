@@ -4,10 +4,9 @@ import * as path from 'path';
 
 const fileName = 'conftest.py';
 const fileNameHandler = 'test_handlers.py';
-test.use({ tmpPath: 'search-replace-file-filter-test' });
 
-test.beforeAll(async ({ baseURL, tmpPath }) => {
-  const contents = galata.newContentsHelper(baseURL);
+test.beforeEach(async ({ page, tmpPath }) => {
+  const { contents } = page;
   await contents.uploadFile(
     path.resolve(
       __dirname,
@@ -24,8 +23,8 @@ test.beforeAll(async ({ baseURL, tmpPath }) => {
   );
 });
 
-test.afterAll(async ({ baseURL, tmpPath }) => {
-  const contents = galata.newContentsHelper(baseURL);
+test.afterEach(async ({ page, tmpPath }) => {
+  const { contents } = page;
   await contents.deleteDirectory(tmpPath);
 });
 
@@ -99,7 +98,7 @@ test('should replace results for a particular file only', async ({ page }) => {
   ).toBeTruthy();
 
   await page.waitForSelector(
-    '.search-tree-files:has-text("conftest.py") >> .search-tree-matches:has-text(\'                "Is that hello enough?",\')'
+    '.search-tree-files:has-text("conftest.py") >> .search-tree-matches:has-text(\'                "Is that hellohello enough?",\')'
   );
 });
 
@@ -138,13 +137,17 @@ test('should replace results for a particular match only', async ({ page }) => {
     .locator('#jp-search-replace >> input[placeholder="Replace"]')
     .fill('helloqs');
 
+  await expect(itemMatch.nth(1)).toHaveText(
+    '                    "line": "Unicode strangehelloqs sub file, very strange\\n",'
+  );
+
   await itemMatch.nth(1).hover();
   // press replace match for a particular match in `test_handlers.py` only
   await itemMatch.nth(1).locator('[title="Replace"]').click();
 
   // new results for previous query 'strange' should have one less result in `test_handlers.py`
   await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
-    '54 result(s) in 1 file'
+    '59 results in 2 files'
   );
   expect(
     await page.waitForSelector('jp-tree-view[role="tree"] >> text=54')
@@ -170,6 +173,82 @@ test('should replace results for a particular match only', async ({ page }) => {
   ).toBeTruthy();
 
   await expect(itemMatch.first()).toHaveText(
-    '                    "line": "Unicode helloqs sub file, very strange\\n",'
+    '                    "line": "Unicode helloqshelloqs sub file, very strange\\n",'
+  );
+});
+
+test('should replace with regexp group matching', async ({ page }) => {
+  // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
+  await page.locator('[title="Search and Replace"]').click();
+  await page.locator('[title="Use Regular Expression"]').click();
+  await page.locator('input[type="search"]').fill('(str)an(g)e');
+
+  await page.pause();
+  await Promise.all([
+    page.waitForResponse(
+      response =>
+        /.*search\/[\w-]+\?query=%28str%29an%28g%29e/.test(response.url()) &&
+        response.request().method() === 'GET'
+    ),
+    page.locator('input[type="search"]').press('Enter'),
+    page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
+      state: 'hidden'
+    })
+  ]);
+
+  await expect(
+    page.locator('.search-tree-files:has-text("test_handlers.py") >> jp-badge')
+  ).toHaveText('55');
+
+  const itemMatch = page.locator(
+    '.search-tree-files:has-text("test_handlers.py") >> .search-tree-matches'
+  );
+  await itemMatch.first().waitFor();
+
+  await page.locator('#jp-search-replace >> [title="Toggle Replace"]').click();
+  await page
+    .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
+    .click();
+  await page
+    .locator('#jp-search-replace >> input[placeholder="Replace"]')
+    .fill('$1on$2');
+
+  await expect(itemMatch.nth(1)).toHaveText(
+    '                    "line": "Unicode strangestrong sub file, very strange\\n",'
+  );
+
+  await itemMatch.nth(1).hover();
+  // press replace match for a particular match in `test_handlers.py` only
+  await itemMatch.nth(1).locator('[title="Replace"]').click();
+
+  // new results for previous query 'strange' should have one less result in `test_handlers.py`
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    '59 results in 2 files'
+  );
+  expect(
+    await page.waitForSelector('jp-tree-view[role="tree"] >> text=54')
+  ).toBeTruthy();
+
+  // new search with `strong`
+  await page.locator('input[type="search"]').fill('strong');
+  await Promise.all([
+    page.waitForResponse(
+      response =>
+        /.*search\/[\w-]+\?query=strong/.test(response.url()) &&
+        response.request().method() === 'GET'
+    ),
+    page.locator('input[type="search"]').press('Enter'),
+    page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
+      state: 'hidden'
+    })
+  ]);
+
+  // verify if `test_handlers.py` has changed
+  expect(
+    await page.waitForSelector('jp-tree-view[role="tree"] >> text=1')
+  ).toBeTruthy();
+
+  await expect(itemMatch.first()).toHaveText(
+    '                    "line": "Unicode strong$1on$2 sub file, very strange\\n",'
   );
 });

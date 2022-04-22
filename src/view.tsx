@@ -33,7 +33,8 @@ import {
   replaceIcon,
   wholeWordIcon
 } from './icon';
-import { IResults, SearchReplaceModel } from './model';
+import { SearchReplaceModel } from './model';
+import { SearchReplace } from './tokens';
 
 /**
  * Open a file in JupyterLab
@@ -55,7 +56,7 @@ function openFile(
 /**
  * Create a tree view for the search query results
  *
- * @param results Search query results
+ * @param matches Search query results
  * @param path Root directory of the query
  * @param commands Application commands registry
  * @param expandStatus Expansion status of the matches
@@ -65,16 +66,16 @@ function openFile(
  * @returns The tree view
  */
 function createTreeView(
-  results: IResults[],
+  matches: SearchReplace.IFileMatch[],
   path: string,
   commands: CommandRegistry,
   expandStatus: boolean[],
   setExpandStatus: (v: boolean[]) => void,
-  onReplace: ((r: IResults[]) => void) | null,
+  onReplace: ((r: SearchReplace.IFileReplacement[]) => void) | null,
   trans: TranslationBundle
 ): JSX.Element {
-  results.sort((a, b) => (a.path > b.path ? 1 : -1));
-  const items = results.map((file, index) => {
+  matches.sort((a, b) => (a.path > b.path ? 1 : -1));
+  const items = matches.map((file, index) => {
     return (
       <TreeItem
         className="search-tree-files"
@@ -91,8 +92,9 @@ function createTreeView(
             className="jp-search-replace-item-button jp-mod-icon-only"
             appearance="neutral"
             title={trans.__('Replace All in File')}
-            onClick={() => {
-              const partialResult: IResults[] = [
+            onClick={(event: React.MouseEvent) => {
+              event.stopPropagation();
+              const partialResult: SearchReplace.IFileMatch[] = [
                 {
                   path: file.path,
                   matches: file.matches
@@ -105,39 +107,50 @@ function createTreeView(
           </Button>
         )}
         <Badge slot="end">{file.matches.length}</Badge>
-        {file.matches.map(match => (
-          <TreeItem
-            className="search-tree-matches"
-            onClick={(event: React.MouseEvent) => {
-              event.stopPropagation();
-              openFile(path, file.path, commands);
-            }}
-          >
-            <span title={match.line}>
-              {match.line.slice(0, match.start_utf8)}
-              <mark>{match.match}</mark>
-              {match.line.slice(match.end_utf8)}
-            </span>
-            {onReplace && (
-              <Button
-                className="jp-search-replace-item-button jp-mod-icon-only"
-                appearance="neutral"
-                title={trans.__('Replace')}
-                onClick={() => {
-                  const partialResult: IResults[] = [
-                    {
-                      path: file.path,
-                      matches: [match]
-                    }
-                  ];
-                  onReplace(partialResult);
-                }}
-              >
-                <replaceIcon.react></replaceIcon.react>
-              </Button>
-            )}
-          </TreeItem>
-        ))}
+        {file.matches.map(match => {
+          const hasReplace = onReplace && match.replace;
+          return (
+            <TreeItem
+              className="search-tree-matches"
+              onClick={(event: React.MouseEvent) => {
+                event.stopPropagation();
+                openFile(path, file.path, commands);
+              }}
+            >
+              <span title={match.line.trim()}>
+                {match.line.slice(0, match.start_utf8)}
+                {hasReplace ? (
+                  <>
+                    <del>{match.match}</del>
+                    <ins>{match.replace}</ins>
+                  </>
+                ) : (
+                  <mark>{match.match}</mark>
+                )}
+                {match.line.slice(match.end_utf8)}
+              </span>
+              {hasReplace && (
+                <Button
+                  className="jp-search-replace-item-button jp-mod-icon-only"
+                  appearance="neutral"
+                  title={trans.__('Replace')}
+                  onClick={(event: React.MouseEvent) => {
+                    event.stopPropagation();
+                    const partialResult: SearchReplace.IFileMatch[] = [
+                      {
+                        path: file.path,
+                        matches: [match]
+                      }
+                    ];
+                    onReplace!(partialResult);
+                  }}
+                >
+                  <replaceIcon.react></replaceIcon.react>
+                </Button>
+              )}
+            </TreeItem>
+          );
+        })}
       </TreeItem>
     );
   });
@@ -175,22 +188,22 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
   render(): JSX.Element | null {
     return (
       <SearchReplaceElement
-        searchString={this.model.searchString}
+        searchString={this.model.searchQuery}
         onSearchChanged={(s: string) => {
-          this.model.searchString = s;
+          this.model.searchQuery = s;
         }}
         replaceString={this.model.replaceString}
         onReplaceString={(s: string) => {
           this.model.replaceString = s;
         }}
-        onReplace={(r: IResults[]) => {
-          this.model.replace(r);
+        onReplace={async (r: SearchReplace.IFileReplacement[]) => {
+          await this.model.replace(r);
         }}
         commands={this._commands}
         isLoading={this.model.isLoading}
         queryResults={this.model.queryResults}
         refreshResults={() => {
-          this.model.refreshResults();
+          this.model.refresh();
         }}
         path={this.model.path}
         onPathChanged={(s: string) => {
@@ -291,13 +304,13 @@ const Breadcrumbs = React.memo((props: IBreadcrumbProps) => {
 
 interface ISearchReplaceProps {
   searchString: string;
-  queryResults: IResults[];
+  queryResults: SearchReplace.IFileMatch[];
   commands: CommandRegistry;
   isLoading: boolean;
   onSearchChanged: (s: string) => void;
   replaceString: string;
   onReplaceString: (s: string) => void;
-  onReplace: (r: IResults[]) => void;
+  onReplace: (r: SearchReplace.IFileReplacement[]) => void;
   children: React.ReactNode;
   refreshResults: () => void;
   path: string;
