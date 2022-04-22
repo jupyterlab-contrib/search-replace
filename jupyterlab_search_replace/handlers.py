@@ -16,7 +16,6 @@ class RouteHandler(APIHandler):
     async def get(self, path: str = ""):
         """GET request handler to perform a search."""
         query = self.get_query_argument("query")
-        max_count = self.get_query_argument("max_count", 100)
         case_sensitive = self.get_query_argument("case_sensitive", "false") == "true"
         whole_word = self.get_query_argument("whole_word", "false") == "true"
         include = self.get_query_argument("include", None)
@@ -26,7 +25,6 @@ class RouteHandler(APIHandler):
             r = await self._engine.search(
                 query,
                 path,
-                max_count,
                 case_sensitive,
                 whole_word,
                 include,
