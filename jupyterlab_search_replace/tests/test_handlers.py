@@ -31,6 +31,7 @@ async def test_search_get(test_content, schema, jp_fetch):
                     "end_utf8": 15,
                     "line_number": 1,
                     "absolute_offset": 0,
+                    "replace": None,
                 },
                 {
                     "line": "Unicode strange sub file, very strange\n",
@@ -41,6 +42,7 @@ async def test_search_get(test_content, schema, jp_fetch):
                     "end_utf8": 38,
                     "line_number": 1,
                     "absolute_offset": 0,
+                    "replace": None,
                 },
                 {
                     "line": "Is that λ strange enough?",
@@ -51,6 +53,7 @@ async def test_search_get(test_content, schema, jp_fetch):
                     "end_utf8": 17,
                     "line_number": 3,
                     "absolute_offset": 57,
+                    "replace": None,
                 },
             ],
         },
@@ -66,6 +69,7 @@ async def test_search_get(test_content, schema, jp_fetch):
                     "end_utf8": 17,
                     "line_number": 1,
                     "absolute_offset": 0,
+                    "replace": None,
                 },
                 {
                     "line": "Is that Strange enough?",
@@ -76,6 +80,7 @@ async def test_search_get(test_content, schema, jp_fetch):
                     "end_utf8": 15,
                     "line_number": 3,
                     "absolute_offset": 59,
+                    "replace": None,
                 },
             ],
         },
@@ -112,6 +117,7 @@ async def test_search_case_sensitive(test_content, schema, jp_fetch):
                     "end_utf8": 15,
                     "line_number": 3,
                     "absolute_offset": 59,
+                    "replace": None,
                 },
             ],
         }
@@ -142,6 +148,7 @@ async def test_search_whole_word(test_content, schema, jp_fetch):
                     "end_utf8": 15,
                     "line_number": 1,
                     "absolute_offset": 0,
+                    "replace": None,
                 },
                 {
                     "line": "Unicode strange sub file, very strange\n",
@@ -152,6 +159,7 @@ async def test_search_whole_word(test_content, schema, jp_fetch):
                     "end_utf8": 38,
                     "line_number": 1,
                     "absolute_offset": 0,
+                    "replace": None,
                 },
                 {
                     "line": "Is that λ strange enough?",
@@ -162,6 +170,7 @@ async def test_search_whole_word(test_content, schema, jp_fetch):
                     "end_utf8": 17,
                     "line_number": 3,
                     "absolute_offset": 57,
+                    "replace": None,
                 },
             ],
         },
@@ -177,6 +186,7 @@ async def test_search_whole_word(test_content, schema, jp_fetch):
                     "end_utf8": 15,
                     "line_number": 3,
                     "absolute_offset": 59,
+                    "replace": None,
                 },
             ],
         },
@@ -206,6 +216,7 @@ async def test_search_include_files(test_content, schema, jp_fetch):
                     "end_utf8": 17,
                     "line_number": 1,
                     "absolute_offset": 0,
+                    "replace": None,
                 },
                 {
                     "line": "Is that Strange enough?",
@@ -216,6 +227,7 @@ async def test_search_include_files(test_content, schema, jp_fetch):
                     "end_utf8": 15,
                     "line_number": 3,
                     "absolute_offset": 59,
+                    "replace": None,
                 },
             ],
         },
@@ -245,6 +257,7 @@ async def test_search_exclude_files(test_content, schema, jp_fetch):
                     "end_utf8": 15,
                     "line_number": 1,
                     "absolute_offset": 0,
+                    "replace": None,
                 },
                 {
                     "line": "Unicode strange sub file, very strange\n",
@@ -255,6 +268,7 @@ async def test_search_exclude_files(test_content, schema, jp_fetch):
                     "end_utf8": 38,
                     "line_number": 1,
                     "absolute_offset": 0,
+                    "replace": None,
                 },
                 {
                     "line": "Is that λ strange enough?",
@@ -265,6 +279,7 @@ async def test_search_exclude_files(test_content, schema, jp_fetch):
                     "end_utf8": 17,
                     "line_number": 3,
                     "absolute_offset": 57,
+                    "replace": None,
                 },
             ],
         },
@@ -302,6 +317,7 @@ async def test_search_literal(test_content, schema, jp_fetch):
                     "end_utf8": 34,
                     "line_number": 1,
                     "absolute_offset": 0,
+                    "replace": None,
                 },
             ],
         },
@@ -332,6 +348,7 @@ async def test_search_regex(test_content, schema, jp_fetch):
                     "end_utf8": 38,
                     "line_number": 1,
                     "absolute_offset": 0,
+                    "replace": None,
                 },
                 {
                     "line": "Is that λ strange enough?",
@@ -342,6 +359,7 @@ async def test_search_regex(test_content, schema, jp_fetch):
                     "end_utf8": 25,
                     "line_number": 3,
                     "absolute_offset": 57,
+                    "replace": None,
                 },
             ],
         },
@@ -357,6 +375,7 @@ async def test_search_regex(test_content, schema, jp_fetch):
                     "end_utf8": 38,
                     "line_number": 1,
                     "absolute_offset": 0,
+                    "replace": None,
                 },
                 {
                     "line": "Is that Strange enough?",
@@ -367,6 +386,7 @@ async def test_search_regex(test_content, schema, jp_fetch):
                     "end_utf8": 23,
                     "line_number": 3,
                     "absolute_offset": 59,
+                    "replace": None,
                 },
             ],
         },
@@ -396,6 +416,7 @@ async def test_two_search_operations(test_content, schema, jp_root_dir):
                     "end_utf8": 34,
                     "line_number": 1,
                     "absolute_offset": 0,
+                    "replace": None,
                 },
             ],
         },
@@ -409,9 +430,15 @@ async def test_replace_operation(test_content, schema, jp_fetch):
     assert response.code == 200
     payload = json.loads(response.body)
     validate(instance=payload, schema=schema)
+    matches = payload["matches"]
+    for fidx, file in enumerate(matches):
+        for midx, match in enumerate(file["matches"]):
+            match["replace"] = "hello"
+            file["matches"][midx] = match
+        matches[fidx] = file
     response = jp_fetch(
         "search",
-        body=json.dumps({"results": payload["matches"], "query": "hello"}),
+        body=json.dumps({"matches": matches}),
         method="POST",
     )
     response = await jp_fetch(
@@ -435,6 +462,7 @@ async def test_replace_operation(test_content, schema, jp_fetch):
                     "end_utf8": 13,
                     "line_number": 1,
                     "absolute_offset": 0,
+                    "replace": None,
                 },
                 {
                     "line": "Unicode hello sub file, very hello\n",
@@ -445,6 +473,7 @@ async def test_replace_operation(test_content, schema, jp_fetch):
                     "end_utf8": 34,
                     "line_number": 1,
                     "absolute_offset": 0,
+                    "replace": None,
                 },
                 {
                     "line": "Is that λ hello enough?",
@@ -455,6 +484,7 @@ async def test_replace_operation(test_content, schema, jp_fetch):
                     "end_utf8": 15,
                     "line_number": 3,
                     "absolute_offset": 53,
+                    "replace": None,
                 },
             ],
         },

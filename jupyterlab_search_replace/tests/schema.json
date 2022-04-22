@@ -1,4 +1,5 @@
 {
+  "$schema": "http://json-schema.org/draft-07/schema",
   "title": "Model",
   "type": "object",
   "properties": {
@@ -27,30 +28,58 @@
           "type": "string"
         },
         "start": {
-          "title": "Start",
-          "type": "integer"
+          "title": "Match start position in binary format",
+          "type": "integer",
+          "minimum": 0
         },
         "end": {
-          "title": "End",
-          "type": "integer"
+          "title": "Match end position in binary format",
+          "type": "integer",
+          "minimum": 0
+        },
+        "start_utf8": {
+          "title": "Match start position in UTF-8 format",
+          "type": "integer",
+          "minimum": 0
+        },
+        "end_utf8": {
+          "title": "Match end position in UTF-8 format",
+          "type": "integer",
+          "minimum": 0
         },
         "line_number": {
           "title": "Line Number",
-          "type": "integer"
+          "type": "integer",
+          "minimum": 1
         },
         "absolute_offset": {
           "title": "Absolute Offset",
           "type": "integer"
+        },
+        "replace": {
+          "title": "Replacement string for the match",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string"
+            }
+          ]
         }
       },
       "required": [
         "line",
         "match",
         "start",
+        "start_utf8",
         "end",
+        "end_utf8",
         "line_number",
-        "absolute_offset"
-      ]
+        "absolute_offset",
+        "replace"
+      ],
+      "additionalProperties": false
     },
     "fileMatches": {
       "title": "fileMatches",
@@ -71,7 +100,8 @@
       "required": [
         "path",
         "matches"
-      ]
+      ],
+      "additionalProperties": false
     }
   }
 }

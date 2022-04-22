@@ -62,6 +62,7 @@
     "@jupyterlab/services": "^6.1.9",
     "@jupyterlab/translation": "^3.1.9",
     "@jupyterlab/ui-components": "^3.1.9",
+    "@lumino/coreutils": "^1.5.3",
     "@lumino/messaging": "^1.7.2",
     "@lumino/widgets": "^1.26.2",
     "react": "^17.0.1"
