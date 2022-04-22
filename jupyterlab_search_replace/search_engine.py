@@ -24,7 +24,6 @@ MAX_LOG_OUTPUT = 6000  # type: int
 
 def construct_command(
     query: str,
-    max_count: int,
     case_sensitive: bool,
     whole_word: bool,
     include: Optional[str],
@@ -32,7 +31,7 @@ def construct_command(
     use_regex: bool,
 ):
     """Helper to construct the ripgrep command line."""
-    command = ["rg", "-F", query, "--json", f"--max-count={max_count}"]
+    command = ["rg", "-F", query, "--json"]
     if use_regex:
         command.remove("-F")
     if not case_sensitive:
@@ -132,7 +131,6 @@ class SearchEngine:
         self,
         query: str,
         path: str = "",
-        max_count: int = 100,
         case_sensitive: bool = False,
         whole_word: bool = False,
         include: Optional[str] = None,
@@ -147,7 +145,6 @@ class SearchEngine:
         Args:
             query: The search term
             path: The root folder to run the search in
-            max_count: The maximal number of matches to return
             case_sensitive: Whether the search is case sensitive or not
             whole_word: Whether the search is for whole words or not
             include: Filter specifying files to include
@@ -159,7 +156,7 @@ class SearchEngine:
         """
         # JSON output is described at https://docs.rs/grep-printer/0.1.0/grep_printer/struct.JSON.html
         command = construct_command(
-            query, max_count, case_sensitive, whole_word, include, exclude, use_regex
+            query, case_sensitive, whole_word, include, exclude, use_regex
         )
         cwd = os.path.join(self._root_dir, url2path(path))
         if SearchEngine.search_task is not None and not SearchEngine.search_task.done():
