@@ -2,7 +2,7 @@
 
 **WIP this is very early work in progress and nothing is yet working.** But don't hesitate to open issues and PRs if you want to help.
 
-[![Extension status](https://img.shields.io/badge/status-draft-critical 'Not yet working')](https://jupyterlab-contrib.github.io/index.html) [![Build](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml/badge.svg)](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/search-replace.git/main?urlpath=lab)
+[![Extension status](https://img.shields.io/badge/status-draft-critical 'Not yet working')](https://jupyterlab-contrib.github.io/index.html) [![Build](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml/badge.svg)](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/search-replace/master?urlpath=lab)
 
 Search and replace accross files.
 
