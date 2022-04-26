@@ -9,7 +9,7 @@ import {
   TreeItem,
   TreeView
 } from '@jupyter-notebook/react-components';
-import { VDomRenderer } from '@jupyterlab/apputils';
+import { Dialog, showDialog, VDomRenderer } from '@jupyterlab/apputils';
 import { PathExt } from '@jupyterlab/coreutils';
 import { TranslationBundle } from '@jupyterlab/translation';
 import {
@@ -24,6 +24,7 @@ import {
 import { CommandRegistry } from '@lumino/commands';
 import { Widget } from '@lumino/widgets';
 import React, { useEffect, useState } from 'react';
+import { AskBoolean } from './askBoolean';
 import {
   collapseAllIcon,
   expandAllIcon,
@@ -188,12 +189,24 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
   constructor(
     searchModel: SearchReplaceModel,
     commands: CommandRegistry,
-    protected trans: TranslationBundle
+    protected trans: TranslationBundle,
+    private onAskReplaceChanged: (b: boolean) => void
   ) {
     super(searchModel);
+    this._askReplaceConfirmation = true;
     this._commands = commands;
     this.addClass('jp-search-replace-tab');
     this.addClass('jp-search-replace-column');
+  }
+
+  get askReplaceConfirmation(): boolean {
+    return this._askReplaceConfirmation;
+  }
+  set askReplaceConfirmation(v: boolean) {
+    if (this._askReplaceConfirmation !== v) {
+      this._askReplaceConfirmation = v;
+      this.onAskReplaceChanged(v);
+    }
   }
 
   /**
@@ -202,6 +215,12 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
    * @returns The React component
    */
   render(): JSX.Element | null {
+    const nFiles = this.model.queryResults.map(r => r.path).length;
+    const nMatches = this.model.queryResults.reduce(
+      (agg, current) => agg + current.matches.length,
+      0
+    );
+
     return (
       <SearchReplaceElement
         searchString={this.model.searchQuery}
@@ -212,7 +231,37 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         onReplaceString={(s: string) => {
           this.model.replaceString = s;
         }}
-        onReplace={async (r: SearchReplace.IFileReplacement[]) => {
+        onReplace={async (
+          r: SearchReplace.IFileReplacement[],
+          askConfirmation = false
+        ) => {
+          if (askConfirmation) {
+            const result = await showDialog<boolean>({
+              title: this.trans.__('Replace All'),
+              body: new AskBoolean(
+                this.trans._n(
+                  'Replace %2 matche(s) accross %1 file with %3?',
+                  'Replace %2 matches accross %1 files with %3?',
+                  nFiles,
+                  nMatches,
+                  this.model.replaceString
+                ),
+                this.trans.__('Skip confirmation next time.')
+              ),
+              buttons: [
+                Dialog.cancelButton({ label: this.trans.__('Cancel') }),
+                Dialog.okButton({ label: this.trans.__('Replace') })
+              ]
+            });
+            if (!result.button.accept) {
+              return;
+            } else {
+              // If checkbox is checked don't ask for confirmation
+              if (result.value === true) {
+                this.askReplaceConfirmation = false;
+              }
+            }
+          }
           await this.model.replace(r);
         }}
         commands={this._commands}
@@ -273,10 +322,24 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
           }}
           trans={this.trans}
         ></FilterBox>
+
+        {this.model.searchQuery && (
+          <p className="jp-search-replace-statistics">
+            {this.model.queryResults
+              ? this.trans._n(
+                  '%2 result(s) in %1 file',
+                  '%2 results in %1 files',
+                  nFiles,
+                  nMatches
+                )
+              : this.trans.__('No results found.')}
+          </p>
+        )}
       </SearchReplaceElement>
     );
   }
 
+  private _askReplaceConfirmation: boolean;
   private _commands: CommandRegistry;
 }
 
@@ -342,7 +405,7 @@ interface ISearchReplaceProps {
   onSearchChanged: (s: string) => void;
   replaceString: string;
   onReplaceString: (s: string) => void;
-  onReplace: (r: SearchReplace.IFileReplacement[]) => void;
+  onReplace: (r: SearchReplace.IFileReplacement[], b?: boolean) => void;
   children: React.ReactNode;
   refreshResults: () => void;
   path: string;
@@ -460,7 +523,7 @@ const SearchReplaceElement = (props: ISearchReplaceProps) => {
                 title={props.trans.__('Replace All')}
                 disabled={!canReplace}
                 onClick={() => {
-                  props.onReplace(props.queryResults);
+                  props.onReplace(props.queryResults, true);
                 }}
               >
                 <replaceAllIcon.react></replaceAllIcon.react>
@@ -470,21 +533,6 @@ const SearchReplaceElement = (props: ISearchReplaceProps) => {
         </div>
       </div>
       {props.children}
-      {props.searchString && (
-        <p className="jp-search-replace-statistics">
-          {props.queryResults
-            ? props.trans._n(
-                '%2 result(s) in %1 file',
-                '%2 results in %1 files',
-                props.queryResults.map(r => r.path).length,
-                props.queryResults.reduce(
-                  (agg, current) => agg + current.matches.length,
-                  0
-                )
-              )
-            : props.trans.__('No results found.')}
-        </p>
-      )}
       {props.isLoading ? (
         <Progress />
       ) : (

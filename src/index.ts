@@ -29,18 +29,36 @@ const plugin: JupyterFrontEndPlugin<void> = {
     addJupyterLabThemeChangeListener();
 
     const searchReplaceModel = new SearchReplaceModel();
+
+    let settings: ISettingRegistry.ISettings | null = null;
+    const onAskReplaceChange = async (b: boolean) => {
+      if (settings) {
+        await settings.set('askReplaceAllConfirmation', b);
+      }
+    };
+    const searchReplacePlugin = new SearchReplaceView(
+      searchReplaceModel,
+      app.commands,
+      trans,
+      onAskReplaceChange
+    );
+
     if (settingRegistry) {
       settingRegistry
         .load(plugin.id)
-        .then(settings => {
+        .then(settings_ => {
+          settings = settings_;
           const onSettingsChanged = (settings: ISettingRegistry.ISettings) => {
             searchReplaceModel.defaultExcludeFilters = settings.get('exclude')
               .composite as string[];
             searchReplaceModel.maxLinesPerFile = settings.get('maxLinesPerFile')
               .composite as number;
+            searchReplacePlugin.askReplaceConfirmation = settings.get(
+              'askReplaceAllConfirmation'
+            ).composite as boolean;
           };
-          onSettingsChanged(settings);
-          settings.changed.connect(onSettingsChanged);
+          onSettingsChanged(settings_);
+          settings_.changed.connect(onSettingsChanged);
         })
         .catch(reason => {
           console.error(`Failed to load settings ${plugin.id}.`, reason);
@@ -60,11 +78,6 @@ const plugin: JupyterFrontEndPlugin<void> = {
     };
 
     fileBrowser.model.pathChanged.connect(onPathChanged);
-    const searchReplacePlugin = new SearchReplaceView(
-      searchReplaceModel,
-      app.commands,
-      trans
-    );
 
     searchReplacePlugin.title.caption = trans.__('Search and Replace');
     searchReplacePlugin.id = 'jp-search-replace';

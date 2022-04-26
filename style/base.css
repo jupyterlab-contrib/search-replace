@@ -190,3 +190,7 @@ jp-tree-item:focus-visible > .jp-search-replace-item-button,
 jp-tree-item:focus-within > .jp-search-replace-item-button {
   display: flex;
 }
+
+.jp-ask-checkbox {
+  color: var(--jp-ui-font-color1);
+}

@@ -4,6 +4,12 @@
   "description": "Search and Replace across Files Settings",
   "type": "object",
   "properties": {
+    "askReplaceAllConfirmation": {
+      "title": "Ask confirmation before replacing all",
+      "description": "",
+      "type": "boolean",
+      "default": true
+    },
     "exclude": {
       "title": "Exclude",
       "description": "Configure glob patterns for excluding files and folders in full text searches.",
