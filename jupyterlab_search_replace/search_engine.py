@@ -33,9 +33,10 @@ def construct_command(
     max_count: int,
 ):
     """Helper to construct the ripgrep command line."""
-    command = ["rg", "-F", query, "--json", "--max-count", f"{max_count}"]
-    if use_regex:
-        command.remove("-F")
+    command = ["rg", "--json", "--max-count", f"{max_count}"]
+
+    if not use_regex:
+        command.append("--fixed-strings")
     if not case_sensitive:
         command.append("--ignore-case")
     if whole_word:
@@ -47,6 +48,9 @@ def construct_command(
     if exclude:
         for e in exclude:
             command.extend(["-g", f"!{e}"])
+
+    # Deal with query starting with '-'
+    command.extend(["--", query])
 
     return command
 

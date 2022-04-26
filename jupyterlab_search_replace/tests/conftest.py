@@ -24,6 +24,7 @@ def test_content(jp_root_dir):
                 "Unicode histrange file, very str.*ange",
                 "ü notebook with λ",
                 "Is that Strange enough?",
+                "A line with a -dash",
             ]
         )
     )
@@ -36,6 +37,7 @@ def test_content(jp_root_dir):
                 "Unicode strange sub file, very strange",
                 "ü notebook with ",
                 "Is that λ strange enough?",
+                "A line with a -dash",
             ]
         )
     )

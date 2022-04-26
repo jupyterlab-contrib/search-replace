@@ -45,7 +45,7 @@ async def test_search_get(test_content, schema, jp_fetch):
                     "replace": None,
                 },
                 {
-                    "line": "Is that λ strange enough?",
+                    "line": "Is that λ strange enough?\n",
                     "match": "strange",
                     "start": 11,
                     "start_utf8": 10,
@@ -72,7 +72,7 @@ async def test_search_get(test_content, schema, jp_fetch):
                     "replace": None,
                 },
                 {
-                    "line": "Is that Strange enough?",
+                    "line": "Is that Strange enough?\n",
                     "match": "Strange",
                     "start": 8,
                     "start_utf8": 8,
@@ -80,6 +80,52 @@ async def test_search_get(test_content, schema, jp_fetch):
                     "end_utf8": 15,
                     "line_number": 3,
                     "absolute_offset": 59,
+                    "replace": None,
+                },
+            ],
+        },
+    ]
+
+
+async def test_search_get_with_dash(test_content, schema, jp_fetch):
+    response = await jp_fetch("search", params={"query": "-da"}, method="GET")
+
+    assert response.code == 200
+    payload = json.loads(response.body)
+    validate(instance=payload, schema=schema)
+    sorted_payload = sorted(payload["matches"], key=lambda x: x["path"])
+    assert len(sorted_payload) == 2
+    assert len(sorted_payload[0]["matches"]) == 1
+    assert len(sorted_payload[1]["matches"]) == 1
+    assert sorted_payload == [
+        {
+            "path": "test_lab_search_replace/subfolder/text_sub.txt",
+            "matches": [
+                {
+                    "line": "A line with a -dash",
+                    "match": "-da",
+                    "start": 14,
+                    "start_utf8": 14,
+                    "end": 17,
+                    "end_utf8": 17,
+                    "line_number": 4,
+                    "absolute_offset": 84,
+                    "replace": None,
+                },
+            ],
+        },
+        {
+            "path": "test_lab_search_replace/text_1.txt",
+            "matches": [
+                {
+                    "line": "A line with a -dash",
+                    "match": "-da",
+                    "start": 14,
+                    "start_utf8": 14,
+                    "end": 17,
+                    "end_utf8": 17,
+                    "line_number": 4,
+                    "absolute_offset": 83,
                     "replace": None,
                 },
             ],
@@ -109,7 +155,7 @@ async def test_search_case_sensitive(test_content, schema, jp_fetch):
             "path": "test_lab_search_replace/text_1.txt",
             "matches": [
                 {
-                    "line": "Is that Strange enough?",
+                    "line": "Is that Strange enough?\n",
                     "match": "Strange",
                     "start": 8,
                     "start_utf8": 8,
@@ -162,7 +208,7 @@ async def test_search_whole_word(test_content, schema, jp_fetch):
                     "replace": None,
                 },
                 {
-                    "line": "Is that λ strange enough?",
+                    "line": "Is that λ strange enough?\n",
                     "match": "strange",
                     "start": 11,
                     "start_utf8": 10,
@@ -178,7 +224,7 @@ async def test_search_whole_word(test_content, schema, jp_fetch):
             "path": "test_lab_search_replace/text_1.txt",
             "matches": [
                 {
-                    "line": "Is that Strange enough?",
+                    "line": "Is that Strange enough?\n",
                     "match": "Strange",
                     "start": 8,
                     "start_utf8": 8,
@@ -219,7 +265,7 @@ async def test_search_include_files(test_content, schema, jp_fetch):
                     "replace": None,
                 },
                 {
-                    "line": "Is that Strange enough?",
+                    "line": "Is that Strange enough?\n",
                     "match": "Strange",
                     "start": 8,
                     "start_utf8": 8,
@@ -271,7 +317,7 @@ async def test_search_exclude_files(test_content, schema, jp_fetch):
                     "replace": None,
                 },
                 {
-                    "line": "Is that λ strange enough?",
+                    "line": "Is that λ strange enough?\n",
                     "match": "strange",
                     "start": 11,
                     "start_utf8": 10,
@@ -328,7 +374,7 @@ async def test_search_include_and_exclude_files(test_content, schema, jp_fetch):
                     "absolute_offset": 57,
                     "end": 18,
                     "end_utf8": 17,
-                    "line": "Is that λ strange enough?",
+                    "line": "Is that λ strange enough?\n",
                     "line_number": 3,
                     "match": "strange",
                     "replace": None,
@@ -396,7 +442,7 @@ async def test_search_regex(test_content, schema, jp_fetch):
                     "replace": None,
                 },
                 {
-                    "line": "Is that λ strange enough?",
+                    "line": "Is that λ strange enough?\n",
                     "match": "strange enough?",
                     "start": 11,
                     "start_utf8": 10,
@@ -423,7 +469,7 @@ async def test_search_regex(test_content, schema, jp_fetch):
                     "replace": None,
                 },
                 {
-                    "line": "Is that Strange enough?",
+                    "line": "Is that Strange enough?\n",
                     "match": "Strange enough?",
                     "start": 8,
                     "start_utf8": 8,
@@ -521,7 +567,7 @@ async def test_replace_operation(test_content, schema, jp_fetch):
                     "replace": None,
                 },
                 {
-                    "line": "Is that λ hello enough?",
+                    "line": "Is that λ hello enough?\n",
                     "match": "hello",
                     "start": 11,
                     "start_utf8": 10,
