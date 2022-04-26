@@ -374,7 +374,7 @@ async def test_search_include_and_exclude_files(test_content, schema, jp_fetch):
                     "absolute_offset": 57,
                     "end": 18,
                     "end_utf8": 17,
-                    "line": "Is that λ strange enough?",
+                    "line": "Is that λ strange enough?\n",
                     "line_number": 3,
                     "match": "strange",
                     "replace": None,
