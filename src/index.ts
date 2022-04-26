@@ -5,6 +5,7 @@ import {
 } from '@jupyterlab/application';
 import { IChangedArgs } from '@jupyterlab/coreutils';
 import { FileBrowserModel, IFileBrowserFactory } from '@jupyterlab/filebrowser';
+import { IEditorTracker } from '@jupyterlab/fileeditor';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 import { searchIcon } from '@jupyterlab/ui-components';
 import { SearchReplaceView } from './view';
@@ -22,6 +23,9 @@ const plugin: JupyterFrontEndPlugin<void> = {
   activate: (
     app: JupyterFrontEnd,
     factory: IFileBrowserFactory,
+    // Request the file editor as we do the replace actions with the editor
+    // to take advantage of the editor history.
+    editorTracker: IEditorTracker,
     settingRegistry: ISettingRegistry | null,
     translator: ITranslator | null
   ) => {

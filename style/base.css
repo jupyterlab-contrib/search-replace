@@ -117,8 +117,9 @@
 .jp-search-replace-filters-collapser {
   position: absolute;
   top: -4px;
-  right: 0;
+  right: 4px;
   max-height: 16px;
+  height: 16px;
   margin: 0;
 }
 

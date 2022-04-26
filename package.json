@@ -59,6 +59,7 @@
     "@jupyterlab/apputils": "^3.1.9",
     "@jupyterlab/coreutils": "^5.1.9",
     "@jupyterlab/filebrowser": "^3.1.9",
+    "@jupyterlab/fileeditor": "^3.1.9",
     "@jupyterlab/services": "^6.1.9",
     "@jupyterlab/settingregistry": "^3.1.9",
     "@jupyterlab/translation": "^3.1.9",
@@ -70,6 +71,9 @@
   },
   "devDependencies": {
     "@jupyterlab/builder": "^3.1.0",
+    "@jupyterlab/codemirror": "^3.1.9",
+    "@jupyterlab/docregistry": "^3.1.9",
+    "@types/codemirror": "^0.0.109",
     "@typescript-eslint/eslint-plugin": "^4.8.1",
     "@typescript-eslint/parser": "^4.8.1",
     "@vscode/codicons": "^0.0.29",
