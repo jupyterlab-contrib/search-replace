@@ -15,3 +15,9 @@ npm = ["jlpm"]
 
 [tool.check-manifest]
 ignore = ["jupyterlab_search_replace/labextension/**", "yarn.lock", ".*", "package-lock.json"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = [
+    "jupyterlab_search_replace",
+]
