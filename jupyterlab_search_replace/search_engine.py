@@ -12,7 +12,7 @@ import os
 from functools import partial
 from pathlib import Path
 from subprocess import Popen, PIPE
-from typing import ClassVar, Iterable, List, Optional, Tuple
+from typing import Callable, ClassVar, Iterable, List, Optional, Tuple
 
 import tornado
 from jupyter_server.utils import url2path
@@ -262,7 +262,12 @@ class SearchEngine:
             d[line] = sorted(matches, key=lambda tup: tup[0])
         return d
 
-    def replace(self, matches: List, path: str) -> None:
+    def replace(
+        self,
+        matches: List,
+        path: str,
+        create_checkpoint: Optional[Callable[[str], None]] = None,
+    ) -> None:
         """Replace the ``matches`` within ``path``.
 
         A match is described by a dictionary: {"line_number", "start", "end", "replace"}
@@ -272,12 +277,20 @@ class SearchEngine:
         Args:
             matches: The search matches to replace
             path: The root folder in which to apply the replace
+            create_checkpoint: Optional callback to apply on each file before the replacement operation
         """
         for file_match in matches:
             file_relative_path = file_match["path"]
             line_matches = file_match["matches"]
 
-            file_path: Path = self._root_dir / url2path(path) / file_relative_path
+            relative_path = os.path.join(url2path(path), file_relative_path)
+
+            if create_checkpoint is not None:
+                self.log.debug(f"Creating checkpoints for {relative_path}")
+                create_checkpoint(relative_path)
+
+            file_path: Path = self._root_dir / relative_path
+
             grouped_line_matches = self.group_matches_by_line(line_matches)
 
             with file_path.open("rb") as fp:

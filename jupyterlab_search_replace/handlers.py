@@ -48,7 +48,9 @@ class RouteHandler(APIHandler):
         """POST request handler to perform a replace action."""
         json_body = self.get_json_body()
         matches = json_body["matches"]
-        self._engine.replace(matches, path)
+        create_checkpoint = lambda p: self.contents_manager.create_checkpoint(p)
+
+        self._engine.replace(matches, path, create_checkpoint)
 
         self.set_status(201)
 
