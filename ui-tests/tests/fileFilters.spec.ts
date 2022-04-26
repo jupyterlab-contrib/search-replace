@@ -9,17 +9,11 @@ test.use({ tmpPath: 'search-replace-file-filter-test' });
 test.beforeAll(async ({ baseURL, tmpPath }) => {
   const contents = galata.newContentsHelper(baseURL);
   await contents.uploadFile(
-    path.resolve(
-      __dirname,
-      `../../jupyterlab_search_replace/tests/${fileName}`
-    ),
+    path.resolve(__dirname, `./data/${fileName}`),
     `${tmpPath}/${fileName}`
   );
   await contents.uploadFile(
-    path.resolve(
-      __dirname,
-      `../../jupyterlab_search_replace/tests/${fileNameHandler}`
-    ),
+    path.resolve(__dirname, `./data/${fileNameHandler}`),
     `${tmpPath}/${fileNameHandler}`
   );
 });
@@ -32,8 +26,8 @@ test.afterAll(async ({ baseURL, tmpPath }) => {
 test('should test for include filter', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
-  // Fill input[type="search"]
-  await page.locator('input[type="search"]').fill('strange');
+  // Fill input[placeholder="Search"]
+  await page.locator('input[placeholder="Search"]').fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -41,7 +35,7 @@ test('should test for include filter', async ({ page }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[type="search"]').press('Enter'),
+    page.locator('input[placeholder="Search"]').press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -61,9 +55,7 @@ test('should test for include filter', async ({ page }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    await page
-      .locator('text=File filters >> [placeholder="e.g. *.py, src/**/include"]')
-      .fill('conftest.py')
+    await page.locator('text=Include file filters >> input').fill('conftest.py')
   ]);
 
   await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
@@ -78,8 +70,8 @@ test('should test for include filter', async ({ page }) => {
 test('should test for exclude filter', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
-  // Fill input[type="search"]
-  await page.locator('input[type="search"]').fill('strange');
+  // Fill input[placeholder="Search"]
+  await page.locator('input[placeholder="Search"]').fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -87,7 +79,7 @@ test('should test for exclude filter', async ({ page }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[type="search"]').press('Enter'),
+    page.locator('input[placeholder="Search"]').press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -97,17 +89,13 @@ test('should test for exclude filter', async ({ page }) => {
     .locator('#jp-search-replace >> .jp-search-replace-filters-collapser')
     .click();
 
-  await page.locator('[title="Toggle File Filter Mode"]').click();
-
   await Promise.all([
     page.waitForResponse(
       response =>
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    await page
-      .locator('text=File filters >> [placeholder="e.g. *.py, src/**/include"]')
-      .fill('conftest.py')
+    await page.locator('text=Exclude file filters >> input').fill('conftest.py')
   ]);
 
   await expect(page.locator('.jp-search-replace-statistics')).toHaveText(

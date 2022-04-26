@@ -27,26 +27,25 @@ def construct_command(
     query: str,
     case_sensitive: bool,
     whole_word: bool,
-    include: Optional[str],
-    exclude: Optional[str],
+    include: List[str],
+    exclude: List[str],
     use_regex: bool,
 ):
     """Helper to construct the ripgrep command line."""
-    command = ["rg", "-F", query, "--json"]
+    command = ["rg", "-F", query, "--json", "--max-count", "100"]
     if use_regex:
         command.remove("-F")
     if not case_sensitive:
         command.append("--ignore-case")
     if whole_word:
         command.append("--word-regexp")
-    if include and exclude:
-        raise ValueError("cannot use include and exclude simultaneously")
-    if include is not None and include:
-        command.append("-g")
-        command.append(f"{include}")
-    if exclude is not None and exclude:
-        command.append("-g")
-        command.append(f"!{exclude}")
+
+    if include:
+        for i in include:
+            command.extend(["-g", i])
+    if exclude:
+        for e in exclude:
+            command.extend(["-g", f"!{e}"])
 
     return command
 
@@ -139,8 +138,8 @@ class SearchEngine:
         path: str = "",
         case_sensitive: bool = False,
         whole_word: bool = False,
-        include: Optional[str] = None,
-        exclude: Optional[str] = None,
+        include: Optional[List[str]] = None,
+        exclude: Optional[List[str]] = None,
         use_regex: bool = False,
     ) -> dict:
         """Search for ``query`` in files in ``path``.
@@ -153,8 +152,8 @@ class SearchEngine:
             path: The root folder to run the search in
             case_sensitive: Whether the search is case sensitive or not
             whole_word: Whether the search is for whole words or not
-            include: Filter specifying files to include
-            exclude: Filter specifying files to exclude
+            include: Filters specifying files to include
+            exclude: Filters specifying files to exclude
             use_regex: Whether the search term is a regular expression or not
 
         Returns:
@@ -162,7 +161,7 @@ class SearchEngine:
         """
         # JSON output is described at https://docs.rs/grep-printer/0.1.0/grep_printer/struct.JSON.html
         command = construct_command(
-            query, case_sensitive, whole_word, include, exclude, use_regex
+            query, case_sensitive, whole_word, include or [], exclude or [], use_regex
         )
         cwd = os.path.join(self._root_dir, url2path(path))
         if SearchEngine.search_task is not None and not SearchEngine.search_task.done():

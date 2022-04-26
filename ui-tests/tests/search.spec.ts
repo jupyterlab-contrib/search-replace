@@ -8,10 +8,7 @@ test.use({ tmpPath: 'search-replace-test' });
 test.beforeAll(async ({ baseURL, tmpPath }) => {
   const contents = galata.newContentsHelper(baseURL);
   await contents.uploadFile(
-    path.resolve(
-      __dirname,
-      `../../jupyterlab_search_replace/tests/${fileName}`
-    ),
+    path.resolve(__dirname, `./data/${fileName}`),
     `${tmpPath}/${fileName}`
   );
 });
@@ -24,8 +21,8 @@ test.afterAll(async ({ baseURL, tmpPath }) => {
 test('should get 5 matches', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
-  // Fill input[type="search"]
-  await page.locator('input[type="search"]').fill('strange');
+  // Fill input[placeholder="Search"]
+  await page.locator('input[placeholder="Search"]').fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -33,7 +30,7 @@ test('should get 5 matches', async ({ page }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[type="search"]').press('Enter')
+    page.locator('input[placeholder="Search"]').press('Enter')
   ]);
 
   await page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
@@ -61,8 +58,8 @@ test('should get 5 matches', async ({ page }) => {
 test('should get no matches', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
-  // Fill input[type="search"]
-  await page.locator('input[type="search"]').fill('dhit');
+  // Fill input[placeholder="Search"]
+  await page.locator('input[placeholder="Search"]').fill('dhit');
 
   await Promise.all([
     page.waitForResponse(
@@ -70,7 +67,7 @@ test('should get no matches', async ({ page }) => {
         /.*search\/[\w-]+\?query=dhit/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[type="search"]').press('Enter')
+    page.locator('input[placeholder="Search"]').press('Enter')
   ]);
 
   await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
@@ -84,8 +81,8 @@ test('should get no matches', async ({ page }) => {
 test('should test for case sensitive option', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
-  // Fill input[type="search"]
-  await page.locator('input[type="search"]').fill('Strange');
+  // Fill input[placeholder="Search"]
+  await page.locator('input[placeholder="Search"]').fill('Strange');
 
   let response_url: string;
 
@@ -97,7 +94,7 @@ test('should test for case sensitive option', async ({ page }) => {
         response.request().method() === 'GET'
       );
     }),
-    page.locator('input[type="search"]').press('Enter'),
+    page.locator('input[placeholder="Search"]').press('Enter'),
     page.locator('[title="Match Case"]').click()
   ]);
 
@@ -111,8 +108,8 @@ test('should test for case sensitive option', async ({ page }) => {
 test('should test for whole word option', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
-  // Fill input[type="search"]
-  await page.locator('input[type="search"]').fill('strange');
+  // Fill input[placeholder="Search"]
+  await page.locator('input[placeholder="Search"]').fill('strange');
 
   let response_url: string;
 
@@ -124,7 +121,7 @@ test('should test for whole word option', async ({ page }) => {
         response.request().method() === 'GET'
       );
     }),
-    page.locator('input[type="search"]').press('Enter'),
+    page.locator('input[placeholder="Search"]').press('Enter'),
     page.locator('[title="Match Whole Word"]').click()
   ]);
 
@@ -138,8 +135,8 @@ test('should test for whole word option', async ({ page }) => {
 test('should test for use regex option', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
-  // Fill input[type="search"]
-  await page.locator('input[type="search"]').fill('str.*');
+  // Fill input[placeholder="Search"]
+  await page.locator('input[placeholder="Search"]').fill('str.*');
 
   let response_url: string;
 
@@ -151,7 +148,7 @@ test('should test for use regex option', async ({ page }) => {
         response.request().method() === 'GET'
       );
     }),
-    page.locator('input[type="search"]').press('Enter'),
+    page.locator('input[placeholder="Search"]').press('Enter'),
     page.locator('[title="Use Regular Expression"]').click()
   ]);
 
@@ -165,8 +162,8 @@ test('should test for use regex option', async ({ page }) => {
 test('should make a new request on refresh', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
-  // Fill input[type="search"]
-  await page.locator('input[type="search"]').fill('strange');
+  // Fill input[placeholder="Search"]
+  await page.locator('input[placeholder="Search"]').fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -174,7 +171,7 @@ test('should make a new request on refresh', async ({ page }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[type="search"]').press('Enter')
+    page.locator('input[placeholder="Search"]').press('Enter')
   ]);
 
   await Promise.all([
@@ -192,8 +189,8 @@ test('should expand and collapse tree view on clicking expand-collapse button', 
 }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
-  // Fill input[type="search"]
-  await page.locator('input[type="search"]').fill('strange');
+  // Fill input[placeholder="Search"]
+  await page.locator('input[placeholder="Search"]').fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -201,7 +198,7 @@ test('should expand and collapse tree view on clicking expand-collapse button', 
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[type="search"]').press('Enter'),
+    page.locator('input[placeholder="Search"]').press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -225,8 +222,8 @@ test('should expand and collapse tree view on clicking expand-collapse button', 
 test('should replace results on replace-all button', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
-  // Fill input[type="search"]
-  await page.locator('input[type="search"]').fill('strange');
+  // Fill input[placeholder="Search"]
+  await page.locator('input[placeholder="Search"]').fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -234,7 +231,7 @@ test('should replace results on replace-all button', async ({ page }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[type="search"]').press('Enter'),
+    page.locator('input[placeholder="Search"]').press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -257,14 +254,14 @@ test('should replace results on replace-all button', async ({ page }) => {
     .fill('hello');
   await page.locator('[title="Replace All"]').click();
 
-  await page.locator('input[type="search"]').fill('hello');
+  await page.locator('input[placeholder="Search"]').fill('hello');
   await Promise.all([
     page.waitForResponse(
       response =>
         /.*search\/[\w-]+\?query=hello/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[type="search"]').press('Enter'),
+    page.locator('input[placeholder="Search"]').press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })

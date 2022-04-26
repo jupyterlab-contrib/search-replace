@@ -287,58 +287,13 @@ async def test_search_exclude_files(test_content, schema, jp_fetch):
 
 
 async def test_search_include_and_exclude_files(test_content, schema, jp_fetch):
-    response = await jp_fetch(
-        "search",
-        params={"query": "strange", "exclude": "*_1.txt", "include": "*_sub.txt"},
-        method="GET",
-    )
-
-    assert response.code == 200
-    payload = json.loads(response.body)
-    validate(instance=payload, schema=schema)
-    sorted_payload = sorted(payload["matches"], key=lambda x: x["path"])
-    assert len(sorted_payload) == 1
-    assert len(sorted_payload[0]["matches"]) == 3
-    assert sorted_payload == [
-        {
-            "matches": [
-                {
-                    "absolute_offset": 0,
-                    "end": 15,
-                    "end_utf8": 15,
-                    "line": "Unicode strange sub file, very strange\n",
-                    "line_number": 1,
-                    "match": "strange",
-                    "replace": None,
-                    "start": 8,
-                    "start_utf8": 8,
-                },
-                {
-                    "absolute_offset": 0,
-                    "end": 38,
-                    "end_utf8": 38,
-                    "line": "Unicode strange sub file, very strange\n",
-                    "line_number": 1,
-                    "match": "strange",
-                    "replace": None,
-                    "start": 31,
-                    "start_utf8": 31,
-                },
-                {
-                    "absolute_offset": 57,
-                    "end": 18,
-                    "end_utf8": 17,
-                    "line": "Is that λ strange enough?",
-                    "line_number": 3,
-                    "match": "strange",
-                    "replace": None,
-                    "start": 11,
-                    "start_utf8": 10,
-                },
-            ],
-            "path": "test_lab_search_replace/subfolder/text_sub.txt",
-        }
-    ]
+    with pytest.raises(HTTPClientError) as excinfo:
+        response = await jp_fetch(
+            "search",
+            params={"query": "strange", "exclude": "*_1.txt", "include": "*_sub.txt"},
+            method="GET",
+        )
+    assert str(excinfo.value) == "HTTP 500: Internal Server Error"
 
 
 async def test_search_literal(test_content, schema, jp_fetch):

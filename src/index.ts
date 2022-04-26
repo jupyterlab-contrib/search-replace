@@ -9,6 +9,7 @@ import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 import { searchIcon } from '@jupyterlab/ui-components';
 import { SearchReplaceView } from './view';
 import { SearchReplaceModel } from './model';
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
 
 /**
  * Initialization data for the search-replace extension.
@@ -17,17 +18,34 @@ const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab-search-replace:plugin',
   autoStart: true,
   requires: [IFileBrowserFactory],
-  optional: [ITranslator],
+  optional: [ISettingRegistry, ITranslator],
   activate: (
     app: JupyterFrontEnd,
     factory: IFileBrowserFactory,
+    settingRegistry: ISettingRegistry | null,
     translator: ITranslator | null
   ) => {
     const trans = (translator ?? nullTranslator).load('search-replace');
     addJupyterLabThemeChangeListener();
 
-    const fileBrowser = factory.defaultBrowser;
     const searchReplaceModel = new SearchReplaceModel();
+    if (settingRegistry) {
+      settingRegistry
+        .load(plugin.id)
+        .then(settings => {
+          const onSettingsChanged = (settings: ISettingRegistry.ISettings) => {
+            searchReplaceModel.defaultExcludeFilters = settings.get('exclude')
+              .composite as string[];
+          };
+          onSettingsChanged(settings);
+          settings.changed.connect(onSettingsChanged);
+        })
+        .catch(reason => {
+          console.error(`Failed to load settings ${plugin.id}.`, reason);
+        });
+    }
+
+    const fileBrowser = factory.defaultBrowser;
     Promise.all([app.restored, fileBrowser.model.restored]).then(() => {
       searchReplaceModel.path = fileBrowser.model.path;
     });

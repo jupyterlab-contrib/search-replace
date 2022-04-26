@@ -122,24 +122,24 @@
     gud "^1.0.0"
     warning "^4.0.3"
 
-"@jupyter-notebook/react-components@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@jupyter-notebook/react-components/-/react-components-0.8.1.tgz#fa0450902b61321193f6c8b3fdb5d6b7a0b50fc0"
-  integrity sha512-JsU3eRZTs6QvfG996BnhAKn43s6KJyz1EuWTb5kxJhDxv8D/kWlxlaxmnId8vccqTJPHJ7XQUvSH7+KcXq8MoA==
+"@jupyter-notebook/react-components@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.npmjs.org/@jupyter-notebook/react-components/-/react-components-0.9.1.tgz#b1115a75fb86f87d4c8d2e448ac964617bbc7aa7"
+  integrity sha512-WeJNvg5FWftpEBEK2NjPCwuht0QkIsDgjycrIFP37f/fv/96Yr3ocfgi/y4UaWvBTlhvBF67yqtu2cXYc091bw==
   dependencies:
-    "@jupyter-notebook/web-components" "^0.8.1"
-    "@microsoft/fast-react-wrapper" "^0.1.17"
+    "@jupyter-notebook/web-components" "^0.9.1"
+    "@microsoft/fast-react-wrapper" "^0.1.42"
     react "^17.0.0"
 
-"@jupyter-notebook/web-components@^0.8.1":
-  version "0.8.1"
-  resolved "https://registry.yarnpkg.com/@jupyter-notebook/web-components/-/web-components-0.8.1.tgz#10e7cd09d95fc28cf06d195b700b954a9575c8e0"
-  integrity sha512-DOXK0uzFGWbkYbDJdJeEUsgMfYeiZXgWAnYXV26B0d3fg5vtA3ZAq+6jQQuLv7o/de6cYf3JXlTArfRum4z3ww==
+"@jupyter-notebook/web-components@^0.9.1":
+  version "0.9.1"
+  resolved "https://registry.npmjs.org/@jupyter-notebook/web-components/-/web-components-0.9.1.tgz#e71be720b980a6408f7093a4e99b942c96d7e614"
+  integrity sha512-nFwKT2kb34uqATt68x03YITMrUaLjdTqb2fN+YtPBUadqHvnUgy57IMN6Wr5U7Gb1HPgpa/jwZlgyjFLZ9VPJQ==
   dependencies:
-    "@microsoft/fast-colors" "^5.1.4"
-    "@microsoft/fast-components" "^2.17.1"
-    "@microsoft/fast-element" "^1.6.0"
-    "@microsoft/fast-foundation" "^2.21.0"
+    "@microsoft/fast-colors" "^5.1.5"
+    "@microsoft/fast-components" "^2.25.1"
+    "@microsoft/fast-element" "^1.8.0"
+    "@microsoft/fast-foundation" "^2.37.1"
     "@microsoft/fast-web-utilities" "^5.1.0"
 
 "@jupyterlab/application@^3.1.9":
@@ -543,6 +543,19 @@
     node-fetch "^2.6.0"
     ws "^7.4.6"
 
+"@jupyterlab/settingregistry@^3.1.9":
+  version "3.3.4"
+  resolved "https://registry.npmjs.org/@jupyterlab/settingregistry/-/settingregistry-3.3.4.tgz#fd2d545dd868553e9819a78f0eb32c1dcc364c3e"
+  integrity sha512-7aoUDX5pZC7/RfqbHMUBNcI4CKaT9ag/TU4u6tM11sasU/8HggVH82ps85g/dC5XsTGV/NCYU9yt8Abcn5dc+w==
+  dependencies:
+    "@jupyterlab/statedb" "^3.3.4"
+    "@lumino/commands" "^1.12.0"
+    "@lumino/coreutils" "^1.5.3"
+    "@lumino/disposable" "^1.4.3"
+    "@lumino/signaling" "^1.4.3"
+    ajv "^6.12.3"
+    json5 "^2.1.1"
+
 "@jupyterlab/settingregistry@^3.2.9":
   version "3.2.9"
   resolved "https://registry.yarnpkg.com/@jupyterlab/settingregistry/-/settingregistry-3.2.9.tgz#374863461d37fea3b5b4ec2fab1b95baa828477d"
@@ -596,6 +609,17 @@
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/@jupyterlab/statedb/-/statedb-3.3.2.tgz#944baa96680e4819a630797a55075e24a63a27be"
   integrity sha512-IXjlV+RsaS091lfkyOaZOoho9QQLS/74OG4ei4kP6MXghIGTFYTsXvleUh9tynOcTXrhdQcHRNYsoUzTmRMW0A==
+  dependencies:
+    "@lumino/commands" "^1.12.0"
+    "@lumino/coreutils" "^1.5.3"
+    "@lumino/disposable" "^1.4.3"
+    "@lumino/properties" "^1.2.3"
+    "@lumino/signaling" "^1.4.3"
+
+"@jupyterlab/statedb@^3.3.4":
+  version "3.3.4"
+  resolved "https://registry.npmjs.org/@jupyterlab/statedb/-/statedb-3.3.4.tgz#2fe7df41b9a5796577cf7f17f61787e27726a4ef"
+  integrity sha512-j0iPv/KVrzgTD59tAtnVobC1PfyIr1a7egvwz6xaVlr5d8KUrz9mcTlEVWSrrWjJMRWFBpRqkkxoNqPR1nWd+w==
   dependencies:
     "@lumino/commands" "^1.12.0"
     "@lumino/coreutils" "^1.5.3"
@@ -800,45 +824,49 @@
     "@lumino/signaling" "^1.10.1"
     "@lumino/virtualdom" "^1.14.1"
 
-"@microsoft/fast-colors@^5.1.4", "@microsoft/fast-colors@^5.1.5":
+"@microsoft/fast-colors@^5.1.5":
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/@microsoft/fast-colors/-/fast-colors-5.1.5.tgz#3d7dacae85c263030c793ba457991d4cdcec7538"
   integrity sha512-g8FByhbmRxibSpHkDE90CLCsh61HzH4ujPBG5N1zWXgM8LtzaF6OYBzfd8uGJ/md+SGeHf3aH9fcT8HTCbarXw==
 
-"@microsoft/fast-components@^2.17.1":
-  version "2.21.9"
-  resolved "https://registry.yarnpkg.com/@microsoft/fast-components/-/fast-components-2.21.9.tgz#a36f8b3226207bcbb2e201043fc833a64d5f6c89"
-  integrity sha512-j6Q6Po6pENi8GG66cn9D+mjwhPurmsQtxPyOYu/LUepSlQ9A81YRtZdj2PJRSDYW/9bQJ6PFRBbBwvXO56nXSA==
+"@microsoft/fast-colors@^5.2.0":
+  version "5.2.0"
+  resolved "https://registry.npmjs.org/@microsoft/fast-colors/-/fast-colors-5.2.0.tgz#a2cf362ccb11c682a5c5802c1467049991ea11d0"
+  integrity sha512-EAGkf8xnBGHCV5ICKXZCuIn9uzC1pnnfrnMsgg0rJD7y2OXFr1CzP7niL1UG9XfPvZYh//IQgMAP71qdJYr2Ug==
+
+"@microsoft/fast-components@^2.25.1":
+  version "2.29.1"
+  resolved "https://registry.npmjs.org/@microsoft/fast-components/-/fast-components-2.29.1.tgz#defbe7cad7ce2c57a0de3e1bda6592f60ff1bc7d"
+  integrity sha512-G+nptDwXDwaFBzT0FpMVVglhzWeqDULVI22vGGZHuHmKtTT3/2fPoqgX1JpFr4/ssR8sOtLl2TYWuzDeh8kdcQ==
   dependencies:
-    "@microsoft/fast-colors" "^5.1.5"
-    "@microsoft/fast-element" "^1.7.2"
-    "@microsoft/fast-foundation" "^2.34.0"
-    "@microsoft/fast-web-utilities" "^5.1.0"
+    "@microsoft/fast-colors" "^5.2.0"
+    "@microsoft/fast-element" "^1.9.0"
+    "@microsoft/fast-foundation" "^2.42.2"
+    "@microsoft/fast-web-utilities" "^5.3.0"
     tslib "^1.13.0"
-    vscode-html-languageservice "^4.0.3"
 
-"@microsoft/fast-element@^1.6.0", "@microsoft/fast-element@^1.7.2":
-  version "1.7.2"
-  resolved "https://registry.yarnpkg.com/@microsoft/fast-element/-/fast-element-1.7.2.tgz#b381c95b1c0f04faa5819785e1cd92b4d9f9ae8a"
-  integrity sha512-bV+wFQUoMtyd1ccwE6k8CVjWSWQv9wgMj6nA2j2l5EtcN8+/XT23Ljce98GaMdIBARYpb35RQwCQq7stVWZUTg==
+"@microsoft/fast-element@^1.8.0", "@microsoft/fast-element@^1.9.0":
+  version "1.9.0"
+  resolved "https://registry.npmjs.org/@microsoft/fast-element/-/fast-element-1.9.0.tgz#9d3bb5a029772c0e99c230acdcd6df9640a55715"
+  integrity sha512-VxDwoLEEQRRxXfLOB5Llzha9WWvjVJHZFHNE1mn2s1QV5IAkOhrYrhFe9vzv50eI6CqazChDyHDy1km3+rn0wg==
 
-"@microsoft/fast-foundation@^2.21.0", "@microsoft/fast-foundation@^2.34.0":
-  version "2.34.0"
-  resolved "https://registry.yarnpkg.com/@microsoft/fast-foundation/-/fast-foundation-2.34.0.tgz#e50c5b05f11bb799e2b9d49f8b735b59100e20d8"
-  integrity sha512-G5EnbeAvzzJJ3xxuO9CJhPYf/Hp6o96nfI1LBStjxUVa1CZOAuRu/TN5cGoF0dAFEGuLQrptd6j02tEN/6FxpA==
+"@microsoft/fast-foundation@^2.37.1", "@microsoft/fast-foundation@^2.41.1", "@microsoft/fast-foundation@^2.42.2":
+  version "2.42.2"
+  resolved "https://registry.npmjs.org/@microsoft/fast-foundation/-/fast-foundation-2.42.2.tgz#d5453a9814a84926d516da1950124d07ed14307f"
+  integrity sha512-kHQ+UNWdlk+/doe7tmSCg5NRM20TeAspLivO9ohzEjKYYy0qe5jHB3Pr4nIEqyMYgFwFLfSHUNOkOdczRVIulg==
   dependencies:
-    "@microsoft/fast-element" "^1.7.2"
-    "@microsoft/fast-web-utilities" "^5.1.0"
+    "@microsoft/fast-element" "^1.9.0"
+    "@microsoft/fast-web-utilities" "^5.3.0"
     tabbable "^5.2.0"
     tslib "^1.13.0"
 
-"@microsoft/fast-react-wrapper@^0.1.17":
-  version "0.1.34"
-  resolved "https://registry.yarnpkg.com/@microsoft/fast-react-wrapper/-/fast-react-wrapper-0.1.34.tgz#87977e01354c89b4df49341b4eedbd252ef94766"
-  integrity sha512-+aUwaJxtpYKjLmgM3N9sTyBz3e4APHjijXF/369DieD9a/BxdrfGoBxqVzy6w7KQN4aviHAOTDKRKk8ST0ypgg==
+"@microsoft/fast-react-wrapper@^0.1.42":
+  version "0.1.48"
+  resolved "https://registry.npmjs.org/@microsoft/fast-react-wrapper/-/fast-react-wrapper-0.1.48.tgz#aa89c0dfb703c2f71619c536de2342e28b40b8c9"
+  integrity sha512-9NvEjru9Kn5ZKjomAMX6v+eF0DR+eDkxKDwDfi+Wb73kTbrNzcnmlwd4diN15ygH97kldgj2+lpvI4CKLQQWLg==
   dependencies:
-    "@microsoft/fast-element" "^1.7.2"
-    "@microsoft/fast-foundation" "^2.34.0"
+    "@microsoft/fast-element" "^1.9.0"
+    "@microsoft/fast-foundation" "^2.41.1"
 
 "@microsoft/fast-web-utilities@^5.1.0":
   version "5.1.0"
@@ -846,6 +874,13 @@
   integrity sha512-S2PCxI4XqtIxLM1N7i/NuIAgx+mJM01+mDzyB3vZlYibAkOT0bzp5YZCp+coXowokSin/nK5T2kqShMXEzI6Jg==
   dependencies:
     exenv-es6 "^1.0.0"
+
+"@microsoft/fast-web-utilities@^5.3.0":
+  version "5.3.0"
+  resolved "https://registry.npmjs.org/@microsoft/fast-web-utilities/-/fast-web-utilities-5.3.0.tgz#cf6031cc2d4b6668649006d2a0877920f8c0d2fd"
+  integrity sha512-bC3JEM0tOFpxFOWTnBIFUwcH58BzBbW5zJFYcYvgNOSs4GN7Jg/90VJfiAqyEYyzxM6HPQbQUjQqOBytwwGT1g==
+  dependencies:
+    exenv-es6 "^1.1.1"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -2594,6 +2629,11 @@ exenv-es6@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/exenv-es6/-/exenv-es6-1.0.0.tgz#bd459136369af17cf33f959b5af58803d4068c80"
   integrity sha512-fcG/TX8Ruv9Ma6PBaiNsUrHRJzVzuFMP6LtPn/9iqR+nr9mcLeEOGzXQGLC5CVQSXGE98HtzW2mTZkrCA3XrDg==
+
+exenv-es6@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.npmjs.org/exenv-es6/-/exenv-es6-1.1.1.tgz#80b7a8c5af24d53331f755bac07e84abb1f6de67"
+  integrity sha512-vlVu3N8d6yEMpMsEm+7sUBAI81aqYYuEvfK0jNqmdb/OPXzzH7QWDDnVjMvDSY47JdHEqx/dfC/q8WkfoTmpGQ==
 
 express-rate-limit@5.5.1:
   version "5.5.1"
@@ -6019,36 +6059,6 @@ verror@1.10.0:
     assert-plus "^1.0.0"
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
-
-vscode-html-languageservice@^4.0.3:
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/vscode-html-languageservice/-/vscode-html-languageservice-4.2.2.tgz#e580b8f22b1b8c1dc0d6aaeda5a861f8b4120e4e"
-  integrity sha512-4ICwlpplGbiNQq6D/LZr4qLbPZuMmnSQeX/57UAYP7jD1LOvKeru4lVI+f6d6Eyd7uS46nLJ5DUY4AAlq35C0g==
-  dependencies:
-    vscode-languageserver-textdocument "^1.0.3"
-    vscode-languageserver-types "^3.16.0"
-    vscode-nls "^5.0.0"
-    vscode-uri "^3.0.3"
-
-vscode-languageserver-textdocument@^1.0.3:
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/vscode-languageserver-textdocument/-/vscode-languageserver-textdocument-1.0.4.tgz#3cd56dd14cec1d09e86c4bb04b09a246cb3df157"
-  integrity sha512-/xhqXP/2A2RSs+J8JNXpiiNVvvNM0oTosNVmQnunlKvq9o4mupHOBAnnzH0lwIPKazXKvAKsVp1kr+H/K4lgoQ==
-
-vscode-languageserver-types@^3.16.0:
-  version "3.16.0"
-  resolved "https://registry.yarnpkg.com/vscode-languageserver-types/-/vscode-languageserver-types-3.16.0.tgz#ecf393fc121ec6974b2da3efb3155644c514e247"
-  integrity sha512-k8luDIWJWyenLc5ToFQQMaSrqCHiLwyKPHKPQZ5zz21vM+vIVUSvsRpcbiECH4WR88K2XZqc4ScRcZ7nk/jbeA==
-
-vscode-nls@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/vscode-nls/-/vscode-nls-5.0.0.tgz#99f0da0bd9ea7cda44e565a74c54b1f2bc257840"
-  integrity sha512-u0Lw+IYlgbEJFF6/qAqG2d1jQmJl0eyAGJHoAJqr2HT4M2BNuQYSEiSE75f52pXHSJm8AlTjnLLbBFPrdz2hpA==
-
-vscode-uri@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/vscode-uri/-/vscode-uri-3.0.3.tgz#a95c1ce2e6f41b7549f86279d19f47951e4f4d84"
-  integrity sha512-EcswR2S8bpR7fD0YPeS7r2xXExrScVMxg4MedACaWHEtx9ftCF/qHG1xGkolzTPcEmjTavCQgbVzHUIdTMzFGA==
 
 w3c-hr-time@^1.0.1:
   version "1.0.2"
