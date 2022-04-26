@@ -36,6 +36,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
           const onSettingsChanged = (settings: ISettingRegistry.ISettings) => {
             searchReplaceModel.defaultExcludeFilters = settings.get('exclude')
               .composite as string[];
+            searchReplaceModel.maxLinesPerFile = settings.get('maxLinesPerFile')
+              .composite as number;
           };
           onSettingsChanged(settings);
           settings.changed.connect(onSettingsChanged);

@@ -2,8 +2,9 @@
   --density: -3;
   --jp-search-replace-added-color: rgba(155, 185, 85, 0.4);
   --jp-search-replace-deleted-color: rgba(255, 0, 0, 0.4);
-  display: flex;
-  flex-direction: column;
+  --badge-fill-warning: var(--jp-warn-color1);
+  --badge-color-warning: var(--jp-ui-inverse-font-color1);
+
   background: var(--jp-layout-color1);
   color: var(--jp-ui-font-color1);
 }

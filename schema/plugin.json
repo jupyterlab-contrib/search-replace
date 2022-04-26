@@ -14,6 +14,13 @@
         "minLength": 1
       },
       "default": ["**/.ipynb_checkpoints"]
+    },
+    "maxLinesPerFile": {
+      "title": "Maximal lines count per file",
+      "description": "Maximal number of matching lines per file to report. The total number of matches per file can be greater if there are multiple matches per line.",
+      "type": "integer",
+      "minimum": 1,
+      "default": 100
     }
   },
   "additionalProperties": false

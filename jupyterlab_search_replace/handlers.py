@@ -21,6 +21,7 @@ class RouteHandler(APIHandler):
         include = self.get_query_arguments("include")
         exclude = self.get_query_arguments("exclude")
         use_regex = self.get_query_argument("use_regex", "false") == "true"
+        max_count = int(self.get_query_argument("max_count", "100"))
         try:
             r = await self._engine.search(
                 query,
@@ -30,6 +31,7 @@ class RouteHandler(APIHandler):
                 include,
                 exclude,
                 use_regex,
+                max_count,
             )
         except asyncio.exceptions.CancelledError:
             r = {"code": 1, "message": "task was cancelled"}

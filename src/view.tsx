@@ -58,6 +58,7 @@ function openFile(
  * @param path Root directory of the query
  * @param commands Application commands registry
  * @param expandStatus Expansion status of the matches
+ * @param maxMatchesPerFiles Maximal number of matches per files
  * @param setExpandStatus Set the matches expansion status
  * @param onReplace Callback on replace event
  * @param trans Extension translation bundle
@@ -68,12 +69,14 @@ function createTreeView(
   path: string,
   commands: CommandRegistry,
   expandStatus: boolean[],
+  maxMatchesPerFiles: number,
   setExpandStatus: (v: boolean[]) => void,
   onReplace: ((r: SearchReplace.IFileReplacement[]) => void) | null,
   trans: TranslationBundle
 ): JSX.Element {
   matches.sort((a, b) => (a.path > b.path ? 1 : -1));
   const items = matches.map((file, index) => {
+    const mayHaveMoreMatches = file.matches.length >= maxMatchesPerFiles;
     return (
       <TreeItem
         className="search-tree-files"
@@ -104,7 +107,21 @@ function createTreeView(
             <replaceAllIcon.react></replaceAllIcon.react>
           </Button>
         )}
-        <Badge slot="end">{file.matches.length}</Badge>
+        {mayHaveMoreMatches ? (
+          <Badge
+            slot="end"
+            fill={'warning'}
+            color={'warning'}
+            title={trans.__(
+              'Maximal number of matches is reached for this file. You can increase it in the settings.'
+            )}
+          >
+            {file.matches.length}
+            {mayHaveMoreMatches && '+'}
+          </Badge>
+        ) : (
+          <Badge slot="end">{file.matches.length}</Badge>
+        )}
         {file.matches.map(match => {
           const hasReplace = onReplace && match.replace;
           return (
@@ -176,6 +193,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
     super(searchModel);
     this._commands = commands;
     this.addClass('jp-search-replace-tab');
+    this.addClass('jp-search-replace-column');
   }
 
   /**
@@ -207,6 +225,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         onPathChanged={(s: string) => {
           this.model.path = s;
         }}
+        maxLinesPerFile={this.model.maxLinesPerFile}
         options={
           <>
             <Button
@@ -313,6 +332,7 @@ interface ISearchReplaceProps {
   refreshResults: () => void;
   path: string;
   onPathChanged: (s: string) => void;
+  maxLinesPerFile: number;
   options: React.ReactNode;
   trans: TranslationBundle;
 }
@@ -459,6 +479,7 @@ const SearchReplaceElement = (props: ISearchReplaceProps) => {
           props.path,
           props.commands,
           expandStatus,
+          props.maxLinesPerFile,
           setExpandStatus,
           canReplace ? props.onReplace : null,
           props.trans

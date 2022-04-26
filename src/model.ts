@@ -13,7 +13,6 @@ export class SearchReplaceModel extends VDomModel {
   constructor() {
     super();
     this._isLoading = false;
-    this._defaultExcludeFilters = [];
     this._searchQuery = '';
     this._queryResults = [];
     this._caseSensitive = false;
@@ -24,16 +23,12 @@ export class SearchReplaceModel extends VDomModel {
     this._path = '';
     this._replaceString = '';
     this._replaceWorker = null;
+
+    this._defaultExcludeFilters = [];
+    this._maxLinesPerFile = 100;
+
     this._debouncedSearch = new Debouncer(async () => {
-      await this.search(
-        this._searchQuery,
-        this._caseSensitive,
-        this._wholeWord,
-        this._useRegex,
-        this._excludeFilters,
-        this._includeFilters,
-        this._path
-      );
+      await this.search();
     });
   }
 
@@ -133,6 +128,20 @@ export class SearchReplaceModel extends VDomModel {
   }
 
   /**
+   * Maximal number of lines with matches per file.
+   */
+  get maxLinesPerFile(): number {
+    return this._maxLinesPerFile;
+  }
+  set maxLinesPerFile(v: number) {
+    if (v >= 1 && v !== this._maxLinesPerFile) {
+      this._maxLinesPerFile = v;
+      this.stateChanged.emit();
+      this.refresh();
+    }
+  }
+
+  /**
    * Replace string
    */
   get replaceString(): string {
@@ -227,15 +236,11 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
-  private async search(
-    search: string,
-    caseSensitive: boolean,
-    wholeWord: boolean,
-    useRegex: boolean,
-    excludeFiles: string,
-    includeFiles: string,
-    path: string
-  ): Promise<void> {
+  private async search(): Promise<void> {
+    // Ensure values used in error message is coherent with the request
+    // as those can change during the server request.
+    const search = this.searchQuery;
+    const path = this.path;
     if (search === '') {
       this._queryResults = [];
       this.stateChanged.emit();
@@ -245,13 +250,14 @@ export class SearchReplaceModel extends VDomModel {
       this.isLoading = true;
       const queryArgs = [
         ['query', search],
-        ['case_sensitive', caseSensitive.toString()],
-        ['whole_word', wholeWord.toString()],
-        ['use_regex', useRegex.toString()]
+        ['case_sensitive', this.caseSensitive.toString()],
+        ['whole_word', this.wholeWord.toString()],
+        ['use_regex', this.useRegex.toString()],
+        ['max_count', this.maxLinesPerFile.toString()]
       ];
 
       queryArgs.push(
-        ...excludeFiles
+        ...this.excludeFilters
           .split(',')
           .concat(this.defaultExcludeFilters)
           .map(e => e.trim())
@@ -260,7 +266,7 @@ export class SearchReplaceModel extends VDomModel {
       );
 
       queryArgs.push(
-        ...includeFiles
+        ...this.includeFilters
           .split(',')
           .map(e => e.trim())
           .filter(e => e)
@@ -354,5 +360,7 @@ export class SearchReplaceModel extends VDomModel {
   private _queryResults: SearchReplace.IFileMatch[];
   private _debouncedSearch: Debouncer;
   private _replaceWorker: Worker | null;
+  // Configuration from settings
   private _defaultExcludeFilters: string[];
+  private _maxLinesPerFile: number;
 }

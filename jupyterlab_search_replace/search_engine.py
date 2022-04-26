@@ -30,9 +30,10 @@ def construct_command(
     include: List[str],
     exclude: List[str],
     use_regex: bool,
+    max_count: int,
 ):
     """Helper to construct the ripgrep command line."""
-    command = ["rg", "-F", query, "--json", "--max-count", "100"]
+    command = ["rg", "-F", query, "--json", "--max-count", f"{max_count}"]
     if use_regex:
         command.remove("-F")
     if not case_sensitive:
@@ -141,6 +142,7 @@ class SearchEngine:
         include: Optional[List[str]] = None,
         exclude: Optional[List[str]] = None,
         use_regex: bool = False,
+        max_count: int = 100,
     ) -> dict:
         """Search for ``query`` in files in ``path``.
 
@@ -155,13 +157,20 @@ class SearchEngine:
             include: Filters specifying files to include
             exclude: Filters specifying files to exclude
             use_regex: Whether the search term is a regular expression or not
+            max_count: The maximal number of lines with matches per file to return
 
         Returns:
             Dictionary with the matches or the error description
         """
         # JSON output is described at https://docs.rs/grep-printer/0.1.0/grep_printer/struct.JSON.html
         command = construct_command(
-            query, case_sensitive, whole_word, include or [], exclude or [], use_regex
+            query,
+            case_sensitive,
+            whole_word,
+            include or [],
+            exclude or [],
+            use_regex,
+            max_count,
         )
         cwd = os.path.join(self._root_dir, url2path(path))
         if SearchEngine.search_task is not None and not SearchEngine.search_task.done():
