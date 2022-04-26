@@ -1,25 +1,28 @@
 # jupyterlab_search_replace
 
-**WIP this is very early work in progress and nothing is yet working.** But don't hesitate to open issues and PRs if you want to help.
+[![Extension status](https://img.shields.io/badge/status-ready-success 'ready to be used')](https://jupyterlab-contrib.github.io/) [![Build](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml/badge.svg)](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/search-replace/master?urlpath=lab)
 
-[![Extension status](https://img.shields.io/badge/status-draft-critical 'Not yet working')](https://jupyterlab-contrib.github.io/index.html) [![Build](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml/badge.svg)](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/search-replace/master?urlpath=lab)
-
-Search and replace accross files.
-
-This extension is composed of a Python package named `jupyterlab_search_replace`
-for the server extension and a NPM package named `search-replace`
-for the frontend extension.
+Search and replace across files.
 
 ## Requirements
 
 - JupyterLab >= 3.0
+- [ripgrep](https://github.com/BurntSushi/ripgrep)
+
+> _ripgrep_ is available as [conda package](https://anaconda.org/conda-forge/ripgrep) on conda-forge.
 
 ## Install
 
 To install the extension, execute:
 
 ```bash
-pip install jupyterlab_search_replace
+pip install jupyterlab jupyterlab_search_replace
+```
+
+or
+
+```bash
+conda install -c conda-forge jupyterlab jupyterlab_search_replace ripgrep
 ```
 
 ## Uninstall
@@ -27,7 +30,13 @@ pip install jupyterlab_search_replace
 To remove the extension, execute:
 
 ```bash
-pip uninstall jupyterlab_search_replace
+pip uninstall jupyterlab jupyterlab_search_replace
+```
+
+or
+
+```bash
+conda remove jupyterlab jupyterlab_search_replace ripgrep
 ```
 
 ## Troubleshoot

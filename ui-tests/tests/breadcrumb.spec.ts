@@ -9,17 +9,11 @@ test.use({ tmpPath: 'search-replace-breadcrumb-test' });
 test.beforeAll(async ({ baseURL, tmpPath }) => {
   const contents = galata.newContentsHelper(baseURL);
   await contents.uploadFile(
-    path.resolve(
-      __dirname,
-      `../../jupyterlab_search_replace/tests/${fileName}`
-    ),
+    path.resolve(__dirname, `./data/${fileName}`),
     `${tmpPath}/aaa/${fileName}`
   );
   await contents.uploadFile(
-    path.resolve(
-      __dirname,
-      `../../jupyterlab_search_replace/tests/${fileNameHandler}`
-    ),
+    path.resolve(__dirname, `./data/${fileNameHandler}`),
     `${tmpPath}/aaa/bbb/${fileNameHandler}`
   );
 });
@@ -35,8 +29,8 @@ test('should switch directory and update results', async ({
 }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
-  // Fill input[type="search"]
-  await page.locator('input[type="search"]').fill('strange');
+  // Fill input[placeholder="Search"]
+  await page.locator('input[placeholder="Search"]').fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -44,7 +38,7 @@ test('should switch directory and update results', async ({
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[type="search"]').press('Enter'),
+    page.locator('input[placeholder="Search"]').press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -97,8 +91,8 @@ test('should not update file browser on clicking of breadcrumb', async ({
 }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
-  // Fill input[type="search"]
-  await page.locator('input[type="search"]').fill('strange');
+  // Fill input[placeholder="Search"]
+  await page.locator('input[placeholder="Search"]').fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -106,7 +100,7 @@ test('should not update file browser on clicking of breadcrumb', async ({
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[type="search"]').press('Enter'),
+    page.locator('input[placeholder="Search"]').press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })

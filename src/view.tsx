@@ -4,8 +4,6 @@ import {
   BreadcrumbItem,
   Button,
   Progress,
-  Search,
-  Switch,
   TextField,
   Toolbar,
   TreeItem,
@@ -246,13 +244,13 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         trans={this.trans}
       >
         <FilterBox
-          filters={this.model.filesFilter}
-          isExcludeFilter={this.model.excludeToggle}
-          onFilterChange={(f: string) => {
-            this.model.filesFilter = f;
+          includeFilters={this.model.includeFilters}
+          excludeFilters={this.model.excludeFilters}
+          onIncludeFiltersChange={(f: string) => {
+            this.model.includeFilters = f;
           }}
-          onIsExcludeChange={(b: boolean) => {
-            this.model.excludeToggle = b;
+          onExcludeFiltersChange={(v: string) => {
+            this.model.excludeFilters = v;
           }}
           trans={this.trans}
         ></FilterBox>
@@ -396,8 +394,9 @@ const SearchReplaceElement = (props: ISearchReplaceProps) => {
         </Button>
         <div className="jp-search-replace-column">
           <div className="jp-search-replace-row">
-            <Search
+            <TextField
               appearance="outline"
+              type="text"
               placeholder={props.trans.__('Search')}
               aria-label={props.trans.__('Search Files for Text')}
               onChange={(event: any) => {
@@ -438,15 +437,17 @@ const SearchReplaceElement = (props: ISearchReplaceProps) => {
       {props.children}
       {props.searchString && (
         <p className="jp-search-replace-statistics">
-          {props.trans._n(
-            '%2 result(s) in %1 file',
-            '%2 results in %1 files',
-            props.queryResults.map(r => r.path).length,
-            props.queryResults.reduce(
-              (agg, current) => agg + current.matches.length,
-              0
-            )
-          )}
+          {props.queryResults
+            ? props.trans._n(
+                '%2 result(s) in %1 file',
+                '%2 results in %1 files',
+                props.queryResults.map(r => r.path).length,
+                props.queryResults.reduce(
+                  (agg, current) => agg + current.matches.length,
+                  0
+                )
+              )
+            : props.trans.__('No results found.')}
         </p>
       )}
       {props.isLoading ? (
@@ -468,19 +469,24 @@ const SearchReplaceElement = (props: ISearchReplaceProps) => {
 };
 
 interface IFilterBoxProps {
-  filters: string;
-  onFilterChange: (f: string) => void;
-  isExcludeFilter: boolean;
-  onIsExcludeChange: (b: boolean) => void;
+  includeFilters: string;
+  onIncludeFiltersChange: (f: string) => void;
+  excludeFilters: string;
+  onExcludeFiltersChange: (f: string) => void;
   trans: TranslationBundle;
 }
 
 const FilterBox = React.memo((props: IFilterBoxProps) => {
   const [show, setShow] = useState<boolean>(false);
-  const { filters, onFilterChange, isExcludeFilter, onIsExcludeChange, trans } =
-    props;
+  const {
+    includeFilters,
+    onIncludeFiltersChange,
+    excludeFilters,
+    onExcludeFiltersChange,
+    trans
+  } = props;
   return (
-    <div className="jp-search-replace-filtersBox">
+    <div className="jp-search-replace-filtersBox jp-search-replace-column">
       <Button
         className="jp-search-replace-filters-collapser jp-mod-icon-only"
         appearance="stealth"
@@ -493,29 +499,34 @@ const FilterBox = React.memo((props: IFilterBoxProps) => {
       </Button>
       {show && (
         <>
-          <TextField
-            appearance="outline"
-            placeholder={trans.__('e.g. *.py, src/**/include')}
-            onChange={(event: any) => {
-              onFilterChange(event.target.value);
-            }}
-            onInput={(event: any) => {
-              onFilterChange(event.target.value);
-            }}
-            value={filters}
-          >
-            {trans.__('File filters')}
-          </TextField>
-          <Switch
-            title={trans.__('Toggle File Filter Mode')}
-            onChange={(event: any) => {
-              onIsExcludeChange(event.target.checked);
-            }}
-            checked={isExcludeFilter}
-          >
-            <span slot="checked-message">{trans.__('Files to Exclude')}</span>
-            <span slot="unchecked-message">{trans.__('Files to Include')}</span>
-          </Switch>
+          <label className="jp-search-replace-column">
+            {trans.__('Include file filters')}
+            <TextField
+              appearance="outline"
+              placeholder={trans.__('e.g. *.py, src/**/include')}
+              onChange={(event: any) => {
+                onIncludeFiltersChange(event.target.value);
+              }}
+              onInput={(event: any) => {
+                onIncludeFiltersChange(event.target.value);
+              }}
+              value={includeFilters}
+            ></TextField>
+          </label>
+          <label className="jp-search-replace-column">
+            {trans.__('Exclude file filters')}
+            <TextField
+              appearance="outline"
+              placeholder={trans.__('e.g. *.py, src/**/exclude')}
+              onChange={(event: any) => {
+                onExcludeFiltersChange(event.target.value);
+              }}
+              onInput={(event: any) => {
+                onExcludeFiltersChange(event.target.value);
+              }}
+              value={excludeFilters}
+            ></TextField>
+          </label>
         </>
       )}
     </div>

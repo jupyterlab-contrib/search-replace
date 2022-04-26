@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Search across Files",
+  "description": "Search and Replace across Files Settings",
+  "type": "object",
+  "properties": {
+    "exclude": {
+      "title": "Exclude",
+      "description": "Configure glob patterns for excluding files and folders in full text searches.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "uniqueItems": true,
+        "minLength": 1
+      },
+      "default": ["**/.ipynb_checkpoints"]
+    }
+  },
+  "additionalProperties": false
+}

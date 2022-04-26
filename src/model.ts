@@ -1,5 +1,5 @@
 import { VDomModel } from '@jupyterlab/apputils';
-import { PromiseDelegate } from '@lumino/coreutils';
+import { JSONExt, PromiseDelegate } from '@lumino/coreutils';
 import { Debouncer } from '@lumino/polling';
 import { requestAPI } from './handler';
 import { SearchReplace } from './tokens';
@@ -13,23 +13,25 @@ export class SearchReplaceModel extends VDomModel {
   constructor() {
     super();
     this._isLoading = false;
+    this._defaultExcludeFilters = [];
     this._searchQuery = '';
     this._queryResults = [];
     this._caseSensitive = false;
     this._wholeWord = false;
     this._useRegex = false;
-    this._filesFilter = '';
-    this._excludeToggle = false;
+    this._excludeFilters = '';
+    this._includeFilters = '';
     this._path = '';
     this._replaceString = '';
+    this._replaceWorker = null;
     this._debouncedSearch = new Debouncer(async () => {
       await this.search(
         this._searchQuery,
         this._caseSensitive,
         this._wholeWord,
         this._useRegex,
-        this._filesFilter,
-        this._excludeToggle,
+        this._excludeFilters,
+        this._includeFilters,
         this._path
       );
     });
@@ -51,30 +53,44 @@ export class SearchReplaceModel extends VDomModel {
   }
 
   /**
-   * Whether the files filter is to exclude or include files.
+   * Default exclude filters
    */
-  get excludeToggle(): boolean {
-    return this._excludeToggle;
+  get defaultExcludeFilters(): string[] {
+    return this._defaultExcludeFilters;
   }
-
-  set excludeToggle(v: boolean) {
-    if (v !== this._excludeToggle) {
-      this._excludeToggle = v;
+  set defaultExcludeFilters(v: string[]) {
+    if (!JSONExt.deepEqual(v, this._defaultExcludeFilters)) {
+      this._defaultExcludeFilters = v;
       this.stateChanged.emit();
       this.refresh();
     }
   }
 
   /**
-   * Files filter.
+   * Exclude files filters.
    */
-  get filesFilter(): string {
-    return this._filesFilter;
+  get excludeFilters(): string {
+    return this._excludeFilters;
   }
 
-  set filesFilter(v: string) {
-    if (v !== this._filesFilter) {
-      this._filesFilter = v;
+  set excludeFilters(v: string) {
+    if (v !== this._excludeFilters) {
+      this._excludeFilters = v;
+      this.stateChanged.emit();
+      this.refresh();
+    }
+  }
+
+  /**
+   * Include files filters.
+   */
+  get includeFilters(): string {
+    return this._includeFilters;
+  }
+
+  set includeFilters(v: string) {
+    if (v !== this._includeFilters) {
+      this._includeFilters = v;
       this.stateChanged.emit();
       this.refresh();
     }
@@ -216,8 +232,8 @@ export class SearchReplaceModel extends VDomModel {
     caseSensitive: boolean,
     wholeWord: boolean,
     useRegex: boolean,
+    excludeFiles: string,
     includeFiles: string,
-    excludeToggle: boolean,
     path: string
   ): Promise<void> {
     if (search === '') {
@@ -227,22 +243,32 @@ export class SearchReplaceModel extends VDomModel {
     }
     try {
       this.isLoading = true;
-      let excludeFiles = '';
-      if (excludeToggle) {
-        excludeFiles = includeFiles;
-        includeFiles = '';
-      }
+      const queryArgs = [
+        ['query', search],
+        ['case_sensitive', caseSensitive.toString()],
+        ['whole_word', wholeWord.toString()],
+        ['use_regex', useRegex.toString()]
+      ];
+
+      queryArgs.push(
+        ...excludeFiles
+          .split(',')
+          .concat(this.defaultExcludeFilters)
+          .map(e => e.trim())
+          .filter(e => e)
+          .map(e => ['exclude', e])
+      );
+
+      queryArgs.push(
+        ...includeFiles
+          .split(',')
+          .map(e => e.trim())
+          .filter(e => e)
+          .map(e => ['include', e])
+      );
+
       const data = await requestAPI<SearchReplace.ISearchQuery>(
-        path +
-          '?' +
-          new URLSearchParams([
-            ['query', search],
-            ['case_sensitive', caseSensitive.toString()],
-            ['whole_word', wholeWord.toString()],
-            ['use_regex', useRegex.toString()],
-            ['include', includeFiles],
-            ['exclude', excludeFiles]
-          ]).toString(),
+        path + '?' + new URLSearchParams(queryArgs).toString(),
         {
           method: 'GET'
         }
@@ -322,10 +348,11 @@ export class SearchReplaceModel extends VDomModel {
   private _caseSensitive: boolean;
   private _wholeWord: boolean;
   private _useRegex: boolean;
-  private _filesFilter: string;
-  private _excludeToggle: boolean;
+  private _excludeFilters: string;
+  private _includeFilters: string;
   private _path: string;
   private _queryResults: SearchReplace.IFileMatch[];
   private _debouncedSearch: Debouncer;
-  private _replaceWorker: Worker | null = null;
+  private _replaceWorker: Worker | null;
+  private _defaultExcludeFilters: string[];
 }

@@ -40,7 +40,6 @@
   padding: 2px 8px;
 }
 
-.jp-search-replace-row > jp-search,
 .jp-search-replace-row > jp-text-field {
   flex: 1 1 auto;
 }
@@ -64,11 +63,6 @@
   flex: 1 1 0;
 }
 
-.jp-search-replace-row.jp-search-replace-collapser {
-  align-items: flex-start;
-  padding: 4px 4px 2px 0px;
-}
-
 /* Fix JupyterLab icons colors */
 .jp-search-replace-tab .jp-icon2[fill] {
   fill: none;
@@ -82,9 +76,13 @@
   flex: 0 0 auto;
   position: relative;
   padding: 4px 8px;
-  display: flex;
-  flex-direction: column;
   min-height: 6px;
+}
+
+.jp-search-replace-filtersBox > label {
+  color: var(--jp-ui-font-color1);
+  font-size: var(--jp-ui-font-size1);
+  margin-bottom: 4px;
 }
 
 .jp-search-replace-filters-collapser {
@@ -93,6 +91,15 @@
   right: 0;
   max-height: 16px;
   margin: 0;
+}
+
+.jp-search-replace-row.jp-search-replace-collapser {
+  align-items: flex-start;
+  padding: 4px 4px 2px 0px;
+}
+
+.jp-search-replace-collapser > .jp-search-replace-column {
+  flex: 1 1 auto;
 }
 
 .jp-search-replace-statistics {

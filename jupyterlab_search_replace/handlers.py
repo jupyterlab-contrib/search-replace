@@ -18,8 +18,8 @@ class RouteHandler(APIHandler):
         query = self.get_query_argument("query")
         case_sensitive = self.get_query_argument("case_sensitive", "false") == "true"
         whole_word = self.get_query_argument("whole_word", "false") == "true"
-        include = self.get_query_argument("include", None)
-        exclude = self.get_query_argument("exclude", None)
+        include = self.get_query_arguments("include")
+        exclude = self.get_query_arguments("exclude")
         use_regex = self.get_query_argument("use_regex", "false") == "true"
         try:
             r = await self._engine.search(
