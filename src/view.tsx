@@ -290,8 +290,8 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
                 title: this.trans.__('Replace All'),
                 body: new AskBoolean(
                   this.trans._n(
-                    'Replace %2 matche(s) accross %1 file with %3?',
-                    'Replace %2 matches accross %1 files with %3?',
+                    'Replace %2 matche(s) accross %1 file with %3? This cannot be undone.',
+                    'Replace %2 matches accross %1 files with %3? This cannot be undone.',
                     nFiles,
                     nMatches,
                     this.model.replaceString
