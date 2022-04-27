@@ -6,7 +6,7 @@
   "properties": {
     "askReplaceAllConfirmation": {
       "title": "Ask confirmation before replacing all",
-      "description": "",
+      "description": "Whether to display a confirmation dialog before replacing all matches or not.",
       "type": "boolean",
       "default": true
     },
