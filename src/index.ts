@@ -18,7 +18,7 @@ import { ISettingRegistry } from '@jupyterlab/settingregistry';
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab-search-replace:plugin',
   autoStart: true,
-  requires: [IFileBrowserFactory],
+  requires: [IFileBrowserFactory, IEditorTracker],
   optional: [ISettingRegistry, ITranslator],
   activate: (
     app: JupyterFrontEnd,
