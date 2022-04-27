@@ -54,7 +54,9 @@ test('should switch directory and update results', async ({
 
   // Click on File Browser Tab
   await page.locator('[title="File Browser (Ctrl+Shift+F)"]').click();
-  await page.locator('span:has-text("aaa")').first().dblclick();
+  await page
+    .locator('[aria-label="File\\ Browser\\ Section"] >> text=aaa')
+    .dblclick();
   await expect(page).toHaveURL(`http://localhost:8888/lab/tree/${tmpPath}/aaa`);
   await page
     .locator('[aria-label="File\\ Browser\\ Section"] >> text=bbb')
@@ -104,7 +106,9 @@ test('should not update file browser on clicking of breadcrumb', async ({
   );
   // Click on File Browser Tab
   await page.locator('[title="File Browser (Ctrl+Shift+F)"]').click();
-  await page.locator('span:has-text("aaa")').first().dblclick();
+  await page
+    .locator('[aria-label="File\\ Browser\\ Section"] >> text=aaa')
+    .dblclick();
   await expect(page).toHaveURL(`http://localhost:8888/lab/tree/${tmpPath}/aaa`);
   await page
     .locator('[aria-label="File\\ Browser\\ Section"] >> text=bbb')
