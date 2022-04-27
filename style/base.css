@@ -137,6 +137,18 @@
   font-size: var(--jp-ui-font-size0);
 }
 
+.jp-search-replace-warning {
+  display: flex;
+  padding: 4px 8px;
+  color: var(--jp-warn-color1);
+  font-size: var(--jp-ui-font-size1);
+}
+
+.jp-search-replace-warning::before {
+  content: '⚠';
+  margin-right: 4px;
+}
+
 .jp-search-replace-list {
   overflow-y: auto;
   flex-grow: 1;

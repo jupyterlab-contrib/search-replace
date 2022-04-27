@@ -10,11 +10,12 @@ import {
   TreeView
 } from '@jupyter-notebook/react-components';
 import { Dialog, showDialog, VDomRenderer } from '@jupyterlab/apputils';
-import type { IDocumentWidget } from '@jupyterlab/docregistry';
 import type { CodeMirrorEditor } from '@jupyterlab/codemirror';
 import { PathExt } from '@jupyterlab/coreutils';
+import type { IDocumentManager } from '@jupyterlab/docmanager';
+import type { IDocumentWidget } from '@jupyterlab/docregistry';
 import type { FileEditor } from '@jupyterlab/fileeditor';
-import { TranslationBundle } from '@jupyterlab/translation';
+import type { TranslationBundle } from '@jupyterlab/translation';
 import {
   caretDownIcon,
   caretRightIcon,
@@ -24,7 +25,7 @@ import {
   refreshIcon,
   regexIcon
 } from '@jupyterlab/ui-components';
-import { CommandRegistry } from '@lumino/commands';
+import type { CommandRegistry } from '@lumino/commands';
 import React, { useEffect, useState } from 'react';
 import { AskBoolean } from './askBoolean';
 import {
@@ -34,7 +35,7 @@ import {
   replaceIcon,
   wholeWordIcon
 } from './icon';
-import { SearchReplaceModel } from './model';
+import type { SearchReplaceModel } from './model';
 import { SearchReplace } from './tokens';
 
 /**
@@ -204,13 +205,13 @@ function MatchesTreeView(props: IMatchesTreeViewProps): JSX.Element {
 export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
   constructor(
     searchModel: SearchReplaceModel,
-    commands: CommandRegistry,
+    protected commands: CommandRegistry,
+    protected docManager: IDocumentManager | null,
     protected trans: TranslationBundle,
     private onAskReplaceChanged: (b: boolean) => void
   ) {
     super(searchModel);
     this._askReplaceConfirmation = true;
-    this._commands = commands;
     this.addClass('jp-search-replace-tab');
     this.addClass('jp-search-replace-column');
   }
@@ -234,11 +235,28 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
    * @returns The React component
    */
   render(): JSX.Element | null {
-    const nFiles = this.model.queryResults.map(r => r.path).length;
+    const filenames = this.model.queryResults.map(r => r.path);
+    const nFiles = filenames.length;
     const nMatches = this.model.queryResults.reduce(
       (agg, current) => agg + current.matches.length,
       0
     );
+
+    let hasDirtyFiles = false;
+    if (this.docManager) {
+      for (const fileName of filenames) {
+        const docWidget = this.docManager.findWidget(
+          PathExt.join(this.model.path, fileName)
+        );
+        if (docWidget) {
+          const context = this.docManager.contextForWidget(docWidget);
+          if (context?.model.dirty) {
+            hasDirtyFiles = true;
+            break;
+          }
+        }
+      }
+    }
 
     return (
       <SearchReplaceElement
@@ -348,7 +366,15 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
           }}
           trans={this.trans}
         ></FilterBox>
-
+        {hasDirtyFiles && (
+          <div className="jp-search-replace-warning">
+            <p>
+              {this.trans.__(
+                'You have unsaved changes. The result(s) may be inexact. Save your work and refresh.'
+              )}
+            </p>
+          </div>
+        )}
         {this.model.searchQuery && (
           <p className="jp-search-replace-statistics">
             {this.model.queryResults
@@ -375,7 +401,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
     path: string,
     match?: SearchReplace.IMatch
   ): Promise<IDocumentWidget<FileEditor>> {
-    const widget = await this._commands.execute('docmanager:open', {
+    const widget = await this.commands.execute('docmanager:open', {
       factory: 'Editor',
       path
     });
@@ -445,13 +471,12 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         }
       });
 
-    await this._commands.execute('docmanager:save');
+    await this.commands.execute('docmanager:save');
 
     return widget;
   }
 
   private _askReplaceConfirmation: boolean;
-  private _commands: CommandRegistry;
 }
 
 interface IBreadcrumbProps {
