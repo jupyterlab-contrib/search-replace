@@ -1,8 +1,21 @@
 # jupyterlab_search_replace
 
-[![Extension status](https://img.shields.io/badge/status-ready-success 'ready to be used')](https://jupyterlab-contrib.github.io/) [![Build](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml/badge.svg)](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/search-replace/master?urlpath=lab)
+[![Extension status](https://img.shields.io/badge/status-ready-success 'ready to be used')](https://jupyterlab-contrib.github.io/) [![Build](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml/badge.svg)](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/search-replace/master?urlpath=lab) [![Version](https://img.shields.io/pypi/v/jupyterlab-search-replace.svg)](https://pypi.org/project/jupyterlab-search-replace/) [![Version](https://img.shields.io/conda/vn/conda-forge/jupyterlab-search-replace.svg)](https://anaconda.org/conda-forge/jupyterlab-search-replace)
 
 Search and replace across files.
+
+![Demo](https://raw.githubusercontent.com/jupyterlab-contrib/search-replace/master/search-replace-demo.gif)
+
+**Notes on replace**
+
+There are three levels of replacement. Undo capability is possible except for replace all matches:
+
+- Replace all matches: _Cannot_ be undone. A dialog will ask confirmation and all files will be backed up
+  in `.ipynb_checkpoints` folders before applying the replacement actions.
+- Replace all matches in a file: The file will be opened in the text editor and the replacement will be done
+  as a single text edition. So all replacements can will be undone by calling the editor undo action.
+- Replace a single match: The file will be opened in the text editor and the replacement will be done as
+  a text edition. The replacement will be undone by calling the editor undo action.
 
 ## Requirements
 
@@ -16,13 +29,13 @@ Search and replace across files.
 To install the extension, execute:
 
 ```bash
-pip install jupyterlab jupyterlab_search_replace
+pip install jupyterlab jupyterlab-search-replace
 ```
 
 or
 
 ```bash
-conda install -c conda-forge jupyterlab jupyterlab_search_replace ripgrep
+conda install -c conda-forge jupyterlab-search-replace ripgrep
 ```
 
 ## Uninstall
@@ -30,13 +43,13 @@ conda install -c conda-forge jupyterlab jupyterlab_search_replace ripgrep
 To remove the extension, execute:
 
 ```bash
-pip uninstall jupyterlab jupyterlab_search_replace
+pip uninstall jupyterlab-search-replace
 ```
 
 or
 
 ```bash
-conda remove jupyterlab jupyterlab_search_replace ripgrep
+conda remove jupyterlab-search-replace ripgrep
 ```
 
 ## Troubleshoot

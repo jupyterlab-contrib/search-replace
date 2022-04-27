@@ -6,6 +6,7 @@ recursive-include jupyter-config *.json
 recursive-include jupyterlab_search_replace *.json
 include jupyter_server_test_config.py
 include conftest.py
+exclude *.gif
 
 include package.json
 include install.json
