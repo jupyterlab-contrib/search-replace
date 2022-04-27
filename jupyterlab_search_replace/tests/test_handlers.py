@@ -1,9 +1,9 @@
 import asyncio
 import json
+from pathlib import Path
 
 import pytest
 from jsonschema import validate
-from tornado.httpclient import HTTPClientError
 
 from ..search_engine import SearchEngine
 
@@ -515,23 +515,44 @@ async def test_two_search_operations(test_content, schema, jp_root_dir):
 
 
 async def test_replace_operation(test_content, schema, jp_fetch):
+    # Given
     response = await jp_fetch(
         "search", params={"query": "strange", "exclude": "*_1.txt"}, method="GET"
     )
     assert response.code == 200
     payload = json.loads(response.body)
-    validate(instance=payload, schema=schema)
+
+    # Load file test content
+    file_match: Path = test_content / "subfolder" / "text_sub.txt"
+    unmodified_content = file_match.read_text()
+
     matches = payload["matches"]
     for fidx, file in enumerate(matches):
         for midx, match in enumerate(file["matches"]):
             match["replace"] = "hello"
             file["matches"][midx] = match
         matches[fidx] = file
-    response = jp_fetch(
+
+    # When
+    response = await jp_fetch(
         "search",
         body=json.dumps({"matches": matches}),
         method="POST",
     )
+
+    # Then
+    assert response.code == 201
+
+    ## Check checkpoint is created
+    checkpoint_file = (
+        file_match.parent
+        / ".ipynb_checkpoints"
+        / file_match.with_name(file_match.stem + "-checkpoint" + file_match.suffix).name
+    )
+    assert checkpoint_file.exists()
+    assert checkpoint_file.read_text() == unmodified_content
+
+    ## Check file has been modified
     response = await jp_fetch(
         "search", params={"query": "hello", "exclude": "*_1.txt"}, method="GET"
     )

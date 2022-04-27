@@ -3,22 +3,15 @@ import { expect } from '@playwright/test';
 import * as path from 'path';
 
 const fileName = 'conftest.py';
-test.use({ tmpPath: 'search-replace-test' });
 
-test.beforeAll(async ({ baseURL, tmpPath }) => {
-  const contents = galata.newContentsHelper(baseURL);
-  await contents.uploadFile(
+test.beforeEach(async ({ page, tmpPath }) => {
+  await page.contents.uploadFile(
     path.resolve(__dirname, `./data/${fileName}`),
     `${tmpPath}/${fileName}`
   );
 });
 
-test.afterAll(async ({ baseURL, tmpPath }) => {
-  const contents = galata.newContentsHelper(baseURL);
-  await contents.deleteDirectory(tmpPath);
-});
-
-test('should get 5 matches', async ({ page }) => {
+test('should get 5 matches', async ({ page, tmpPath }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
   // Fill input[placeholder="Search"]
@@ -51,7 +44,12 @@ test('should get 5 matches', async ({ page }) => {
 
   await page.locator('jp-tree-item').nth(5).click();
   await expect(page).toHaveURL(
-    'http://localhost:8888/lab/tree/search-replace-test/conftest.py'
+    `http://localhost:8888/lab/tree/${tmpPath}/conftest.py`
+  );
+
+  // Check the match is selected in the editor
+  await expect(page.locator('span.CodeMirror-selectedtext')).toHaveText(
+    'strange'
   );
 });
 
@@ -71,10 +69,10 @@ test('should get no matches', async ({ page }) => {
   ]);
 
   await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
-    '0 results in 0 files'
+    'No results found.'
   );
   expect(
-    await page.waitForSelector('#jp-search-replace >> text="No Matches Found"')
+    await page.waitForSelector('#jp-search-replace >> text="No results found."')
   ).toBeTruthy();
 });
 
@@ -272,5 +270,43 @@ test('should replace results on replace-all button', async ({ page }) => {
   ).toBeTruthy();
   await expect(page.locator('jp-tree-item').nth(2)).toHaveText(
     '                "Is that hellohello enough?",'
+  );
+});
+
+test('should display a warning if a file is dirty', async ({ page }) => {
+  // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
+  await page.locator('[title="Search and Replace"]').click();
+  // Fill input[placeholder="Search"]
+  await page.locator('input[placeholder="Search"]').fill('strange');
+
+  await Promise.all([
+    page.waitForResponse(
+      response =>
+        /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
+        response.request().method() === 'GET'
+    ),
+    page.locator('input[placeholder="Search"]').press('Enter')
+  ]);
+
+  await page
+    .locator('.jp-search-replace-statistics >> text=5 result(s) in 1 file')
+    .waitFor();
+
+  await page.locator('jp-tree-item').nth(2).click();
+
+  await page
+    .locator('[role="main"] >> text=Is that λ strange enough?')
+    .waitFor();
+
+  await Promise.all([
+    page
+      .locator('.jp-search-replace-statistics >> text=5 result(s) in 1 file')
+      .waitFor(),
+    page.keyboard.type('dirty'),
+    page.locator('.jp-search-replace-tab >> [title="Refresh"]').click()
+  ]);
+
+  await expect(page.locator('.jp-search-replace-warning > p')).toHaveText(
+    'You have unsaved changes. The result(s) may be inexact. Save your work and refresh.'
   );
 });

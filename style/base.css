@@ -36,9 +36,7 @@
 .jp-search-replace-tab .jp-stack-panel-header {
   border-bottom: solid var(--jp-border-width) var(--jp-border-color1);
   box-shadow: var(--jp-toolbar-box-shadow);
-  display: flex;
-  flex-direction: column;
-  padding: 2px 8px;
+  padding: 4px 8px 2px 8px;
 }
 
 .jp-search-replace-row > jp-text-field {
@@ -117,8 +115,9 @@
 .jp-search-replace-filters-collapser {
   position: absolute;
   top: -4px;
-  right: 0;
+  right: 4px;
   max-height: 16px;
+  height: 16px;
   margin: 0;
 }
 
@@ -128,12 +127,25 @@
 }
 
 .jp-search-replace-collapser > .jp-search-replace-column {
+  margin-top: 2px;
   flex: 1 1 auto;
 }
 
 .jp-search-replace-statistics {
   color: var(--jp-ui-font-color2);
   font-size: var(--jp-ui-font-size0);
+}
+
+.jp-search-replace-warning {
+  display: flex;
+  padding: 4px 8px;
+  color: var(--jp-warn-color1);
+  font-size: var(--jp-ui-font-size1);
+}
+
+.jp-search-replace-warning::before {
+  content: '⚠';
+  margin-right: 4px;
 }
 
 .jp-search-replace-list {
@@ -189,4 +201,8 @@ jp-tree-item:active > .jp-search-replace-item-button,
 jp-tree-item:focus-visible > .jp-search-replace-item-button,
 jp-tree-item:focus-within > .jp-search-replace-item-button {
   display: flex;
+}
+
+.jp-ask-checkbox {
+  color: var(--jp-ui-font-color1);
 }

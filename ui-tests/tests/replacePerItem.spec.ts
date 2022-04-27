@@ -17,11 +17,6 @@ test.beforeEach(async ({ page, tmpPath }) => {
   );
 });
 
-test.afterEach(async ({ page, tmpPath }) => {
-  const { contents } = page;
-  await contents.deleteDirectory(tmpPath);
-});
-
 test('should replace results for a particular file only', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
@@ -49,9 +44,6 @@ test('should replace results for a particular file only', async ({ page }) => {
   );
 
   await page.locator('#jp-search-replace >> [title="Toggle Replace"]').click();
-  await page
-    .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
-    .click();
   await page
     .locator('#jp-search-replace >> input[placeholder="Replace"]')
     .fill('hello');
@@ -96,6 +88,62 @@ test('should replace results for a particular file only', async ({ page }) => {
   );
 });
 
+test('should undo replace results for a particular file only', async ({
+  page
+}) => {
+  await page.locator('[title="Search and Replace"]').click();
+  await page.locator('input[placeholder="Search"]').fill('strange');
+
+  await Promise.all([
+    page.waitForResponse(
+      response =>
+        /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
+        response.request().method() === 'GET'
+    ),
+    page.locator('input[placeholder="Search"]').press('Enter')
+  ]);
+
+  await page.locator('jp-tree-view[role="tree"] >> text=5').first().waitFor();
+
+  await page.locator('#jp-search-replace >> [title="Toggle Replace"]').click();
+  await page
+    .locator('#jp-search-replace >> input[placeholder="Replace"]')
+    .fill('hello QS');
+
+  const entry = page.locator('.search-tree-files:has-text("conftest.py")');
+  await entry.hover();
+  // press replace all matches for `conftest.py` only
+  await entry.locator('[title="Replace All in File"]').click();
+
+  // new results for previous query 'strange' should only have `test_handlers.py`
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    '55 result(s) in 1 file'
+  );
+  expect(
+    await page.locator('.search-tree-files >> text=test_handlers.py').count()
+  ).toEqual(1);
+
+  // Undo changes
+  await page.keyboard.press('Control+z');
+  await page.keyboard.press('Control+s');
+
+  // new search with `hello`
+  await page.locator('input[placeholder="Search"]').fill('hello QS');
+  await Promise.all([
+    page.waitForResponse(
+      response =>
+        /.*search\/[\w-]+\?query=hello/.test(response.url()) &&
+        response.request().method() === 'GET'
+    ),
+    page.locator('input[placeholder="Search"]').press('Enter')
+  ]);
+
+  // verify if `conftest.py` has not changed
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    'No results found.'
+  );
+});
+
 test('should replace results for a particular match only', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
   await page.locator('[title="Search and Replace"]').click();
@@ -124,9 +172,6 @@ test('should replace results for a particular match only', async ({ page }) => {
   await itemMatch.first().waitFor();
 
   await page.locator('#jp-search-replace >> [title="Toggle Replace"]').click();
-  await page
-    .locator('#jp-search-replace >> jp-text-field[placeholder="Replace"]')
-    .click();
   await page
     .locator('#jp-search-replace >> input[placeholder="Replace"]')
     .fill('helloqs');
@@ -168,6 +213,61 @@ test('should replace results for a particular match only', async ({ page }) => {
 
   await expect(itemMatch.first()).toHaveText(
     '                    "line": "Unicode helloqshelloqs sub file, very strange\\n",'
+  );
+});
+
+test('should undo replace results for a particular match only', async ({
+  page
+}) => {
+  await page.locator('[title="Search and Replace"]').click();
+  await page.locator('input[placeholder="Search"]').fill('strange');
+
+  await Promise.all([
+    page.waitForResponse(
+      response =>
+        /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
+        response.request().method() === 'GET'
+    ),
+    page.locator('input[placeholder="Search"]').press('Enter')
+  ]);
+
+  await page.locator('jp-tree-view[role="tree"] >> text=5').first().waitFor();
+
+  await page.locator('#jp-search-replace >> [title="Toggle Replace"]').click();
+  await page
+    .locator('#jp-search-replace >> input[placeholder="Replace"]')
+    .fill('hello QS');
+
+  const itemMatch = page.locator(
+    '.search-tree-files:has-text("conftest.py") >> .search-tree-matches'
+  );
+
+  await itemMatch.nth(1).hover();
+  await itemMatch.nth(1).locator('[title="Replace"]').click();
+
+  // new results for previous query 'strange' should only have `test_handlers.py`
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    '59 results in 2 files'
+  );
+
+  // Undo changes
+  await page.keyboard.press('Control+z');
+  await page.keyboard.press('Control+s');
+
+  // new search with `hello`
+  await page.locator('input[placeholder="Search"]').fill('hello QS');
+  await Promise.all([
+    page.waitForResponse(
+      response =>
+        /.*search\/[\w-]+\?query=hello/.test(response.url()) &&
+        response.request().method() === 'GET'
+    ),
+    page.locator('input[placeholder="Search"]').press('Enter')
+  ]);
+
+  // verify if `conftest.py` has not changed
+  await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
+    'No results found.'
   );
 });
 

@@ -29,14 +29,6 @@ export namespace SearchReplace {
      */
     line: string;
     /**
-     * starting offset of the match in utf-8 format
-     */
-    start_utf8: number;
-    /**
-     * ending offset of the match in utf-8 format
-     */
-    end_utf8: number;
-    /**
      * the actual match itself
      */
     match: string;
@@ -79,6 +71,14 @@ export namespace SearchReplace {
      * ending offset of the match in binary format
      */
     end: number;
+    /**
+     * starting offset of the match in utf-8 format
+     */
+    start_utf8: number;
+    /**
+     * ending offset of the match in utf-8 format
+     */
+    end_utf8: number;
     /**
      * the base-1 line number where the match occurs
      */

@@ -9,9 +9,13 @@ import {
   TreeItem,
   TreeView
 } from '@jupyter-notebook/react-components';
-import { VDomRenderer } from '@jupyterlab/apputils';
+import { Dialog, showDialog, VDomRenderer } from '@jupyterlab/apputils';
+import type { CodeMirrorEditor } from '@jupyterlab/codemirror';
 import { PathExt } from '@jupyterlab/coreutils';
-import { TranslationBundle } from '@jupyterlab/translation';
+import type { IDocumentManager } from '@jupyterlab/docmanager';
+import type { IDocumentWidget } from '@jupyterlab/docregistry';
+import type { FileEditor } from '@jupyterlab/fileeditor';
+import type { TranslationBundle } from '@jupyterlab/translation';
 import {
   caretDownIcon,
   caretRightIcon,
@@ -21,9 +25,10 @@ import {
   refreshIcon,
   regexIcon
 } from '@jupyterlab/ui-components';
-import { CommandRegistry } from '@lumino/commands';
-import { Widget } from '@lumino/widgets';
+import type { CommandRegistry } from '@lumino/commands';
+import { Message } from '@lumino/messaging';
 import React, { useEffect, useState } from 'react';
+import { AskBoolean } from './askBoolean';
 import {
   collapseAllIcon,
   expandAllIcon,
@@ -31,49 +36,68 @@ import {
   replaceIcon,
   wholeWordIcon
 } from './icon';
-import { SearchReplaceModel } from './model';
+import type { SearchReplaceModel } from './model';
 import { SearchReplace } from './tokens';
 
 /**
- * Open a file in JupyterLab
- * @param prefixDir Root directory
- * @param path File path relative to `prefixDir`
- * @param commands Application commands registry
- * @returns Widget opened for the given path
+ * MatchesTreeView component properties
  */
-function openFile(
-  prefixDir: string,
-  path: string,
-  commands: CommandRegistry
-): Promise<Widget> {
-  return commands.execute('docmanager:open', {
-    path: PathExt.join(prefixDir, path)
-  });
+interface IMatchesTreeViewProps {
+  /**
+   * Search query results
+   */
+  matches: SearchReplace.IFileMatch[];
+  /**
+   * Root directory of the query
+   */
+  path: string;
+  /**
+   * Expansion status of the matches
+   */
+  expandStatus: boolean[];
+  /**
+   * Maximal number of matches per files
+   */
+  maxMatchesPerFiles: number;
+  /**
+   * Callback on match click
+   */
+  onMatchClick: (path: string, m: SearchReplace.IMatch) => void;
+  /**
+   * Callback on replace event
+   */
+  onReplace:
+    | ((r: SearchReplace.IFileReplacement[], path: string) => void)
+    | null;
+  /**
+   * Set the matches expansion status
+   */
+  setExpandStatus: (v: boolean[]) => void;
+  /**
+   * Extension translation bundle
+   */
+  trans: TranslationBundle;
 }
 
 /**
  * Create a tree view for the search query results
- *
- * @param matches Search query results
- * @param path Root directory of the query
- * @param commands Application commands registry
- * @param expandStatus Expansion status of the matches
- * @param maxMatchesPerFiles Maximal number of matches per files
- * @param setExpandStatus Set the matches expansion status
- * @param onReplace Callback on replace event
- * @param trans Extension translation bundle
- * @returns The tree view
  */
-function createTreeView(
-  matches: SearchReplace.IFileMatch[],
-  path: string,
-  commands: CommandRegistry,
-  expandStatus: boolean[],
-  maxMatchesPerFiles: number,
-  setExpandStatus: (v: boolean[]) => void,
-  onReplace: ((r: SearchReplace.IFileReplacement[]) => void) | null,
-  trans: TranslationBundle
-): JSX.Element {
+function MatchesTreeView(props: IMatchesTreeViewProps): JSX.Element | null {
+  const {
+    matches,
+    path,
+    expandStatus,
+    maxMatchesPerFiles,
+    setExpandStatus,
+    onMatchClick,
+    onReplace,
+    trans
+  } = props;
+
+  if (matches.length === 0) {
+    return null;
+  }
+
   matches.sort((a, b) => (a.path > b.path ? 1 : -1));
   const items = matches.map((file, index) => {
     const mayHaveMoreMatches = file.matches.length >= maxMatchesPerFiles;
@@ -101,7 +125,7 @@ function createTreeView(
                   matches: file.matches
                 }
               ];
-              onReplace(partialResult);
+              onReplace(partialResult, PathExt.join(path, file.path));
             }}
           >
             <replaceAllIcon.react></replaceAllIcon.react>
@@ -123,13 +147,13 @@ function createTreeView(
           <Badge slot="end">{file.matches.length}</Badge>
         )}
         {file.matches.map(match => {
-          const hasReplace = onReplace && match.replace;
+          const hasReplace = onReplace && match.replace !== null;
           return (
             <TreeItem
               className="search-tree-matches"
               onClick={(event: React.MouseEvent) => {
                 event.stopPropagation();
-                openFile(path, file.path, commands);
+                onMatchClick(PathExt.join(path, file.path), match);
               }}
             >
               <span title={match.line.trim()}>
@@ -157,7 +181,7 @@ function createTreeView(
                         matches: [match]
                       }
                     ];
-                    onReplace!(partialResult);
+                    onReplace!(partialResult, PathExt.join(path, file.path));
                   }}
                 >
                   <replaceIcon.react></replaceIcon.react>
@@ -170,15 +194,11 @@ function createTreeView(
     );
   });
 
-  if (items.length === 0) {
-    return <p>{trans.__('No Matches Found')}</p>;
-  } else {
-    return (
-      <div className="jp-search-replace-list">
-        <TreeView>{items}</TreeView>
-      </div>
-    );
-  }
+  return (
+    <div className="jp-search-replace-list">
+      <TreeView>{items}</TreeView>
+    </div>
+  );
 }
 
 /**
@@ -187,13 +207,34 @@ function createTreeView(
 export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
   constructor(
     searchModel: SearchReplaceModel,
-    commands: CommandRegistry,
-    protected trans: TranslationBundle
+    protected commands: CommandRegistry,
+    protected docManager: IDocumentManager | null,
+    protected trans: TranslationBundle,
+    private onAskReplaceChanged: (b: boolean) => void
   ) {
     super(searchModel);
-    this._commands = commands;
+    this._askReplaceConfirmation = true;
+    this.searchInputRef = React.createRef<HTMLInputElement>();
     this.addClass('jp-search-replace-tab');
     this.addClass('jp-search-replace-column');
+  }
+
+  /**
+   * Whether to ask confirmation when replacing all matches or not.
+   */
+  get askReplaceConfirmation(): boolean {
+    return this._askReplaceConfirmation;
+  }
+  set askReplaceConfirmation(v: boolean) {
+    if (this._askReplaceConfirmation !== v) {
+      this._askReplaceConfirmation = v;
+      this.onAskReplaceChanged(v);
+    }
+  }
+
+  protected onAfterShow(msg: Message): void {
+    super.onAfterShow(msg);
+    this.searchInputRef.current?.focus();
   }
 
   /**
@@ -202,8 +243,32 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
    * @returns The React component
    */
   render(): JSX.Element | null {
+    const filenames = this.model.queryResults.map(r => r.path);
+    const nFiles = filenames.length;
+    const nMatches = this.model.queryResults.reduce(
+      (agg, current) => agg + current.matches.length,
+      0
+    );
+
+    let hasDirtyFiles = false;
+    if (this.docManager) {
+      for (const fileName of filenames) {
+        const docWidget = this.docManager.findWidget(
+          PathExt.join(this.model.path, fileName)
+        );
+        if (docWidget) {
+          const context = this.docManager.contextForWidget(docWidget);
+          if (context?.model.dirty) {
+            hasDirtyFiles = true;
+            break;
+          }
+        }
+      }
+    }
+
     return (
       <SearchReplaceElement
+        searchInputRef={this.searchInputRef}
         searchString={this.model.searchQuery}
         onSearchChanged={(s: string) => {
           this.model.searchQuery = s;
@@ -212,13 +277,50 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         onReplaceString={(s: string) => {
           this.model.replaceString = s;
         }}
-        onReplace={async (r: SearchReplace.IFileReplacement[]) => {
-          await this.model.replace(r);
+        onReplace={async (
+          r: SearchReplace.IFileReplacement[],
+          filePath?: string
+        ) => {
+          if (filePath) {
+            await this.replaceInFile(filePath, r[0].matches);
+            this.model.refresh();
+          } else {
+            if (this.askReplaceConfirmation) {
+              const result = await showDialog<boolean>({
+                title: this.trans.__('Replace All'),
+                body: new AskBoolean(
+                  this.trans._n(
+                    'Replace %2 matche(s) accross %1 file with %3? This cannot be undone.',
+                    'Replace %2 matches accross %1 files with %3? This cannot be undone.',
+                    nFiles,
+                    nMatches,
+                    this.model.replaceString
+                  ),
+                  this.trans.__('Skip confirmation next time.')
+                ),
+                buttons: [
+                  Dialog.cancelButton({ label: this.trans.__('Cancel') }),
+                  Dialog.okButton({ label: this.trans.__('Replace') })
+                ]
+              });
+              if (!result.button.accept) {
+                return;
+              } else {
+                // If checkbox is checked don't ask for confirmation
+                if (result.value === true) {
+                  this.askReplaceConfirmation = false;
+                }
+              }
+            }
+            await this.model.replace(r);
+          }
         }}
-        commands={this._commands}
         isLoading={this.model.isLoading}
         queryResults={this.model.queryResults}
-        refreshResults={() => {
+        onMatchClick={(path: string, m: SearchReplace.IMatch) => {
+          this.openFile(path, m);
+        }}
+        refresh={() => {
           this.model.refresh();
         }}
         path={this.model.path}
@@ -273,11 +375,118 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
           }}
           trans={this.trans}
         ></FilterBox>
+        {hasDirtyFiles && (
+          <div className="jp-search-replace-warning">
+            <p>
+              {this.trans.__(
+                'You have unsaved changes. The result(s) may be inexact. Save your work and refresh.'
+              )}
+            </p>
+          </div>
+        )}
+        {this.model.searchQuery && (
+          <p className="jp-search-replace-statistics">
+            {this.model.queryResults.length
+              ? this.trans._n(
+                  '%2 result(s) in %1 file',
+                  '%2 results in %1 files',
+                  nFiles,
+                  nMatches
+                )
+              : this.trans.__('No results found.')}
+          </p>
+        )}
       </SearchReplaceElement>
     );
   }
 
-  private _commands: CommandRegistry;
+  /**
+   * Open a file in JupyterLab
+   * @param path File path
+   * @param match Search match
+   * @returns Widget opened for the given path
+   */
+  protected async openFile(
+    path: string,
+    match?: SearchReplace.IMatch
+  ): Promise<IDocumentWidget<FileEditor>> {
+    const widget = await this.commands.execute('docmanager:open', {
+      factory: 'Editor',
+      path
+    });
+
+    if (match) {
+      await widget.context.ready;
+      const editor = widget.content.editor as CodeMirrorEditor;
+      editor.doc.setSelection(
+        {
+          line: match.line_number - 1,
+          ch: match.start_utf8
+        },
+        {
+          line: match.line_number - 1,
+          ch: match.end_utf8
+        }
+      );
+    }
+
+    return widget;
+  }
+
+  /**
+   * Replace matches within the editor
+   *
+   * @param path File path
+   * @param matches Matches to replace
+   */
+  protected async replaceInFile(
+    path: string,
+    matches: SearchReplace.IReplacement[]
+  ): Promise<IDocumentWidget<FileEditor>> {
+    const widget = await this.openFile(path);
+    await widget.context.ready;
+    const editor = widget.content.editor as CodeMirrorEditor;
+
+    // Sort from end to start to preserve match positions
+    matches
+      .sort((a, b) => {
+        if (a.line_number < b.line_number) {
+          return 1;
+        } else if (a.line_number === b.line_number) {
+          if (a.start < b.start) {
+            return 1;
+          } else if (a.start === b.start) {
+            return 0;
+          } else {
+            return -1;
+          }
+        } else {
+          return -1;
+        }
+      })
+      .forEach(m => {
+        editor.doc.setSelection(
+          {
+            line: m.line_number - 1,
+            ch: m.start_utf8
+          },
+          {
+            line: m.line_number - 1,
+            ch: m.end_utf8
+          }
+        );
+        if (m.replace !== null) {
+          editor.doc.replaceSelection(m.replace);
+        }
+      });
+
+    await this.commands.execute('docmanager:save');
+
+    return widget;
+  }
+
+  protected searchInputRef: React.RefObject<HTMLInputElement>;
+  private _askReplaceConfirmation: boolean;
 }
 
 interface IBreadcrumbProps {
@@ -335,20 +544,21 @@ const Breadcrumbs = React.memo((props: IBreadcrumbProps) => {
 });
 
 interface ISearchReplaceProps {
-  searchString: string;
-  queryResults: SearchReplace.IFileMatch[];
-  commands: CommandRegistry;
-  isLoading: boolean;
-  onSearchChanged: (s: string) => void;
-  replaceString: string;
-  onReplaceString: (s: string) => void;
-  onReplace: (r: SearchReplace.IFileReplacement[]) => void;
   children: React.ReactNode;
-  refreshResults: () => void;
+  isLoading: boolean;
+  queryResults: SearchReplace.IFileMatch[];
+  maxLinesPerFile: number;
+  onMatchClick: (path: string, m: SearchReplace.IMatch) => void;
+  options: React.ReactNode;
   path: string;
   onPathChanged: (s: string) => void;
-  maxLinesPerFile: number;
-  options: React.ReactNode;
+  refresh: () => void;
+  replaceString: string;
+  onReplaceString: (s: string) => void;
+  onReplace: (r: SearchReplace.IFileReplacement[], filePath?: string) => void;
+  searchInputRef: React.RefObject<HTMLInputElement>;
+  searchString: string;
+  onSearchChanged: (s: string) => void;
   trans: TranslationBundle;
 }
 
@@ -368,7 +578,7 @@ const SearchReplaceElement = (props: ISearchReplaceProps) => {
 
   return (
     <>
-      <div className="jp-stack-panel-header">
+      <div className="jp-stack-panel-header jp-search-replace-column">
         <div className="jp-search-replace-header jp-search-replace-row">
           <h2>{props.trans.__('Search')}</h2>
           <div className="jp-Toolbar-spacer"></div>
@@ -378,7 +588,7 @@ const SearchReplaceElement = (props: ISearchReplaceProps) => {
               appearance="stealth"
               title={props.trans.__('Refresh')}
               onClick={() => {
-                props.refreshResults();
+                props.refresh();
               }}
             >
               <refreshIcon.react></refreshIcon.react>
@@ -430,6 +640,7 @@ const SearchReplaceElement = (props: ISearchReplaceProps) => {
         <div className="jp-search-replace-column">
           <div className="jp-search-replace-row">
             <TextField
+              ref={props.searchInputRef}
               appearance="outline"
               type="text"
               placeholder={props.trans.__('Search')}
@@ -470,34 +681,20 @@ const SearchReplaceElement = (props: ISearchReplaceProps) => {
         </div>
       </div>
       {props.children}
-      {props.searchString && (
-        <p className="jp-search-replace-statistics">
-          {props.queryResults
-            ? props.trans._n(
-                '%2 result(s) in %1 file',
-                '%2 results in %1 files',
-                props.queryResults.map(r => r.path).length,
-                props.queryResults.reduce(
-                  (agg, current) => agg + current.matches.length,
-                  0
-                )
-              )
-            : props.trans.__('No results found.')}
-        </p>
-      )}
       {props.isLoading ? (
         <Progress />
       ) : (
-        props.searchString &&
-        createTreeView(
-          props.queryResults,
-          props.path,
-          props.commands,
-          expandStatus,
-          props.maxLinesPerFile,
-          setExpandStatus,
-          canReplace ? props.onReplace : null,
-          props.trans
+        props.searchString && (
+          <MatchesTreeView
+            matches={props.queryResults}
+            path={props.path}
+            expandStatus={expandStatus}
+            maxMatchesPerFiles={props.maxLinesPerFile}
+            onMatchClick={props.onMatchClick}
+            setExpandStatus={setExpandStatus}
+            onReplace={canReplace ? props.onReplace : null}
+            trans={props.trans}
+          ></MatchesTreeView>
         )
       )}
     </>

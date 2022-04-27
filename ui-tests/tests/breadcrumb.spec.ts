@@ -4,23 +4,16 @@ import * as path from 'path';
 
 const fileName = 'conftest.py';
 const fileNameHandler = 'test_handlers.py';
-test.use({ tmpPath: 'search-replace-breadcrumb-test' });
 
-test.beforeAll(async ({ baseURL, tmpPath }) => {
-  const contents = galata.newContentsHelper(baseURL);
-  await contents.uploadFile(
+test.beforeEach(async ({ page, tmpPath }) => {
+  await page.contents.uploadFile(
     path.resolve(__dirname, `./data/${fileName}`),
     `${tmpPath}/aaa/${fileName}`
   );
-  await contents.uploadFile(
+  await page.contents.uploadFile(
     path.resolve(__dirname, `./data/${fileNameHandler}`),
     `${tmpPath}/aaa/bbb/${fileNameHandler}`
   );
-});
-
-test.afterAll(async ({ baseURL, tmpPath }) => {
-  const contents = galata.newContentsHelper(baseURL);
-  await contents.deleteDirectory(tmpPath);
 });
 
 test('should switch directory and update results', async ({
@@ -61,7 +54,9 @@ test('should switch directory and update results', async ({
 
   // Click on File Browser Tab
   await page.locator('[title="File Browser (Ctrl+Shift+F)"]').click();
-  await page.locator('span:has-text("aaa")').first().dblclick();
+  await page
+    .locator('[aria-label="File\\ Browser\\ Section"] >> text=aaa')
+    .dblclick();
   await expect(page).toHaveURL(`http://localhost:8888/lab/tree/${tmpPath}/aaa`);
   await page
     .locator('[aria-label="File\\ Browser\\ Section"] >> text=bbb')
@@ -111,7 +106,9 @@ test('should not update file browser on clicking of breadcrumb', async ({
   );
   // Click on File Browser Tab
   await page.locator('[title="File Browser (Ctrl+Shift+F)"]').click();
-  await page.locator('span:has-text("aaa")').first().dblclick();
+  await page
+    .locator('[aria-label="File\\ Browser\\ Section"] >> text=aaa')
+    .dblclick();
   await expect(page).toHaveURL(`http://localhost:8888/lab/tree/${tmpPath}/aaa`);
   await page
     .locator('[aria-label="File\\ Browser\\ Section"] >> text=bbb')
