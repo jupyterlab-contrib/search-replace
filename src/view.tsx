@@ -287,9 +287,14 @@ interface IBreadcrumbProps {
 
 const Breadcrumbs = React.memo((props: IBreadcrumbProps) => {
   const pathItems = props.path.split('/');
+
   return (
-    <Breadcrumb>
-      <BreadcrumbItem>
+    <Breadcrumb className="jp-search-replace-breadcrumb">
+      <BreadcrumbItem
+        key="root"
+        className="jp-search-replace-breacrumbitem"
+        title="/"
+      >
         <Button
           className="jp-mod-icon-only"
           appearance="stealth"
@@ -302,12 +307,22 @@ const Breadcrumbs = React.memo((props: IBreadcrumbProps) => {
       </BreadcrumbItem>
       {props.path &&
         pathItems.map((item, index) => {
+          const subpath = pathItems.slice(0, index + 1).join('/');
           return (
-            <BreadcrumbItem>
+            <BreadcrumbItem
+              key={item}
+              className="jp-search-replace-breacrumbitem"
+              style={{
+                flexGrow: index + 1,
+                flexShrink: pathItems.length - index - 1
+              }}
+              title={'/' + subpath}
+            >
               <Button
+                className="jp-search-replace-pathbutton"
                 appearance="lightweight"
                 onClick={() => {
-                  props.onPathChanged(pathItems.slice(0, index + 1).join('/'));
+                  props.onPathChanged(subpath);
                 }}
               >
                 {item}
