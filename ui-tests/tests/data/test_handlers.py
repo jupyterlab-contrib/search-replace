@@ -436,7 +436,7 @@ async def test_replace_operation(test_content, schema, jp_fetch):
             match["replace"] = "hello"
             file["matches"][midx] = match
         matches[fidx] = file
-    response = jp_fetch(
+    response = await jp_fetch(
         "search",
         body=json.dumps({"matches": matches}),
         method="POST",

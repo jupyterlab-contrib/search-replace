@@ -177,6 +177,7 @@ class SearchEngine:
             max_count,
         )
         cwd = os.path.join(self._root_dir, url2path(path))
+        # TODO this is not compatible of a multi-users server
         if SearchEngine.search_task is not None and not SearchEngine.search_task.done():
             SearchEngine.search_task.cancel()
         SearchEngine.search_task = asyncio.create_task(self._execute(command, cwd=cwd))

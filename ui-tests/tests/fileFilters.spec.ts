@@ -4,23 +4,16 @@ import * as path from 'path';
 
 const fileName = 'conftest.py';
 const fileNameHandler = 'test_handlers.py';
-test.use({ tmpPath: 'search-replace-file-filter-test' });
 
-test.beforeAll(async ({ baseURL, tmpPath }) => {
-  const contents = galata.newContentsHelper(baseURL);
-  await contents.uploadFile(
+test.beforeEach(async ({ page, tmpPath }) => {
+  await page.contents.uploadFile(
     path.resolve(__dirname, `./data/${fileName}`),
     `${tmpPath}/${fileName}`
   );
-  await contents.uploadFile(
+  await page.contents.uploadFile(
     path.resolve(__dirname, `./data/${fileNameHandler}`),
     `${tmpPath}/${fileNameHandler}`
   );
-});
-
-test.afterAll(async ({ baseURL, tmpPath }) => {
-  const contents = galata.newContentsHelper(baseURL);
-  await contents.deleteDirectory(tmpPath);
 });
 
 test('should test for include filter', async ({ page }) => {

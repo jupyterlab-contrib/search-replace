@@ -82,7 +82,7 @@ interface IMatchesTreeViewProps {
 /**
  * Create a tree view for the search query results
  */
-function MatchesTreeView(props: IMatchesTreeViewProps): JSX.Element {
+function MatchesTreeView(props: IMatchesTreeViewProps): JSX.Element | null {
   const {
     matches,
     path,
@@ -93,6 +93,11 @@ function MatchesTreeView(props: IMatchesTreeViewProps): JSX.Element {
     onReplace,
     trans
   } = props;
+
+  if (matches.length === 0) {
+    return null;
+  }
+
   matches.sort((a, b) => (a.path > b.path ? 1 : -1));
   const items = matches.map((file, index) => {
     const mayHaveMoreMatches = file.matches.length >= maxMatchesPerFiles;
@@ -189,15 +194,11 @@ function MatchesTreeView(props: IMatchesTreeViewProps): JSX.Element {
     );
   });
 
-  if (items.length === 0) {
-    return <p>{trans.__('No Matches Found')}</p>;
-  } else {
-    return (
-      <div className="jp-search-replace-list">
-        <TreeView>{items}</TreeView>
-      </div>
-    );
-  }
+  return (
+    <div className="jp-search-replace-list">
+      <TreeView>{items}</TreeView>
+    </div>
+  );
 }
 
 /**
@@ -385,7 +386,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         )}
         {this.model.searchQuery && (
           <p className="jp-search-replace-statistics">
-            {this.model.queryResults
+            {this.model.queryResults.length
               ? this.trans._n(
                   '%2 result(s) in %1 file',
                   '%2 results in %1 files',
