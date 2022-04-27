@@ -547,7 +547,7 @@ async def test_replace_operation(test_content, schema, jp_fetch):
     checkpoint_file = (
         file_match.parent
         / ".ipynb_checkpoints"
-        / file_match.with_stem(file_match.stem + "-checkpoint").name
+        / file_match.with_name(file_match.stem + "-checkpoint" + file_match.suffix).name
     )
     assert checkpoint_file.exists()
     assert checkpoint_file.read_text() == unmodified_content
