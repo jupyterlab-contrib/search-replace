@@ -36,9 +36,7 @@
 .jp-search-replace-tab .jp-stack-panel-header {
   border-bottom: solid var(--jp-border-width) var(--jp-border-color1);
   box-shadow: var(--jp-toolbar-box-shadow);
-  display: flex;
-  flex-direction: column;
-  padding: 2px 8px;
+  padding: 4px 8px 2px 8px;
 }
 
 .jp-search-replace-row > jp-text-field {
@@ -129,6 +127,7 @@
 }
 
 .jp-search-replace-collapser > .jp-search-replace-column {
+  margin-top: 2px;
   flex: 1 1 auto;
 }
 

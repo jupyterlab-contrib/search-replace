@@ -26,6 +26,7 @@ import {
   regexIcon
 } from '@jupyterlab/ui-components';
 import type { CommandRegistry } from '@lumino/commands';
+import { Message } from '@lumino/messaging';
 import React, { useEffect, useState } from 'react';
 import { AskBoolean } from './askBoolean';
 import {
@@ -212,6 +213,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
   ) {
     super(searchModel);
     this._askReplaceConfirmation = true;
+    this.searchInputRef = React.createRef<HTMLInputElement>();
     this.addClass('jp-search-replace-tab');
     this.addClass('jp-search-replace-column');
   }
@@ -227,6 +229,11 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
       this._askReplaceConfirmation = v;
       this.onAskReplaceChanged(v);
     }
+  }
+
+  protected onAfterShow(msg: Message): void {
+    super.onAfterShow(msg);
+    this.searchInputRef.current?.focus();
   }
 
   /**
@@ -260,6 +267,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
 
     return (
       <SearchReplaceElement
+        searchInputRef={this.searchInputRef}
         searchString={this.model.searchQuery}
         onSearchChanged={(s: string) => {
           this.model.searchQuery = s;
@@ -476,6 +484,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
     return widget;
   }
 
+  protected searchInputRef: React.RefObject<HTMLInputElement>;
   private _askReplaceConfirmation: boolean;
 }
 
@@ -546,6 +555,7 @@ interface ISearchReplaceProps {
   replaceString: string;
   onReplaceString: (s: string) => void;
   onReplace: (r: SearchReplace.IFileReplacement[], filePath?: string) => void;
+  searchInputRef: React.RefObject<HTMLInputElement>;
   searchString: string;
   onSearchChanged: (s: string) => void;
   trans: TranslationBundle;
@@ -567,7 +577,7 @@ const SearchReplaceElement = (props: ISearchReplaceProps) => {
 
   return (
     <>
-      <div className="jp-stack-panel-header">
+      <div className="jp-stack-panel-header jp-search-replace-column">
         <div className="jp-search-replace-header jp-search-replace-row">
           <h2>{props.trans.__('Search')}</h2>
           <div className="jp-Toolbar-spacer"></div>
@@ -629,6 +639,7 @@ const SearchReplaceElement = (props: ISearchReplaceProps) => {
         <div className="jp-search-replace-column">
           <div className="jp-search-replace-row">
             <TextField
+              ref={props.searchInputRef}
               appearance="outline"
               type="text"
               placeholder={props.trans.__('Search')}
