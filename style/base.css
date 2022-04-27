@@ -64,6 +64,34 @@
   flex: 1 1 0;
 }
 
+.jp-search-replace-breadcrumb::part(list) {
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.jp-search-replace-breacrumbitem {
+  flex: 0 0 auto;
+  max-width: max-content;
+}
+
+.jp-search-replace-breacrumbitem::part(listitem) {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.jp-search-replace-pathbutton {
+  width: 100%;
+}
+
+.jp-search-replace-pathbutton::part(control) {
+  overflow-x: hidden;
+}
+
+.jp-search-replace-pathbutton::part(content) {
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Fix JupyterLab icons colors */
 .jp-search-replace-tab .jp-icon2[fill] {
   fill: none;
