@@ -9,7 +9,12 @@ import {
   TreeItem,
   TreeView
 } from '@jupyter-notebook/react-components';
-import { Dialog, showDialog, VDomRenderer } from '@jupyterlab/apputils';
+import {
+  Dialog,
+  ISanitizer,
+  showDialog,
+  VDomRenderer
+} from '@jupyterlab/apputils';
 import type { CodeMirrorEditor } from '@jupyterlab/codemirror';
 import { PathExt } from '@jupyterlab/coreutils';
 import type { IDocumentManager } from '@jupyterlab/docmanager';
@@ -38,6 +43,8 @@ import {
 } from './icon';
 import type { SearchReplaceModel } from './model';
 import { SearchReplace } from './tokens';
+
+const RIPGREP_MISSING_ERROR = 'ripgrep command not found.';
 
 /**
  * MatchesTreeView component properties
@@ -209,6 +216,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
     searchModel: SearchReplaceModel,
     protected commands: CommandRegistry,
     protected docManager: IDocumentManager | null,
+    protected sanitizer: ISanitizer,
     protected trans: TranslationBundle,
     private onAskReplaceChanged: (b: boolean) => void
   ) {
@@ -316,7 +324,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
           }
         }}
         isLoading={this.model.isLoading}
-        queryResults={this.model.queryResults}
+        queryResults={this.model.error ? [] : this.model.queryResults}
         onMatchClick={(path: string, m: SearchReplace.IMatch) => {
           this.openFile(path, m);
         }}
@@ -375,26 +383,47 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
           }}
           trans={this.trans}
         ></FilterBox>
-        {hasDirtyFiles && (
+        {this.model.error ? (
           <div className="jp-search-replace-warning">
-            <p>
-              {this.trans.__(
-                'You have unsaved changes. The result(s) may be inexact. Save your work and refresh.'
-              )}
-            </p>
+            <p
+              dangerouslySetInnerHTML={{
+                __html:
+                  this.model.error === RIPGREP_MISSING_ERROR
+                    ? this.sanitizer.sanitize(
+                        this.trans.__(
+                          '<a href="%1" target="_blank">ripgrep</a> command was not found. You can install it using e.g. the <a href="%2" target="_blank">conda package manager</a>.',
+                          'https://github.com/BurntSushi/ripgrep#installation',
+                          'https://anaconda.org/conda-forge/ripgrep'
+                        )
+                      )
+                    : this.model.error
+              }}
+            ></p>
           </div>
-        )}
-        {this.model.searchQuery && (
-          <p className="jp-search-replace-statistics">
-            {this.model.queryResults.length
-              ? this.trans._n(
-                  '%2 result(s) in %1 file',
-                  '%2 results in %1 files',
-                  nFiles,
-                  nMatches
-                )
-              : this.trans.__('No results found.')}
-          </p>
+        ) : (
+          <>
+            {hasDirtyFiles && (
+              <div className="jp-search-replace-warning">
+                <p>
+                  {this.trans.__(
+                    'You have unsaved changes. The result(s) may be inexact. Save your work and refresh.'
+                  )}
+                </p>
+              </div>
+            )}
+            {this.model.searchQuery && (
+              <p className="jp-search-replace-statistics">
+                {this.model.queryResults.length
+                  ? this.trans._n(
+                      '%2 result(s) in %1 file',
+                      '%2 results in %1 files',
+                      nFiles,
+                      nMatches
+                    )
+                  : this.trans.__('No results found.')}
+              </p>
+            )}
+          </>
         )}
       </SearchReplaceElement>
     );

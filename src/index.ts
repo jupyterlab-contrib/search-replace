@@ -3,15 +3,16 @@ import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
+import { ISanitizer } from '@jupyterlab/apputils';
 import { IChangedArgs } from '@jupyterlab/coreutils';
+import { IDocumentManager } from '@jupyterlab/docmanager';
 import { FileBrowserModel, IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { IEditorTracker } from '@jupyterlab/fileeditor';
+import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 import { searchIcon } from '@jupyterlab/ui-components';
-import { SearchReplaceView } from './view';
 import { SearchReplaceModel } from './model';
-import { ISettingRegistry } from '@jupyterlab/settingregistry';
-import { IDocumentManager } from '@jupyterlab/docmanager';
+import { SearchReplaceView } from './view';
 
 /**
  * Initialization data for the search-replace extension.
@@ -19,10 +20,11 @@ import { IDocumentManager } from '@jupyterlab/docmanager';
 const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab-search-replace:plugin',
   autoStart: true,
-  requires: [IFileBrowserFactory, IEditorTracker],
+  requires: [ISanitizer, IFileBrowserFactory, IEditorTracker],
   optional: [IDocumentManager, ISettingRegistry, ITranslator],
   activate: (
     app: JupyterFrontEnd,
+    sanitizer: ISanitizer,
     factory: IFileBrowserFactory,
     // Request the file editor as we do the replace actions with the editor
     // to take advantage of the editor history.
@@ -46,6 +48,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
       searchReplaceModel,
       app.commands,
       docManager,
+      sanitizer,
       trans,
       onAskReplaceChange
     );

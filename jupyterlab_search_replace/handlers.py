@@ -34,7 +34,12 @@ class RouteHandler(APIHandler):
                 max_count,
             )
         except asyncio.exceptions.CancelledError:
-            r = {"code": 1, "message": "task was cancelled"}
+            r = {"code": 1, "message": "Task was cancelled."}
+        except FileNotFoundError as e:
+            if "'rg'" in str(e):
+                r = {"code": 2, "message": "ripgrep command not found."}
+            else:
+                raise e
 
         if r.get("code") is not None:
             self.set_status(500)

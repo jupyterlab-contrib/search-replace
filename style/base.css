@@ -143,6 +143,10 @@
   font-size: var(--jp-ui-font-size1);
 }
 
+.jp-search-replace-warning a {
+  text-decoration: underline;
+}
+
 .jp-search-replace-warning::before {
   content: '⚠';
   margin-right: 4px;

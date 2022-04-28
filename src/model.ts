@@ -12,6 +12,7 @@ const REGEXP_GROUP = /\$[1-9]\d*/g;
 export class SearchReplaceModel extends VDomModel {
   constructor() {
     super();
+    this._errorMsg = null;
     this._isLoading = false;
     this._searchQuery = '';
     this._queryResults = [];
@@ -59,6 +60,13 @@ export class SearchReplaceModel extends VDomModel {
       this.stateChanged.emit();
       this.refresh();
     }
+  }
+
+  /**
+   * Error message if request failed.
+   */
+  get error(): string | null {
+    return this._errorMsg;
   }
 
   /**
@@ -229,8 +237,10 @@ export class SearchReplaceModel extends VDomModel {
           matches
         })
       });
+      this._errorMsg = null;
     } catch (reason) {
       console.error(`Failed to replace some matches.\n${reason}`);
+      this._errorMsg = reason.message ?? reason;
     } finally {
       this.refresh();
     }
@@ -242,6 +252,7 @@ export class SearchReplaceModel extends VDomModel {
     const search = this.searchQuery;
     const path = this.path;
     if (search === '') {
+      this._errorMsg = null;
       this._queryResults = [];
       this.stateChanged.emit();
       return Promise.resolve();
@@ -280,11 +291,13 @@ export class SearchReplaceModel extends VDomModel {
         }
       );
       this._queryResults = data.matches;
+      this._errorMsg = null;
       if (this.replaceString) {
         await this._updateReplace();
       }
     } catch (reason) {
       console.error(`Failed to search for '${search}' in '${path}'.`, reason);
+      this._errorMsg = reason.message ?? reason;
       this._queryResults = [];
     } finally {
       this._isLoading = false;
@@ -348,6 +361,7 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  private _errorMsg: string | null;
   private _isLoading: boolean;
   private _searchQuery: string;
   private _replaceString: string;
