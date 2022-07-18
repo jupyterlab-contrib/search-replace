@@ -38,6 +38,14 @@ _(
     sys.executable,
     "-m",
     "jupyter",
+    "serverextension",
+    "enable",
+    "jupyterlab_search_replace"
+)
+_(
+    sys.executable,
+    "-m",
+    "jupyter",
     "server",
     "extension",
     "enable",
