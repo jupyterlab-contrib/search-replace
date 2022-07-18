@@ -40,7 +40,7 @@ _(
     "jupyter",
     "serverextension",
     "enable",
-    "jupyterlab_search_replace"
+    "jupyterlab_search_replace",
 )
 _(
     sys.executable,
@@ -49,7 +49,7 @@ _(
     "server",
     "extension",
     "enable",
-    "jupyterlab_search_replace"
+    "jupyterlab_search_replace",
 )
 
 # verify the environment the extension didn't break anything
