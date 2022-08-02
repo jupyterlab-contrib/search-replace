@@ -31,6 +31,7 @@ To install the extension, execute:
 ```bash
 pip install jupyterlab jupyterlab-search-replace
 ```
+Note: You still need `ripgrep` installed for `jupyterlab-search-replace` to work.
 
 or
 
