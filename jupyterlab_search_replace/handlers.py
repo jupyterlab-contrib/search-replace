@@ -10,7 +10,7 @@ from .search_engine import SearchEngine
 
 class RouteHandler(APIHandler):
     def initialize(self) -> None:
-        self._engine = SearchEngine(self.contents_manager.root_dir)
+        self._engine = SearchEngine(self.contents_manager)
 
     @tornado.web.authenticated
     async def get(self, path: str = ""):
@@ -49,13 +49,12 @@ class RouteHandler(APIHandler):
         self.finish(json.dumps(r))
 
     @tornado.web.authenticated
-    def post(self, path: str = ""):
+    async def post(self, path: str = ""):
         """POST request handler to perform a replace action."""
         json_body = self.get_json_body()
         matches = json_body["matches"]
-        create_checkpoint = lambda p: self.contents_manager.create_checkpoint(p)
 
-        self._engine.replace(matches, path, create_checkpoint)
+        await self._engine.replace(matches, path)
 
         self.set_status(201)
 
