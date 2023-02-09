@@ -33,7 +33,7 @@ const plugin: JupyterFrontEndPlugin<void> = {
     settingRegistry: ISettingRegistry | null,
     translator: ITranslator | null
   ) => {
-    const trans = (translator ?? nullTranslator).load('search-replace');
+    const trans = (translator ?? nullTranslator).load('search_replace');
     addJupyterLabThemeChangeListener();
 
     const searchReplaceModel = new SearchReplaceModel();
