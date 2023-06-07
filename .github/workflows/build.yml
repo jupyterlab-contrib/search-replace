@@ -125,7 +125,6 @@ jobs:
 
       - name: Launch JupyterLab
         run: |
-          cd galata
           jlpm start 2>&1 > /tmp/jupyterlab_server.log &
         working-directory: ui-tests
 
