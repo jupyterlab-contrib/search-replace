@@ -123,6 +123,12 @@ jobs:
           set -eux
           python -m pip install "jupyterlab~=3.1" myextension.tar.gz
 
+      - name: Launch JupyterLab
+        run: |
+          cd galata
+          jlpm start 2>&1 > /tmp/jupyterlab_server.log &
+        working-directory: ui-tests
+
       - name: Install dependencies
         working-directory: ui-tests
         env:
@@ -138,6 +144,12 @@ jobs:
         run: jlpm playwright install chromium
         working-directory: ui-tests
 
+      - name: Wait for JupyterLab
+        uses: ifaxity/wait-on-action@v1.1.0
+        with:
+          resource: http-get://localhost:8888/lab
+          timeout: 360000
+
       - name: Execute integration tests
         working-directory: ui-tests
         run: |
@@ -151,3 +163,13 @@ jobs:
           path: |
             ui-tests/test-results
             ui-tests/playwright-report
+
+      - name: Stop JupyterLab
+        if: always()
+        run: |
+          pkill -s SIGTERM jupyter-lab
+
+      - name: Print JupyterLab logs
+        if: always()
+        run: |
+          cat /tmp/jupyterlab_server.log
