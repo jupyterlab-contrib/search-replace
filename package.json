@@ -105,7 +105,25 @@
     },
     "extension": true,
     "outputDir": "jupyterlab_search_replace/labextension",
-    "schemaDir": "schema"
+    "schemaDir": "schema",    
+    "sharedPackages": {
+      "@jupyter-notebook/react-components": {
+        "bundled": true,
+        "singleton": true
+      },
+      "@jupyter-notebook/web-components": {
+        "bundled": true,
+        "singleton": true
+      },
+      "@microsoft/fast-element": {
+        "bundled": true,
+        "singleton": true
+      },
+      "@microsoft/fast-foundation": {
+        "bundled": true,
+        "singleton": true
+      }
+    }
   },
   "jupyter-releaser": {
     "hooks": {
