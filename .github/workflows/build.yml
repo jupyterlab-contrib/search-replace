@@ -166,7 +166,7 @@ jobs:
       - name: Stop JupyterLab
         if: always()
         run: |
-          pkill -s SIGTERM jupyter-lab
+          pkill -SIGTERM jupyter-lab
 
       - name: Print JupyterLab logs
         if: always()
