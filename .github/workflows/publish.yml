@@ -7,7 +7,6 @@ on:
 
 jobs:
   deploy:
-    environment: publication
     runs-on: ubuntu-latest
     permissions:
       # IMPORTANT: this permission is mandatory for trusted publishing
