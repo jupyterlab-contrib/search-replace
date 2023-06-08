@@ -486,7 +486,11 @@ async def test_search_regex(test_content, schema, jp_fetch):
 
 @pytest.mark.asyncio
 async def test_two_search_operations(test_content, schema, jp_root_dir):
-    engine = SearchEngine(jp_root_dir)
+    class DummyContentsManager:
+        def __init__(self, root_dir):
+            self.root_dir = root_dir
+
+    engine = SearchEngine(DummyContentsManager(jp_root_dir))
     task_1 = asyncio.create_task(engine.search(query="s"))
     payload = await asyncio.create_task(engine.search(query="str.*"))
     assert task_1.cancelled() == True

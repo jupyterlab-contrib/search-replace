@@ -12,10 +12,14 @@ import os
 from functools import partial
 from pathlib import Path
 from subprocess import Popen, PIPE
-from typing import Callable, ClassVar, Iterable, List, Optional, Tuple
+from typing import ClassVar, Iterable, List, Optional, Tuple, Union
 
 import tornado
-from jupyter_server.utils import url2path
+from jupyter_server.services.contents.manager import (
+    AsyncContentsManager,
+    ContentsManager,
+)
+from jupyter_server.utils import ensure_async, url2path
 
 from .log import get_logger
 
@@ -77,12 +81,15 @@ class SearchEngine:
     # Keep track of the previous search task to run only one task at a time
     search_task: ClassVar[Optional[asyncio.Task]] = None
 
-    def __init__(self, root_dir: str) -> None:
+    def __init__(
+        self, contents_manager: Union[AsyncContentsManager, ContentsManager]
+    ) -> None:
         """
         Args:
-            root_dir (str): Server root path
+            contents_manager: Server contents manager
         """
-        self._root_dir = Path(os.path.expanduser(root_dir)).resolve()
+        self._contents_manager = contents_manager
+        self._root_dir = Path(os.path.expanduser(contents_manager.root_dir)).resolve()
 
     async def _execute(
         self, cmd: List[str], cwd: Optional[str] = None
@@ -263,12 +270,7 @@ class SearchEngine:
             d[line] = sorted(matches, key=lambda tup: tup[0])
         return d
 
-    def replace(
-        self,
-        matches: List,
-        path: str,
-        create_checkpoint: Optional[Callable[[str], None]] = None,
-    ) -> None:
+    async def replace(self, matches: List, path: str, create_checkpoint=True) -> None:
         """Replace the ``matches`` within ``path``.
 
         A match is described by a dictionary: {"line_number", "start", "end", "replace"}
@@ -278,7 +280,7 @@ class SearchEngine:
         Args:
             matches: The search matches to replace
             path: The root folder in which to apply the replace
-            create_checkpoint: Optional callback to apply on each file before the replacement operation
+            create_checkpoint: Whether to create a checkpoint before replacing matches
         """
         for file_match in matches:
             file_relative_path = file_match["path"]
@@ -286,9 +288,11 @@ class SearchEngine:
 
             relative_path = os.path.join(url2path(path), file_relative_path)
 
-            if create_checkpoint is not None:
+            if create_checkpoint:
                 self.log.debug(f"Creating checkpoints for {relative_path}")
-                create_checkpoint(relative_path)
+                await ensure_async(
+                    self._contents_manager.create_checkpoint(relative_path)
+                )
 
             file_path: Path = self._root_dir / relative_path
 

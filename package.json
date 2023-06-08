@@ -87,6 +87,9 @@
     "rimraf": "^3.0.2",
     "typescript": "~4.1.3"
   },
+  "resolutions": {
+    "@jupyterlab/rendermime-interfaces": ">=3.0.0 <3.8.0"
+  },
   "sideEffects": [
     "style/*.css",
     "style/index.js"
@@ -105,7 +108,25 @@
     },
     "extension": true,
     "outputDir": "jupyterlab_search_replace/labextension",
-    "schemaDir": "schema"
+    "schemaDir": "schema",    
+    "sharedPackages": {
+      "@jupyter-notebook/react-components": {
+        "bundled": true,
+        "singleton": true
+      },
+      "@jupyter-notebook/web-components": {
+        "bundled": true,
+        "singleton": true
+      },
+      "@microsoft/fast-element": {
+        "bundled": true,
+        "singleton": true
+      },
+      "@microsoft/fast-foundation": {
+        "bundled": true,
+        "singleton": true
+      }
+    }
   },
   "jupyter-releaser": {
     "hooks": {
