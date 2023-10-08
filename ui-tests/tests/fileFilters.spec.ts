@@ -18,9 +18,11 @@ test.beforeEach(async ({ page, tmpPath }) => {
 
 test('should test for include filter', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('strange');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -28,7 +30,7 @@ test('should test for include filter', async ({ page }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -62,9 +64,11 @@ test('should test for include filter', async ({ page }) => {
 
 test('should test for exclude filter', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('strange');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -72,7 +76,7 @@ test('should test for exclude filter', async ({ page }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })

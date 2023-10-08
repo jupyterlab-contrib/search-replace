@@ -448,8 +448,21 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
     if (match) {
       await widget.context.ready;
       const editor = widget.content.editor as CodeMirrorEditor;
-      // @ts-expect-error Lab 3 API
-      if (editor.doc.setSelection) {
+      try {
+        const lineOffset = editor.getOffsetAt({
+          line: match.line_number - 1,
+          column: 0
+        });
+        editor.editor.dispatch({
+          selection: EditorSelection.create([
+            EditorSelection.range(
+              lineOffset + match.start_utf8,
+              lineOffset + match.end_utf8
+            )
+          ]),
+          scrollIntoView: true
+        });
+      } catch {
         // @ts-expect-error Lab 3 API
         editor.doc.setSelection(
           {
@@ -461,12 +474,6 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
             ch: match.end_utf8
           }
         );
-      } else {
-        editor.editor.dispatch({
-          selection: EditorSelection.create([
-            EditorSelection.range(match.start_utf8, match.end_utf8)
-          ])
-        });
       }
     }
 
@@ -485,6 +492,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
   ): Promise<IDocumentWidget<FileEditor>> {
     const widget = await this.openFile(path);
     await widget.context.ready;
+    const editor = widget.content.editor as CodeMirrorEditor;
 
     // Sort from end to start to preserve match positions
     matches
@@ -503,13 +511,43 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
           return -1;
         }
       })
-      .forEach(m => {
+      .forEach((m, idx) => {
+        const lineOffset = editor.getOffsetAt({
+          line: m.line_number - 1,
+          column: 0
+        });
         if (m.replace !== null) {
           widget.content.model.sharedModel.updateSource(
-            m.start_utf8,
-            m.end_utf8,
+            lineOffset + m.start_utf8,
+            lineOffset + m.end_utf8,
             m.replace
           );
+
+          if (idx === matches.length - 1) {
+            try {
+              editor.editor.dispatch({
+                selection: EditorSelection.create([
+                  EditorSelection.range(
+                    lineOffset + m.start_utf8,
+                    lineOffset + m.start_utf8 + m.replace.length
+                  )
+                ]),
+                scrollIntoView: true
+              });
+            } catch {
+              // @ts-expect-error Lab 3 API
+              editor.doc.setSelection(
+                {
+                  line: m.line_number - 1,
+                  ch: m.start_utf8
+                },
+                {
+                  line: m.line_number - 1,
+                  ch: m.start_utf8 + m.replace.length
+                }
+              );
+            }
+          }
         }
       });
 
