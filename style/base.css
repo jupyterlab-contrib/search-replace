@@ -1,7 +1,7 @@
 .jp-search-replace-tab {
   --density: -3;
-  --jp-search-replace-added-color: rgba(155, 185, 85, 0.4);
-  --jp-search-replace-deleted-color: rgba(255, 0, 0, 0.4);
+  --jp-search-replace-added-color: rgb(155 185 85 / 40%);
+  --jp-search-replace-deleted-color: rgb(255 0 0 / 40%);
   --badge-fill-warning: var(--jp-warn-color1);
   --badge-color-warning: var(--jp-ui-inverse-font-color1);
 
@@ -36,7 +36,7 @@
 .jp-search-replace-tab .jp-stack-panel-header {
   border-bottom: solid var(--jp-border-width) var(--jp-border-color1);
   box-shadow: var(--jp-toolbar-box-shadow);
-  padding: 4px 8px 2px 8px;
+  padding: 4px 8px 2px;
 }
 
 .jp-search-replace-row > jp-text-field {
@@ -96,7 +96,7 @@
 }
 
 .jp-search-replace-tab .jp-icon-accent2[fill] {
-  fill: currentColor;
+  fill: currentcolor;
 }
 
 .jp-search-replace-filtersBox {
@@ -123,7 +123,7 @@
 
 .jp-search-replace-row.jp-search-replace-collapser {
   align-items: flex-start;
-  padding: 4px 4px 2px 0px;
+  padding: 4px 4px 2px 0;
 }
 
 .jp-search-replace-collapser > .jp-search-replace-column {

@@ -240,7 +240,7 @@ export class SearchReplaceModel extends VDomModel {
       this._errorMsg = null;
     } catch (reason) {
       console.error(`Failed to replace some matches.\n${reason}`);
-      this._errorMsg = reason.message ?? reason;
+      this._errorMsg = (reason as Error).message ?? reason;
     } finally {
       this.refresh();
     }
@@ -297,7 +297,7 @@ export class SearchReplaceModel extends VDomModel {
       }
     } catch (reason) {
       console.error(`Failed to search for '${search}' in '${path}'.`, reason);
-      this._errorMsg = reason.message ?? reason;
+      this._errorMsg = (reason as Error).message ?? reason;
       this._queryResults = [];
     } finally {
       this._isLoading = false;

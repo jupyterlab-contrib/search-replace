@@ -1,3 +1,4 @@
+import { EditorSelection } from '@codemirror/state';
 import {
   Badge,
   Breadcrumb,
@@ -8,7 +9,7 @@ import {
   Toolbar,
   TreeItem,
   TreeView
-} from '@jupyter-notebook/react-components';
+} from '@jupyter/react-components';
 import {
   Dialog,
   ISanitizer,
@@ -447,16 +448,26 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
     if (match) {
       await widget.context.ready;
       const editor = widget.content.editor as CodeMirrorEditor;
-      editor.doc.setSelection(
-        {
-          line: match.line_number - 1,
-          ch: match.start_utf8
-        },
-        {
-          line: match.line_number - 1,
-          ch: match.end_utf8
-        }
-      );
+      // @ts-expect-error Lab 3 API
+      if (editor.doc.setSelection) {
+        // @ts-expect-error Lab 3 API
+        editor.doc.setSelection(
+          {
+            line: match.line_number - 1,
+            ch: match.start_utf8
+          },
+          {
+            line: match.line_number - 1,
+            ch: match.end_utf8
+          }
+        );
+      } else {
+        editor.editor.dispatch({
+          selection: EditorSelection.create([
+            EditorSelection.range(match.start_utf8, match.end_utf8)
+          ])
+        });
+      }
     }
 
     return widget;
@@ -474,7 +485,6 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
   ): Promise<IDocumentWidget<FileEditor>> {
     const widget = await this.openFile(path);
     await widget.context.ready;
-    const editor = widget.content.editor as CodeMirrorEditor;
 
     // Sort from end to start to preserve match positions
     matches
@@ -494,18 +504,12 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
         }
       })
       .forEach(m => {
-        editor.doc.setSelection(
-          {
-            line: m.line_number - 1,
-            ch: m.start_utf8
-          },
-          {
-            line: m.line_number - 1,
-            ch: m.end_utf8
-          }
-        );
         if (m.replace !== null) {
-          editor.doc.replaceSelection(m.replace);
+          widget.content.model.sharedModel.updateSource(
+            m.start_utf8,
+            m.end_utf8,
+            m.replace
+          );
         }
       });
 

@@ -1,4 +1,4 @@
-import { addJupyterLabThemeChangeListener } from '@jupyter-notebook/web-components';
+import { addJupyterLabThemeChangeListener } from '@jupyter/web-components';
 import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin
@@ -6,8 +6,13 @@ import {
 import { ISanitizer } from '@jupyterlab/apputils';
 import { IChangedArgs } from '@jupyterlab/coreutils';
 import { IDocumentManager } from '@jupyterlab/docmanager';
-import { FileBrowserModel, IFileBrowserFactory } from '@jupyterlab/filebrowser';
+import {
+  FileBrowserModel,
+  IDefaultFileBrowser,
+  IFileBrowserFactory
+} from '@jupyterlab/filebrowser';
 import { IEditorTracker } from '@jupyterlab/fileeditor';
+import { IRenderMime } from '@jupyterlab/rendermime-interfaces';
 import { ISettingRegistry } from '@jupyterlab/settingregistry';
 import { ITranslator, nullTranslator } from '@jupyterlab/translation';
 import { searchIcon } from '@jupyterlab/ui-components';
@@ -21,15 +26,21 @@ const plugin: JupyterFrontEndPlugin<void> = {
   id: 'jupyterlab-search-replace:plugin',
   autoStart: true,
   requires: [ISanitizer, IFileBrowserFactory, IEditorTracker],
-  optional: [IDocumentManager, ISettingRegistry, ITranslator],
+  optional: [
+    IDocumentManager,
+    IDefaultFileBrowser,
+    ISettingRegistry,
+    ITranslator
+  ],
   activate: (
     app: JupyterFrontEnd,
-    sanitizer: ISanitizer,
+    sanitizer: IRenderMime.ISanitizer,
     factory: IFileBrowserFactory,
     // Request the file editor as we do the replace actions with the editor
     // to take advantage of the editor history.
     editorTracker: IEditorTracker,
     docManager: IDocumentManager | null,
+    defaultBrowser: IDefaultFileBrowser | null,
     settingRegistry: ISettingRegistry | null,
     translator: ITranslator | null
   ) => {
@@ -75,7 +86,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
         });
     }
 
-    const fileBrowser = factory.defaultBrowser;
+    // @ts-expect-error the fallback is for JupyterLab 3
+    const fileBrowser = defaultBrowser ?? factory.defaultBrowser;
     Promise.all([app.restored, fileBrowser.model.restored]).then(() => {
       searchReplaceModel.path = fileBrowser.model.path;
     });
