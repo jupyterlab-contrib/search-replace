@@ -5,10 +5,11 @@
 Search and replace across files.
 
 ![JupyterLab demo](https://raw.githubusercontent.com/jupyterlab-contrib/search-replace/main/search-replace-demo.gif)
+
 > JupyterLab integration
 
-
 ![Notebook demo](https://raw.githubusercontent.com/jupyterlab-contrib/search-replace/main/search_in_notebook.png)
+
 > Notebook integration
 
 **Notes on replace**

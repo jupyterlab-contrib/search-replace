@@ -30,9 +30,6 @@ jobs:
         jlpm
         jlpm run lint:check
 
-    - name: Linter check
-      run: |
-        set -eux
         python -m pre_commit run --all
 
     - name: Build the extension
