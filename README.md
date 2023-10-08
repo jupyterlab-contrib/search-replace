@@ -1,10 +1,15 @@
 # jupyterlab-search-replace
 
-[![Extension status](https://img.shields.io/badge/status-ready-success 'ready to be used')](https://jupyterlab-contrib.github.io/) [![Build](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml/badge.svg)](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/search-replace/master?urlpath=lab) [![Version](https://img.shields.io/pypi/v/jupyterlab-search-replace.svg)](https://pypi.org/project/jupyterlab-search-replace/) [![Version](https://img.shields.io/conda/vn/conda-forge/jupyterlab-search-replace.svg)](https://anaconda.org/conda-forge/jupyterlab-search-replace)
+[![Extension status](https://img.shields.io/badge/status-ready-success 'ready to be used')](https://jupyterlab-contrib.github.io/) [![Build](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml/badge.svg)](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/search-replace/main?urlpath=lab) [![Version](https://img.shields.io/pypi/v/jupyterlab-search-replace.svg)](https://pypi.org/project/jupyterlab-search-replace/) [![Version](https://img.shields.io/conda/vn/conda-forge/jupyterlab-search-replace.svg)](https://anaconda.org/conda-forge/jupyterlab-search-replace)
 
 Search and replace across files.
 
-![Demo](https://raw.githubusercontent.com/jupyterlab-contrib/search-replace/master/search-replace-demo.gif)
+![JupyterLab demo](https://raw.githubusercontent.com/jupyterlab-contrib/search-replace/main/search-replace-demo.gif)
+> JupyterLab integration
+
+
+![Notebook demo](https://raw.githubusercontent.com/jupyterlab-contrib/search-replace/main/search_in_notebook.png)
+> Notebook integration
 
 **Notes on replace**
 
@@ -19,7 +24,7 @@ There are three levels of replacement. Undo capability is possible except for re
 
 ## Requirements
 
-- JupyterLab >= 3.0
+- JupyterLab >= 3.0 and Notebook >= 7.0
 - [ripgrep](https://github.com/BurntSushi/ripgrep)
 
 > _ripgrep_ is available as [conda package](https://anaconda.org/conda-forge/ripgrep) on conda-forge.
@@ -145,7 +150,7 @@ pytest -vv -r ap --cov jupyterlab_search_replace
 #### Integration tests
 
 This extension uses [Playwright](https://playwright.dev/docs/intro) for the integration tests (aka user level tests).
-More precisely, the JupyterLab helper [Galata](https://github.com/jupyterlab/jupyterlab/tree/master/galata) is used to handle testing the extension in JupyterLab.
+More precisely, the JupyterLab helper [Galata](https://github.com/jupyterlab/jupyterlab/tree/main/galata) is used to handle testing the extension in JupyterLab.
 
 More information are provided within the [ui-tests](./ui-tests/README.md) README.
 

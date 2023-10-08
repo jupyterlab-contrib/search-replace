@@ -1,4 +1,5 @@
 import { addJupyterLabThemeChangeListener } from '@jupyter/web-components';
+import { INotebookTree } from '@jupyter-notebook/tree';
 import {
   JupyterFrontEnd,
   JupyterFrontEndPlugin
@@ -30,7 +31,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     IDocumentManager,
     IDefaultFileBrowser,
     ISettingRegistry,
-    ITranslator
+    ITranslator,
+    INotebookTree
   ],
   activate: (
     app: JupyterFrontEnd,
@@ -42,7 +44,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     docManager: IDocumentManager | null,
     defaultBrowser: IDefaultFileBrowser | null,
     settingRegistry: ISettingRegistry | null,
-    translator: ITranslator | null
+    translator: ITranslator | null,
+    notebookTree: INotebookTree | null
   ) => {
     const trans = (translator ?? nullTranslator).load('search_replace');
     addJupyterLabThemeChangeListener();
@@ -104,7 +107,12 @@ const plugin: JupyterFrontEndPlugin<void> = {
     searchReplacePlugin.title.caption = trans.__('Search and Replace');
     searchReplacePlugin.id = 'jp-search-replace';
     searchReplacePlugin.title.icon = searchIcon;
-    app.shell.add(searchReplacePlugin, 'left');
+    if (notebookTree) {
+      searchReplacePlugin.title.label = trans.__('Search');
+      notebookTree.addWidget(searchReplacePlugin);
+    } else {
+      app.shell.add(searchReplacePlugin, 'left');
+    }
   }
 };
 
