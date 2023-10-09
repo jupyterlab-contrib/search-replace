@@ -23,6 +23,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install ripgrep
         python -m pip install -U "jupyterlab>=4.0.0,<5"
+        python -m pip install .[tests]
 
     - name: Lint the extension
       run: |
@@ -32,10 +33,9 @@ jobs:
 
         python -m pre_commit run --all
 
-    - name: Build the extension
+    - name: Test the backend
       run: |
         set -eux
-        python -m pip install .[test]
 
         pytest -vv -r ap --cov jupyterlab_search_replace
 
