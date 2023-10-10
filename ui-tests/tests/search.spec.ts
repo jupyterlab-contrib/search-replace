@@ -50,7 +50,7 @@ test('should get 5 matches', async ({ page, tmpPath }) => {
   );
 
   // Check the match is selected in the editor
-  await expect(page.locator('span.CodeMirror-selectedtext')).toHaveText(
+  await expect(page.locator('::selection')).toHaveText(
     'strange'
   );
 });

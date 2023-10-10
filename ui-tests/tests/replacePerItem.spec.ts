@@ -92,7 +92,7 @@ test('should replace results for a particular file only', async ({ page }) => {
   );
 });
 
-test.skip('should undo replace results for a particular file only', async ({
+test('should undo replace results for a particular file only', async ({
   page
 }) => {
   await page.getByRole('tab', { name: 'Search and Replace' }).click();
@@ -228,7 +228,7 @@ test('should replace results for a particular match only', async ({ page }) => {
   );
 });
 
-test.skip('should undo replace results for a particular match only', async ({
+test('should undo replace results for a particular match only', async ({
   page
 }) => {
   await page.getByRole('tab', { name: 'Search and Replace' }).click();
