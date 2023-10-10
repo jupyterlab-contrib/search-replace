@@ -120,17 +120,17 @@ jobs:
         sudo apt-get update
         sudo apt-get install ripgrep
 
+    - name: Install the extension
+      run: |
+        set -eux
+        python -m pip install "jupyterlab>=4.0.0,<5" jupyterlab_search_replace*.whl
+
     - name: Install dependencies
       working-directory: ui-tests
       env:
         YARN_ENABLE_IMMUTABLE_INSTALLS: 0
         PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
       run: jlpm install
-
-    - name: Install the extension
-      run: |
-        set -eux
-        python -m pip install "jupyterlab>=4.0.0,<5" jupyterlab_search_replace*.whl
     
     - name: Launch JupyterLab
       run: |
