@@ -120,6 +120,13 @@ jobs:
         sudo apt-get update
         sudo apt-get install ripgrep
 
+    - name: Install dependencies
+      working-directory: ui-tests
+      env:
+        YARN_ENABLE_IMMUTABLE_INSTALLS: 0
+        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+      run: jlpm install
+
     - name: Install the extension
       run: |
         set -eux
@@ -129,13 +136,6 @@ jobs:
       run: |
         jlpm start 2>&1 > /tmp/jupyterlab_server.log &
       working-directory: ui-tests
-
-    - name: Install dependencies
-      working-directory: ui-tests
-      env:
-        YARN_ENABLE_IMMUTABLE_INSTALLS: 0
-        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-      run: jlpm install
 
     - name: Set up browser cache
       uses: actions/cache@v3
