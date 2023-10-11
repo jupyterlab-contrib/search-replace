@@ -50,7 +50,8 @@ test('should get 5 matches', async ({ page, tmpPath }) => {
   );
 
   // Check the match is selected in the editor
-  await expect(page.locator('::selection')).toHaveText(
+  await page.getByLabel('conftest.py').getByRole('textbox').waitFor();
+  expect(await page.evaluate(() => `${window.getSelection()}`)).toEqual(
     'strange'
   );
 });
