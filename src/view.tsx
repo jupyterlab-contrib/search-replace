@@ -32,6 +32,7 @@ import {
   regexIcon
 } from '@jupyterlab/ui-components';
 import type { CommandRegistry } from '@lumino/commands';
+import { PromiseDelegate } from '@lumino/coreutils';
 import { Message } from '@lumino/messaging';
 import React, { useEffect, useState } from 'react';
 import { AskBoolean } from './askBoolean';
@@ -491,8 +492,16 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
     matches: SearchReplace.IReplacement[]
   ): Promise<IDocumentWidget<FileEditor>> {
     const widget = await this.openFile(path);
-    await widget.context.ready;
+    await Promise.all([widget.context.ready, widget.content.ready]);
+
     const editor = widget.content.editor as CodeMirrorEditor;
+
+    // Add arbitrary delay for the shared model to set up properly its undo manager
+    const waitForTimeout = new PromiseDelegate<void>();
+    window.setTimeout(() => {
+      waitForTimeout.resolve();
+    }, 300);
+    await waitForTimeout.promise;
 
     // Sort from end to start to preserve match positions
     matches

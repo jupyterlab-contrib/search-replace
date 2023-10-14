@@ -271,7 +271,7 @@ test('should replace results on replace-all button', async ({ page }) => {
 
   await page
     .getByRole('textbox', { name: 'Search Files for Text' })
-    .fill('hello');
+    .fill('hola');
   await Promise.all([
     page.waitForResponse(
       response =>
