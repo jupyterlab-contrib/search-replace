@@ -51,9 +51,10 @@ test('should get 5 matches', async ({ page, tmpPath }) => {
 
   // Check the match is selected in the editor
   await page.getByLabel('conftest.py').getByRole('textbox').waitFor();
-  expect(await page.evaluate(() => `${window.getSelection()}`)).toEqual(
-    'strange'
+  const selection = await page.waitForFunction(
+    () => `${window.getSelection()}`
   );
+  expect(selection).toEqual('strange');
 });
 
 test('should get no matches', async ({ page }) => {
@@ -271,7 +272,7 @@ test('should replace results on replace-all button', async ({ page }) => {
 
   await page
     .getByRole('textbox', { name: 'Search Files for Text' })
-    .fill('hola');
+    .fill('hello');
   await Promise.all([
     page.waitForResponse(
       response =>
