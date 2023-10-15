@@ -19,9 +19,11 @@ test.beforeEach(async ({ page, tmpPath }) => {
 
 test('should replace results for a particular file only', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('strange');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -29,7 +31,7 @@ test('should replace results for a particular file only', async ({ page }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -65,14 +67,16 @@ test('should replace results for a particular file only', async ({ page }) => {
   ).toBeTruthy();
 
   // new search with `hello`
-  await page.locator('input[placeholder="Search"]').fill('hello');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('hello');
   await Promise.all([
     page.waitForResponse(
       response =>
         /.*search\/[\w-]+\?query=hello/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -88,11 +92,13 @@ test('should replace results for a particular file only', async ({ page }) => {
   );
 });
 
-test.skip('should undo replace results for a particular file only', async ({
+test('should undo replace results for a particular file only', async ({
   page
 }) => {
-  await page.locator('[title="Search and Replace"]').click();
-  await page.locator('input[placeholder="Search"]').fill('strange');
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -100,7 +106,7 @@ test.skip('should undo replace results for a particular file only', async ({
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter')
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter')
   ]);
 
   await page.locator('jp-tree-view[role="tree"] >> text=5').first().waitFor();
@@ -128,14 +134,16 @@ test.skip('should undo replace results for a particular file only', async ({
   await page.keyboard.press('Control+s');
 
   // new search with `hello`
-  await page.locator('input[placeholder="Search"]').fill('hello QS');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('hello QS');
   await Promise.all([
     page.waitForResponse(
       response =>
         /.*search\/[\w-]+\?query=hello/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter')
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter')
   ]);
 
   // verify if `conftest.py` has not changed
@@ -146,9 +154,11 @@ test.skip('should undo replace results for a particular file only', async ({
 
 test('should replace results for a particular match only', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('strange');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -156,7 +166,7 @@ test('should replace results for a particular match only', async ({ page }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -193,14 +203,16 @@ test('should replace results for a particular match only', async ({ page }) => {
   ).toBeTruthy();
 
   // new search with `helloqs`
-  await page.locator('input[placeholder="Search"]').fill('helloqs');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('helloqs');
   await Promise.all([
     page.waitForResponse(
       response =>
         /.*search\/[\w-]+\?query=helloqs/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -216,11 +228,13 @@ test('should replace results for a particular match only', async ({ page }) => {
   );
 });
 
-test.skip('should undo replace results for a particular match only', async ({
+test('should undo replace results for a particular match only', async ({
   page
 }) => {
-  await page.locator('[title="Search and Replace"]').click();
-  await page.locator('input[placeholder="Search"]').fill('strange');
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -228,7 +242,7 @@ test.skip('should undo replace results for a particular match only', async ({
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter')
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter')
   ]);
 
   await page.locator('jp-tree-view[role="tree"] >> text=5').first().waitFor();
@@ -255,14 +269,16 @@ test.skip('should undo replace results for a particular match only', async ({
   await page.keyboard.press('Control+s');
 
   // new search with `hello`
-  await page.locator('input[placeholder="Search"]').fill('hello QS');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('hello QS');
   await Promise.all([
     page.waitForResponse(
       response =>
         /.*search\/[\w-]+\?query=hello/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter')
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter')
   ]);
 
   // verify if `conftest.py` has not changed
@@ -273,9 +289,11 @@ test.skip('should undo replace results for a particular match only', async ({
 
 test('should replace with regexp group matching', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   await page.locator('[title="Use Regular Expression"]').click();
-  await page.locator('input[placeholder="Search"]').fill('(str)an(g)e');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('(str)an(g)e');
 
   await page.pause();
   await Promise.all([
@@ -284,7 +302,7 @@ test('should replace with regexp group matching', async ({ page }) => {
         /.*search\/[\w-]+\?query=%28str%29an%28g%29e/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -324,14 +342,16 @@ test('should replace with regexp group matching', async ({ page }) => {
   ).toBeTruthy();
 
   // new search with `strong`
-  await page.locator('input[placeholder="Search"]').fill('strong');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strong');
   await Promise.all([
     page.waitForResponse(
       response =>
         /.*search\/[\w-]+\?query=strong/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })

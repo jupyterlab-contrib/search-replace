@@ -1,4 +1,4 @@
-import { test, galata } from '@jupyterlab/galata';
+import { test } from '@jupyterlab/galata';
 import { expect } from '@playwright/test';
 import * as path from 'path';
 
@@ -13,9 +13,11 @@ test.beforeEach(async ({ page, tmpPath }) => {
 
 test('should get 5 matches', async ({ page, tmpPath }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('strange');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -23,7 +25,7 @@ test('should get 5 matches', async ({ page, tmpPath }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter')
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter')
   ]);
 
   await page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
@@ -48,16 +50,20 @@ test('should get 5 matches', async ({ page, tmpPath }) => {
   );
 
   // Check the match is selected in the editor
-  await expect(page.locator('span.CodeMirror-selectedtext')).toHaveText(
-    'strange'
+  await page.getByLabel('conftest.py').getByRole('textbox').waitFor();
+  const selection = await page.waitForFunction(
+    () => `${window.getSelection()}`
   );
+  expect(await selection.jsonValue()).toEqual('strange');
 });
 
 test('should get no matches', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('dhit');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('dhit');
 
   await Promise.all([
     page.waitForResponse(
@@ -65,7 +71,7 @@ test('should get no matches', async ({ page }) => {
         /.*search\/[\w-]+\?query=dhit/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter')
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter')
   ]);
 
   await expect(page.locator('.jp-search-replace-statistics')).toHaveText(
@@ -78,9 +84,11 @@ test('should get no matches', async ({ page }) => {
 
 test('should test for case sensitive option', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('Strange');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('Strange');
 
   let response_url: string;
 
@@ -92,7 +100,7 @@ test('should test for case sensitive option', async ({ page }) => {
         response.request().method() === 'GET'
       );
     }),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.locator('[title="Match Case"]').click()
   ]);
 
@@ -105,9 +113,11 @@ test('should test for case sensitive option', async ({ page }) => {
 
 test('should test for whole word option', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('strange');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strange');
 
   let response_url: string;
 
@@ -119,7 +129,7 @@ test('should test for whole word option', async ({ page }) => {
         response.request().method() === 'GET'
       );
     }),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.locator('[title="Match Whole Word"]').click()
   ]);
 
@@ -132,9 +142,11 @@ test('should test for whole word option', async ({ page }) => {
 
 test('should test for use regex option', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('str.*');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('str.*');
 
   let response_url: string;
 
@@ -146,7 +158,7 @@ test('should test for use regex option', async ({ page }) => {
         response.request().method() === 'GET'
       );
     }),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.locator('[title="Use Regular Expression"]').click()
   ]);
 
@@ -159,9 +171,11 @@ test('should test for use regex option', async ({ page }) => {
 
 test('should make a new request on refresh', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('strange');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -169,7 +183,7 @@ test('should make a new request on refresh', async ({ page }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter')
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter')
   ]);
 
   await Promise.all([
@@ -186,9 +200,11 @@ test('should expand and collapse tree view on clicking expand-collapse button', 
   page
 }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('strange');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -196,7 +212,7 @@ test('should expand and collapse tree view on clicking expand-collapse button', 
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -219,9 +235,11 @@ test('should expand and collapse tree view on clicking expand-collapse button', 
 
 test('should replace results on replace-all button', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('strange');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -229,7 +247,7 @@ test('should replace results on replace-all button', async ({ page }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -252,14 +270,16 @@ test('should replace results on replace-all button', async ({ page }) => {
     .fill('hello');
   await page.locator('[title="Replace All"]').click();
 
-  await page.locator('input[placeholder="Search"]').fill('hello');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('hello');
   await Promise.all([
     page.waitForResponse(
       response =>
         /.*search\/[\w-]+\?query=hello/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -275,9 +295,11 @@ test('should replace results on replace-all button', async ({ page }) => {
 
 test('should display a warning if a file is dirty', async ({ page }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('strange');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -285,7 +307,7 @@ test('should display a warning if a file is dirty', async ({ page }) => {
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter')
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter')
   ]);
 
   await page

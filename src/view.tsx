@@ -1,3 +1,4 @@
+import { EditorSelection } from '@codemirror/state';
 import {
   Badge,
   Breadcrumb,
@@ -8,7 +9,7 @@ import {
   Toolbar,
   TreeItem,
   TreeView
-} from '@jupyter-notebook/react-components';
+} from '@jupyter/react-components';
 import {
   Dialog,
   ISanitizer,
@@ -31,6 +32,7 @@ import {
   regexIcon
 } from '@jupyterlab/ui-components';
 import type { CommandRegistry } from '@lumino/commands';
+import { PromiseDelegate } from '@lumino/coreutils';
 import { Message } from '@lumino/messaging';
 import React, { useEffect, useState } from 'react';
 import { AskBoolean } from './askBoolean';
@@ -447,16 +449,33 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
     if (match) {
       await widget.context.ready;
       const editor = widget.content.editor as CodeMirrorEditor;
-      editor.doc.setSelection(
-        {
+      try {
+        const lineOffset = editor.getOffsetAt({
           line: match.line_number - 1,
-          ch: match.start_utf8
-        },
-        {
-          line: match.line_number - 1,
-          ch: match.end_utf8
-        }
-      );
+          column: 0
+        });
+        editor.editor.dispatch({
+          selection: EditorSelection.create([
+            EditorSelection.range(
+              lineOffset + match.start_utf8,
+              lineOffset + match.end_utf8
+            )
+          ]),
+          scrollIntoView: true
+        });
+      } catch {
+        // @ts-expect-error Lab 3 API
+        editor.doc.setSelection(
+          {
+            line: match.line_number - 1,
+            ch: match.start_utf8
+          },
+          {
+            line: match.line_number - 1,
+            ch: match.end_utf8
+          }
+        );
+      }
     }
 
     return widget;
@@ -473,8 +492,16 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
     matches: SearchReplace.IReplacement[]
   ): Promise<IDocumentWidget<FileEditor>> {
     const widget = await this.openFile(path);
-    await widget.context.ready;
+    await Promise.all([widget.context.ready, widget.content.ready]);
+
     const editor = widget.content.editor as CodeMirrorEditor;
+
+    // Add arbitrary delay for the shared model to set up properly its undo manager
+    const waitForTimeout = new PromiseDelegate<void>();
+    window.setTimeout(() => {
+      waitForTimeout.resolve();
+    }, 300);
+    await waitForTimeout.promise;
 
     // Sort from end to start to preserve match positions
     matches
@@ -493,19 +520,43 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
           return -1;
         }
       })
-      .forEach(m => {
-        editor.doc.setSelection(
-          {
-            line: m.line_number - 1,
-            ch: m.start_utf8
-          },
-          {
-            line: m.line_number - 1,
-            ch: m.end_utf8
-          }
-        );
+      .forEach((m, idx) => {
+        const lineOffset = editor.getOffsetAt({
+          line: m.line_number - 1,
+          column: 0
+        });
         if (m.replace !== null) {
-          editor.doc.replaceSelection(m.replace);
+          widget.content.model.sharedModel.updateSource(
+            lineOffset + m.start_utf8,
+            lineOffset + m.end_utf8,
+            m.replace
+          );
+
+          if (idx === matches.length - 1) {
+            try {
+              editor.editor.dispatch({
+                selection: EditorSelection.create([
+                  EditorSelection.range(
+                    lineOffset + m.start_utf8,
+                    lineOffset + m.start_utf8 + m.replace.length
+                  )
+                ]),
+                scrollIntoView: true
+              });
+            } catch {
+              // @ts-expect-error Lab 3 API
+              editor.doc.setSelection(
+                {
+                  line: m.line_number - 1,
+                  ch: m.start_utf8
+                },
+                {
+                  line: m.line_number - 1,
+                  ch: m.start_utf8 + m.replace.length
+                }
+              );
+            }
+          }
         }
       });
 

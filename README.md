@@ -1,10 +1,16 @@
 # jupyterlab-search-replace
 
-[![Extension status](https://img.shields.io/badge/status-ready-success 'ready to be used')](https://jupyterlab-contrib.github.io/) [![Build](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml/badge.svg)](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/search-replace/master?urlpath=lab) [![Version](https://img.shields.io/pypi/v/jupyterlab-search-replace.svg)](https://pypi.org/project/jupyterlab-search-replace/) [![Version](https://img.shields.io/conda/vn/conda-forge/jupyterlab-search-replace.svg)](https://anaconda.org/conda-forge/jupyterlab-search-replace)
+[![Extension status](https://img.shields.io/badge/status-ready-success 'ready to be used')](https://jupyterlab-contrib.github.io/) [![Build](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml/badge.svg)](https://github.com/jupyterlab-contrib/search-replace/actions/workflows/build.yml) [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/jupyterlab-contrib/search-replace/main?urlpath=lab) [![Version](https://img.shields.io/pypi/v/jupyterlab-search-replace.svg)](https://pypi.org/project/jupyterlab-search-replace/) [![Version](https://img.shields.io/conda/vn/conda-forge/jupyterlab-search-replace.svg)](https://anaconda.org/conda-forge/jupyterlab-search-replace)
 
 Search and replace across files.
 
-![Demo](https://raw.githubusercontent.com/jupyterlab-contrib/search-replace/master/search-replace-demo.gif)
+![JupyterLab demo](https://raw.githubusercontent.com/jupyterlab-contrib/search-replace/main/search-replace-demo.gif)
+
+> JupyterLab integration
+
+![Notebook demo](https://raw.githubusercontent.com/jupyterlab-contrib/search-replace/main/search_in_notebook.png)
+
+> Notebook integration
 
 **Notes on replace**
 
@@ -19,7 +25,7 @@ There are three levels of replacement. Undo capability is possible except for re
 
 ## Requirements
 
-- JupyterLab >= 3.0
+- JupyterLab >= 3.0 and Notebook >= 7.0
 - [ripgrep](https://github.com/BurntSushi/ripgrep)
 
 > _ripgrep_ is available as [conda package](https://anaconda.org/conda-forge/ripgrep) on conda-forge.
@@ -31,6 +37,7 @@ To install the extension, execute:
 ```bash
 pip install jupyterlab jupyterlab-search-replace
 ```
+
 Note: You still need `ripgrep` installed for `jupyterlab-search-replace` to work.
 
 or
@@ -83,7 +90,7 @@ The `jlpm` command is JupyterLab's pinned version of
 # Clone the repo to your local environment
 # Change directory to the jupyterlab_search_replace directory
 # Install package in development mode
-pip install -e .
+pip install -e ".[test]"
 # Link your development version of the extension with JupyterLab
 jupyter labextension develop . --overwrite
 # Server extension must be manually installed in develop mode
@@ -119,4 +126,35 @@ pip uninstall jupyterlab_search_replace
 
 In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
 command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
-folder is located. Then you can remove the symlink named `search-replace` within that folder.
+folder is located. Then you can remove the symlink named `jupyterlab-search-replace` within that folder.
+
+### Testing the extension
+
+#### Server tests
+
+This extension is using [Pytest](https://docs.pytest.org/) for Python code testing.
+
+Install test dependencies (needed only once):
+
+```sh
+pip install -e ".[test]"
+# Each time you install the Python package, you need to restore the front-end extension link
+jupyter labextension develop . --overwrite
+```
+
+To execute them, run:
+
+```sh
+pytest -vv -r ap --cov jupyterlab_search_replace
+```
+
+#### Integration tests
+
+This extension uses [Playwright](https://playwright.dev/docs/intro) for the integration tests (aka user level tests).
+More precisely, the JupyterLab helper [Galata](https://github.com/jupyterlab/jupyterlab/tree/main/galata) is used to handle testing the extension in JupyterLab.
+
+More information are provided within the [ui-tests](./ui-tests/README.md) README.
+
+### Packaging the extension
+
+See [RELEASE](RELEASE.md)

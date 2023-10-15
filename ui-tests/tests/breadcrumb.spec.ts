@@ -1,4 +1,4 @@
-import { test, galata } from '@jupyterlab/galata';
+import { test } from '@jupyterlab/galata';
 import { expect } from '@playwright/test';
 import * as path from 'path';
 
@@ -21,17 +21,20 @@ test('should switch directory and update results', async ({
   tmpPath
 }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('strange');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strange');
 
+  await page.pause();
   await Promise.all([
     page.waitForResponse(
       response =>
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -53,7 +56,7 @@ test('should switch directory and update results', async ({
   ).toBeTruthy();
 
   // Click on File Browser Tab
-  await page.locator('[title="File Browser (Ctrl+Shift+F)"]').click();
+  await page.getByRole('tab', { name: 'File Browser (Ctrl+Shift+F)' }).click();
   await page
     .locator('[aria-label="File\\ Browser\\ Section"] >> text=aaa')
     .dblclick();
@@ -64,7 +67,7 @@ test('should switch directory and update results', async ({
   await expect(page).toHaveURL(
     `http://localhost:8888/lab/tree/${tmpPath}/aaa/bbb`
   );
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   await page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
     state: 'hidden'
   });
@@ -85,9 +88,11 @@ test('should not update file browser on clicking of breadcrumb', async ({
   tmpPath
 }) => {
   // Click #tab-key-0 .lm-TabBar-tabIcon svg >> nth=0
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   // Fill input[placeholder="Search"]
-  await page.locator('input[placeholder="Search"]').fill('strange');
+  await page
+    .getByRole('textbox', { name: 'Search Files for Text' })
+    .fill('strange');
 
   await Promise.all([
     page.waitForResponse(
@@ -95,7 +100,7 @@ test('should not update file browser on clicking of breadcrumb', async ({
         /.*search\/[\w-]+\?query=strange/.test(response.url()) &&
         response.request().method() === 'GET'
     ),
-    page.locator('input[placeholder="Search"]').press('Enter'),
+    page.getByRole('textbox', { name: 'Search Files for Text' }).press('Enter'),
     page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
       state: 'hidden'
     })
@@ -105,7 +110,7 @@ test('should not update file browser on clicking of breadcrumb', async ({
     '60 results in 2 files'
   );
   // Click on File Browser Tab
-  await page.locator('[title="File Browser (Ctrl+Shift+F)"]').click();
+  await page.getByRole('tab', { name: 'File Browser (Ctrl+Shift+F)' }).click();
   await page
     .locator('[aria-label="File\\ Browser\\ Section"] >> text=aaa')
     .dblclick();
@@ -116,7 +121,7 @@ test('should not update file browser on clicking of breadcrumb', async ({
   await expect(page).toHaveURL(
     `http://localhost:8888/lab/tree/${tmpPath}/aaa/bbb`
   );
-  await page.locator('[title="Search and Replace"]').click();
+  await page.getByRole('tab', { name: 'Search and Replace' }).click();
   await page.waitForSelector('.jp-search-replace-tab >> .jp-progress', {
     state: 'hidden'
   });
@@ -138,7 +143,7 @@ test('should not update file browser on clicking of breadcrumb', async ({
   ).toBeTruthy();
 
   // Click on File Browser Tab
-  await page.locator('[title="File Browser (Ctrl+Shift+F)"]').click();
+  await page.getByRole('tab', { name: 'File Browser (Ctrl+Shift+F)' }).click();
   expect(
     await page.waitForSelector(
       '[aria-label="File\\ Browser\\ Section"] >> text=bbb'

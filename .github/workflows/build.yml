@@ -2,95 +2,97 @@ name: Build
 
 on:
   push:
-    branches: master
+    branches: main
   pull_request:
+    branches: '*'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
 
-      - name: Base Setup
-        uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+    - name: Base Setup
+      uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
 
-      - name: Install dependencies
-        run: |
-          set -eux
-          sudo apt-get update
-          sudo apt-get install ripgrep
+    - name: Install dependencies
+      run: |
+        set -eux
+        sudo apt-get update
+        sudo apt-get install ripgrep
+        python -m pip install -U "jupyterlab>=4.0.0,<5"
+        python -m pip install .[test]
 
-          python -m pip install -U jupyterlab~=3.1 check-manifest
+    - name: Lint the extension
+      run: |
+        set -eux
+        jlpm
+        jlpm run lint:check
 
-      - name: Build the extension
-        run: |
-          set -eux
-          jlpm
-          jlpm run eslint:check
-          python -m pip install .[tests]
+        python -m pre_commit run --all
 
-      - name: Linter check
-        run: |
-          set -eux
-          python -m pre_commit run --all
+    - name: Test the backend
+      run: |
+        set -eux
 
-      - name: Test
-        run: |
-          set -eux
-          python -m pytest -vv -r ap --cov jupyterlab_search_replace
+        pytest -vv -r ap --cov jupyterlab_search_replace
 
-      - name: Check JupyterLab installation
-        run: |
-          set -eux
-          jupyter server extension list
-          jupyter server extension list 2>&1 | grep -ie "jupyterlab_search_replace.*OK"
+    - name: Check JupyterLab installation
+      run: |
+        set -eux
+        jupyter server extension list
+        jupyter server extension list 2>&1 | grep -ie "jupyterlab_search_replace.*OK"
 
-          jupyter labextension list
-          jupyter labextension list 2>&1 | grep -ie "jupyterlab-search-replace.*OK"
-          python -m jupyterlab.browser_check --no-browser-test
+        jupyter labextension list
+        jupyter labextension list 2>&1 | grep -ie "jupyterlab-search-replace.*OK"
+        python -m jupyterlab.browser_check --no-browser-test
 
-      - name: Build package
-        run: |
-          set -eux
-          check-manifest -v
+    - name: Package the extension
+      run: |
+        set -eux
 
-          pip install build
-          python -m build --sdist
-          cp dist/*.tar.gz myextension.tar.gz
-          pip uninstall -y myextension jupyterlab
-          rm -rf myextension
+        pip install build
+        python -m build
+        pip uninstall -y "jupyterlab_search_replace" jupyterlab
 
-      - uses: actions/upload-artifact@v3
-        with:
-          name: myextension-sdist
-          path: myextension.tar.gz
+    - name: Upload extension packages
+      uses: actions/upload-artifact@v3
+      with:
+        name: extension-artifacts
+        path: dist/jupyterlab_search_replace*
+        if-no-files-found: error
 
   test_isolated:
     needs: build
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Install Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.8'
-          architecture: 'x64'
-      - uses: actions/download-artifact@v3
-        with:
-          name: myextension-sdist
-      - name: Install and Test
-        run: |
-          set -eux
-          # Remove NodeJS, twice to take care of system and locally installed node versions.
-          sudo rm -rf $(which node)
-          sudo rm -rf $(which node)
-          pip install myextension.tar.gz
-          pip install jupyterlab~=3.1
-          jupyter labextension list 2>&1 | grep -ie "search-replace.*OK"
-          python -m jupyterlab.browser_check --no-chrome-test
+    - name: Install Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        architecture: 'x64'
+    - uses: actions/download-artifact@v3
+      with:
+        name: extension-artifacts
+    - name: Install and Test
+      run: |
+        set -eux
+        # Remove NodeJS, twice to take care of system and locally installed node versions.
+        sudo rm -rf $(which node)
+        sudo rm -rf $(which node)
+
+        pip install "jupyterlab>=4.0.0,<5" jupyterlab_search_replace*.whl
+
+
+        jupyter server extension list
+        jupyter server extension list 2>&1 | grep -ie "jupyterlab_search_replace.*OK"
+
+        jupyter labextension list
+        jupyter labextension list 2>&1 | grep -ie "jupyterlab-search-replace.*OK"
+        python -m jupyterlab.browser_check --no-browser-test
 
   integration-tests:
     name: Integration tests
@@ -101,74 +103,86 @@ jobs:
       PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/pw-browsers
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v3
 
-      - name: Base Setup
-        uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+    - name: Base Setup
+      uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
 
-      - name: Download extension package
-        uses: actions/download-artifact@v3
-        with:
-          name: myextension-sdist
+    - name: Download extension package
+      uses: actions/download-artifact@v3
+      with:
+        name: extension-artifacts
 
-      - name: Install ripgrep
-        run: |
-          set -eux
-          sudo apt-get update
-          sudo apt-get install ripgrep
+    - name: Install ripgrep
+      run: |
+        set -eux
+        sudo apt-get update
+        sudo apt-get install ripgrep
 
-      - name: Install the extension
-        run: |
-          set -eux
-          python -m pip install "jupyterlab~=3.1" myextension.tar.gz
+    - name: Install the extension
+      run: |
+        set -eux
+        python -m pip install "jupyterlab>=4.0.0,<5" jupyterlab_search_replace*.whl
 
-      - name: Launch JupyterLab
-        run: |
-          jlpm start 2>&1 > /tmp/jupyterlab_server.log &
-        working-directory: ui-tests
+    - name: Install dependencies
+      working-directory: ui-tests
+      env:
+        YARN_ENABLE_IMMUTABLE_INSTALLS: 0
+        PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+      run: jlpm install
+    
+    - name: Launch JupyterLab
+      run: |
+        jlpm start 2>&1 > /tmp/jupyterlab_server.log &
+      working-directory: ui-tests
 
-      - name: Install dependencies
-        working-directory: ui-tests
-        env:
-          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
-        run: jlpm install
-      - name: Set up browser cache
-        uses: actions/cache@v3
-        with:
-          path: |
-            ${{ github.workspace }}/pw-browsers
-          key: ${{ runner.os }}-${{ hashFiles('ui-tests/yarn.lock') }}
-      - name: Install browser
-        run: jlpm playwright install chromium
-        working-directory: ui-tests
+    - name: Set up browser cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          ${{ github.workspace }}/pw-browsers
+        key: ${{ runner.os }}-${{ hashFiles('ui-tests/yarn.lock') }}
 
-      - name: Wait for JupyterLab
-        uses: ifaxity/wait-on-action@v1.1.0
-        with:
-          resource: http-get://localhost:8888/lab
-          timeout: 360000
+    - name: Install browser
+      run: jlpm playwright install chromium
+      working-directory: ui-tests
 
-      - name: Execute integration tests
-        working-directory: ui-tests
-        run: |
-          jlpm playwright test
+    - name: Wait for JupyterLab
+      uses: ifaxity/wait-on-action@v1.1.0
+      with:
+        resource: http-get://localhost:8888/lab
+        timeout: 360000
 
-      - name: Upload Playwright Test report
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: search-replace-playwright-tests
-          path: |
-            ui-tests/test-results
-            ui-tests/playwright-report
+    - name: Execute integration tests
+      working-directory: ui-tests
+      run: |
+        jlpm playwright test
 
-      - name: Stop JupyterLab
-        if: always()
-        run: |
-          pkill -SIGTERM jupyter-lab
+    - name: Upload Playwright Test report
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: jupyterlab_search_replace-playwright-tests
+        path: |
+          ui-tests/test-results
+          ui-tests/playwright-report
 
-      - name: Print JupyterLab logs
-        if: always()
-        run: |
-          cat /tmp/jupyterlab_server.log
+    - name: Stop JupyterLab
+      if: always()
+      run: |
+        pkill -SIGTERM jupyter-lab
+
+    - name: Print JupyterLab logs
+      if: always()
+      run: |
+        cat /tmp/jupyterlab_server.log
+
+  check_links:
+    name: Check Links
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v3
+      - uses: jupyterlab/maintainer-tools/.github/actions/base-setup@v1
+      - uses: jupyterlab/maintainer-tools/.github/actions/check-links@v1

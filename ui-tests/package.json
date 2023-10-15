@@ -1,14 +1,15 @@
 {
-    "name": "search-replace-ui-tests",
-    "version": "1.0.0",
-    "description": "JupyterLab search-replace Integration Tests",
-    "private": true,
-    "scripts": {
-      "start": "jupyter lab --config jupyter_server_test_config.py",
-      "test": "jlpm playwright test"
-    },
-    "devDependencies": {
-      "@jupyterlab/galata": "^4.1.0",
-      "@playwright/test": "^1.19.0"
-    }
+  "name": "jupyterlab-search-replace-ui-tests",
+  "version": "1.0.0",
+  "description": "JupyterLab jupyterlab-search-replace Integration Tests",
+  "private": true,
+  "scripts": {
+    "start": "jupyter lab --config jupyter_server_test_config.py",
+    "test": "jlpm playwright test",
+    "test:update": "jlpm playwright test --update-snapshots"
+  },
+  "devDependencies": {
+    "@jupyterlab/galata": "^5.0.6",
+    "@playwright/test": "^1.38.1"
+  }
 }

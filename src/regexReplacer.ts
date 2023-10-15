@@ -1,3 +1,6 @@
+/**
+ * Replace worker code
+ */
 import type { SearchReplace } from './tokens';
 
 onmessage = function (e) {
@@ -16,6 +19,5 @@ onmessage = function (e) {
     });
   });
 
-  // @ts-expect-error fail to resolve proper postMessage
   postMessage(matches);
 };
