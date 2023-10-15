@@ -54,7 +54,7 @@ test('should get 5 matches', async ({ page, tmpPath }) => {
   const selection = await page.waitForFunction(
     () => `${window.getSelection()}`
   );
-  expect(selection).toEqual('strange');
+  expect(await selection.jsonValue()).toEqual('strange');
 });
 
 test('should get no matches', async ({ page }) => {
