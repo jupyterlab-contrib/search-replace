@@ -70,11 +70,13 @@
         "@jupyter/web-components": "^0.13.2",
         "@jupyterlab/application": "^4.0.6",
         "@jupyterlab/apputils": "^4.1.6",
+        "@jupyterlab/codemirror": "^4.0.6",
         "@jupyterlab/coreutils": "^6.0.6",
         "@jupyterlab/docmanager": "^4.0.6",
+        "@jupyterlab/docregistry": "^4.0.6",
         "@jupyterlab/filebrowser": "^4.0.6",
         "@jupyterlab/fileeditor": "^4.0.6",
-        "@jupyterlab/rendermime-interfaces": "3.8.6",
+        "@jupyterlab/rendermime-interfaces": "^3.8.6",
         "@jupyterlab/services": "^7.0.6",
         "@jupyterlab/settingregistry": "^4.0.6",
         "@jupyterlab/translation": "^4.0.6",
@@ -86,9 +88,6 @@
     },
     "devDependencies": {
         "@jupyterlab/builder": "^4.0.0",
-        "@jupyterlab/codemirror": "^4.0.6",
-        "@jupyterlab/docregistry": "^4.0.6",
-        "@jupyterlab/testutils": "^4.0.0",
         "@types/json-schema": "^7.0.11",
         "@types/react": "^18.0.26",
         "@types/react-addons-linked-state-mixin": "^0.14.22",
@@ -152,17 +151,6 @@
                 "bundled": true,
                 "singleton": true
             }
-        }
-    },
-    "jupyter-releaser": {
-        "hooks": {
-            "before-build-npm": [
-                "python -m pip install jupyterlab~=3.1",
-                "jlpm"
-            ],
-            "before-build-python": [
-                "jlpm clean:all"
-            ]
         }
     },
     "eslintConfig": {
