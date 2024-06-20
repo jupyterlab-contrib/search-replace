@@ -63,6 +63,7 @@
         "watch:labextension": "jupyter labextension watch .",
         "watch:src": "tsc -w --sourceMap"
     },
+    "packageManager": "yarn@3.5.0",
     "dependencies": {
         "@codemirror/state": "^6.2.1",
         "@jupyter-notebook/tree": "^7.0.4",
