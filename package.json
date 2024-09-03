@@ -34,7 +34,7 @@
     "style": "style/index.css",
     "repository": {
         "type": "git",
-        "url": "https://github.com/jupyterlab-contrib/search-replace.git.git"
+        "url": "https://github.com/jupyterlab-contrib/search-replace.git"
     },
     "scripts": {
         "build": "jlpm build:lib && jlpm build:labextension:dev",
