@@ -542,27 +542,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jupyter/react-components@npm:^0.13.2":
-  version: 0.13.2
-  resolution: "@jupyter/react-components@npm:0.13.2"
+"@jupyter/react-components@npm:^0.16.6":
+  version: 0.16.7
+  resolution: "@jupyter/react-components@npm:0.16.7"
   dependencies:
-    "@jupyter/web-components": ^0.13.2
-    "@microsoft/fast-react-wrapper": ^0.3.18
+    "@jupyter/web-components": ^0.16.7
     react: ">=17.0.0 <19.0.0"
-  checksum: e96cb59ad6909a107b5874e3538acec0e29d7466521a5133dd40645f07dbe44ef8f31afdaaf53d1cf56c7c69e890baee8f18f37741ba37c28247f4bf37783706
+  checksum: 37894347e63ebb528725e8b8b4038d138019823f5c9e28e3f6abb93b46d771b2ee3cc004d5ff7d9a06a93f2d90e41000bd2abae14364be34ba99c5e05864810e
   languageName: node
   linkType: hard
 
-"@jupyter/web-components@npm:^0.13.2":
-  version: 0.13.2
-  resolution: "@jupyter/web-components@npm:0.13.2"
+"@jupyter/web-components@npm:^0.16.6, @jupyter/web-components@npm:^0.16.7":
+  version: 0.16.7
+  resolution: "@jupyter/web-components@npm:0.16.7"
   dependencies:
     "@microsoft/fast-colors": ^5.3.1
-    "@microsoft/fast-components": ^2.30.6
     "@microsoft/fast-element": ^1.12.0
-    "@microsoft/fast-foundation": ^2.49.0
-    "@microsoft/fast-web-utilities": ^6.0.0
-  checksum: 720ab85cdd30942919902bb3d6e09c9a81f71acd67d01b7f8a7bee36cd0f1f70f1919f57963e015f11edcedf8ec61b3d528df1e793beed0e82c55ab2821976ca
+    "@microsoft/fast-foundation": ^2.49.4
+    "@microsoft/fast-web-utilities": ^5.4.1
+  checksum: ec3336247bbabb2e2587c2cf8b9d0e80786b454916dd600b3d6791bf08c3d1e45a7ec1becf366a5491ab56b0be020baa8c50a5b6067961faf5ec904de31243aa
   languageName: node
   linkType: hard
 
@@ -1390,54 +1388,36 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@microsoft/fast-colors@npm:^5.3.0, @microsoft/fast-colors@npm:^5.3.1":
+"@microsoft/fast-colors@npm:^5.3.1":
   version: 5.3.1
   resolution: "@microsoft/fast-colors@npm:5.3.1"
   checksum: ff87f402faadb4b5aeee3d27762566c11807f927cd4012b8bbc7f073ca68de0e2197f95330ff5dfd7038f4b4f0e2f51b11feb64c5d570f5c598d37850a5daf60
   languageName: node
   linkType: hard
 
-"@microsoft/fast-components@npm:^2.30.6":
-  version: 2.30.6
-  resolution: "@microsoft/fast-components@npm:2.30.6"
-  dependencies:
-    "@microsoft/fast-colors": ^5.3.0
-    "@microsoft/fast-element": ^1.10.1
-    "@microsoft/fast-foundation": ^2.46.2
-    "@microsoft/fast-web-utilities": ^5.4.1
-    tslib: ^1.13.0
-  checksum: 1fbf3b7c265bcbf6abcae4d2f72430f7f871104a3d8344f16667a4cc7b123698cdf2bab8b760cbed92ef761c4db350a67f570665c76b132d6996990ac93cbd4f
-  languageName: node
-  linkType: hard
-
-"@microsoft/fast-element@npm:^1.10.1, @microsoft/fast-element@npm:^1.12.0":
+"@microsoft/fast-element@npm:^1.12.0":
   version: 1.12.0
   resolution: "@microsoft/fast-element@npm:1.12.0"
   checksum: bbff4e9c83106d1d74f3eeedc87bf84832429e78fee59c6a4ae8164ee4f42667503f586896bea72341b4d2c76c244a3cb0d4fd0d5d3732755f00357714dd609e
   languageName: node
   linkType: hard
 
-"@microsoft/fast-foundation@npm:^2.46.2, @microsoft/fast-foundation@npm:^2.49.0, @microsoft/fast-foundation@npm:^2.49.1":
-  version: 2.49.1
-  resolution: "@microsoft/fast-foundation@npm:2.49.1"
-  dependencies:
-    "@microsoft/fast-element": ^1.12.0
-    "@microsoft/fast-web-utilities": ^5.4.1
-    tabbable: ^5.2.0
-    tslib: ^1.13.0
-  checksum: 9550f3b92cae893fa70532acc8921366432cc52b24d07053d3da2353d1b2e684b39a591491f7149d6e79ac45f87f5851ece34089994995f712b521a041fcf260
+"@microsoft/fast-element@npm:^1.14.0":
+  version: 1.14.0
+  resolution: "@microsoft/fast-element@npm:1.14.0"
+  checksum: 58765739492997a5c51f7841cf6f334e2d2c4ad2365db4a228c07df1c89d139b026abf6afc6691ac48066070d3c94d09afdea2929bdca25842f778293e19892d
   languageName: node
   linkType: hard
 
-"@microsoft/fast-react-wrapper@npm:^0.3.18":
-  version: 0.3.19
-  resolution: "@microsoft/fast-react-wrapper@npm:0.3.19"
+"@microsoft/fast-foundation@npm:^2.49.4":
+  version: 2.50.0
+  resolution: "@microsoft/fast-foundation@npm:2.50.0"
   dependencies:
-    "@microsoft/fast-element": ^1.12.0
-    "@microsoft/fast-foundation": ^2.49.1
-  peerDependencies:
-    react: ">=16.9.0"
-  checksum: 56a5ff607d8cc012f3fce9cdb5cf61ec51022b86feaea10b58cbfaa0c1e2e132655013f9a198c471255ac67b577243027f723c90e30e567cb0e0400b0d354847
+    "@microsoft/fast-element": ^1.14.0
+    "@microsoft/fast-web-utilities": ^5.4.1
+    tabbable: ^5.2.0
+    tslib: ^1.13.0
+  checksum: 651501eb8cd5a3e583638f70a4e7c0ad30952fe12adedd5c4c24861515d0aaeec0e83d1f1cd25dece899d2fa1614b415001c461f76bb84b20e1a8e18a3fcf219
   languageName: node
   linkType: hard
 
@@ -1447,15 +1427,6 @@ __metadata:
   dependencies:
     exenv-es6: ^1.1.1
   checksum: 303e87847f962944f474e3716c3eb305668243916ca9e0719e26bb9a32346144bc958d915c103776b3e552cea0f0f6233f839fad66adfdf96a8436b947288ca7
-  languageName: node
-  linkType: hard
-
-"@microsoft/fast-web-utilities@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "@microsoft/fast-web-utilities@npm:6.0.0"
-  dependencies:
-    exenv-es6: ^1.1.1
-  checksum: b4b906dbbf626212446d5952c160b1f7e7ce72dd33087c7ed634cb2745c31767bab7d17fba0e9fc32e42984fc5bc0a9929b4f05cbbcbe52869abe3666b5bfa39
   languageName: node
   linkType: hard
 
@@ -4024,8 +3995,8 @@ __metadata:
   dependencies:
     "@codemirror/state": ^6.2.1
     "@jupyter-notebook/tree": ^7.0.4
-    "@jupyter/react-components": ^0.13.2
-    "@jupyter/web-components": ^0.13.2
+    "@jupyter/react-components": ^0.16.6
+    "@jupyter/web-components": ^0.16.6
     "@jupyterlab/application": ^4.0.6
     "@jupyterlab/apputils": ^4.1.6
     "@jupyterlab/builder": ^4.0.0
