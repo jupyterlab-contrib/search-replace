@@ -67,8 +67,8 @@
     "dependencies": {
         "@codemirror/state": "^6.2.1",
         "@jupyter-notebook/tree": "^7.0.4",
-        "@jupyter/react-components": "^0.13.2",
-        "@jupyter/web-components": "^0.13.2",
+        "@jupyter/react-components": "^0.16.6",
+        "@jupyter/web-components": "^0.16.6",
         "@jupyterlab/application": "^4.0.6",
         "@jupyterlab/apputils": "^4.1.6",
         "@jupyterlab/codemirror": "^4.0.6",
