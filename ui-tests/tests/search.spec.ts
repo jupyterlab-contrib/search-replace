@@ -220,7 +220,7 @@ test('should expand and collapse tree view on clicking expand-collapse button', 
 
   // added timeouts allowing DOM to update
   await page.waitForTimeout(60);
-  await page.locator('[title="Collapse All"]').click();
+  await page.locator('#jp-search-replace >> [title="Collapse All"]').click();
   await page.waitForTimeout(60);
   expect(
     await page.locator('.search-tree-files').getAttribute('aria-expanded')
