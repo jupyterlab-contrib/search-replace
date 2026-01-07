@@ -6,6 +6,7 @@ import {
   Button,
   Progress,
   TextField,
+  type TextFieldElement,
   Toolbar,
   TreeItem,
   TreeView
@@ -224,7 +225,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
   ) {
     super(searchModel);
     this._askReplaceConfirmation = true;
-    this.searchInputRef = React.createRef<HTMLInputElement>();
+    this.searchInputRef = React.createRef<TextFieldElement>();
     this.addClass('jp-search-replace-tab');
     this.addClass('jp-search-replace-column');
   }
@@ -565,7 +566,7 @@ export class SearchReplaceView extends VDomRenderer<SearchReplaceModel> {
     return widget;
   }
 
-  protected searchInputRef: React.RefObject<HTMLInputElement>;
+  protected searchInputRef: React.RefObject<TextFieldElement>;
   private _askReplaceConfirmation: boolean;
 }
 
@@ -636,7 +637,7 @@ interface ISearchReplaceProps {
   replaceString: string;
   onReplaceString: (s: string) => void;
   onReplace: (r: SearchReplace.IFileReplacement[], filePath?: string) => void;
-  searchInputRef: React.RefObject<HTMLInputElement>;
+  searchInputRef: React.RefObject<TextFieldElement>;
   searchString: string;
   onSearchChanged: (s: string) => void;
   trans: TranslationBundle;
