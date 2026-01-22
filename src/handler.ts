@@ -7,14 +7,16 @@ import { ServerConnection } from '@jupyterlab/services';
  *
  * @param endPoint API REST end point for the extension
  * @param init Initial values for the request
+ * @param serverSettings Optional server settings
  * @returns The response body interpreted as JSON
  */
 export async function requestAPI<T>(
   endPoint = '',
-  init: RequestInit = {}
+  init: RequestInit = {},
+  serverSettings?: ServerConnection.ISettings
 ): Promise<T> {
   // Make request to Jupyter API
-  const settings = ServerConnection.makeSettings();
+  const settings = serverSettings ?? ServerConnection.makeSettings();
   const requestUrl = URLExt.join(
     settings.baseUrl,
     'search', // API Namespace

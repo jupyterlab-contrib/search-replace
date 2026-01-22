@@ -50,7 +50,8 @@ const plugin: JupyterFrontEndPlugin<void> = {
     const trans = (translator ?? nullTranslator).load('search_replace');
     addJupyterLabThemeChangeListener();
 
-    const searchReplaceModel = new SearchReplaceModel();
+    const serverSettings = app.serviceManager.serverSettings;
+    const searchReplaceModel = new SearchReplaceModel({ serverSettings });
 
     let settings: ISettingRegistry.ISettings | null = null;
     const onAskReplaceChange = async (b: boolean) => {
