@@ -2,6 +2,25 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 1.1.2
+
+([Full Changelog](https://github.com/jupyterlab-contrib/search-replace/compare/v1.1.1...bf87f4ee9c84ff18387d4bf2c87f000f2eca1cd1))
+
+### Bugs fixed
+
+- Use `serverSettings` for API requests [#142](https://github.com/jupyterlab-contrib/search-replace/pull/142) ([@jtpio](https://github.com/jtpio), [@krassowski](https://github.com/krassowski))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlab-contrib/search-replace/graphs/contributors?from=2026-01-07&to=2026-01-22&type=c))
+
+@jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlab-contrib%2Fsearch-replace+involves%3Ajtpio+updated%3A2026-01-07..2026-01-22&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab-contrib%2Fsearch-replace+involves%3Akrassowski+updated%3A2026-01-07..2026-01-22&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 1.1.1
 
 ([Full Changelog](https://github.com/jupyterlab-contrib/search-replace/compare/v1.1.0...7592bb74a03aa54099abdef94f08cbe4f70c4271))
@@ -45,8 +64,6 @@ See [our definition of contributors](https://github-activity.readthedocs.io/en/l
 ([GitHub contributors page for this release](https://github.com/jupyterlab-contrib/search-replace/graphs/contributors?from=2023-10-15&to=2026-01-07&type=c))
 
 @agoose77 ([activity](https://github.com/search?q=repo%3Ajupyterlab-contrib%2Fsearch-replace+involves%3Aagoose77+updated%3A2023-10-15..2026-01-07&type=Issues)) | @fcollonval ([activity](https://github.com/search?q=repo%3Ajupyterlab-contrib%2Fsearch-replace+involves%3Afcollonval+updated%3A2023-10-15..2026-01-07&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab-contrib%2Fsearch-replace+involves%3Akrassowski+updated%3A2023-10-15..2026-01-07&type=Issues))
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 1.1.0
 
