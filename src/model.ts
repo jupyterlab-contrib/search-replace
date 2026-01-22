@@ -11,9 +11,7 @@ const REGEXP_GROUP = /\$[1-9]\d*/g;
  * Search and Replace Model
  */
 export class SearchReplaceModel extends VDomModel {
-  constructor(
-    options: { serverSettings?: ServerConnection.ISettings } = {}
-  ) {
+  constructor(options: { serverSettings?: ServerConnection.ISettings } = {}) {
     super();
     this._serverSettings =
       options.serverSettings ?? ServerConnection.makeSettings();
