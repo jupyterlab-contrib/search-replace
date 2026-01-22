@@ -1,4 +1,5 @@
 import { VDomModel } from '@jupyterlab/apputils';
+import { ServerConnection } from '@jupyterlab/services';
 import { JSONExt, PromiseDelegate } from '@lumino/coreutils';
 import { Debouncer } from '@lumino/polling';
 import { requestAPI } from './handler';
@@ -10,8 +11,10 @@ const REGEXP_GROUP = /\$[1-9]\d*/g;
  * Search and Replace Model
  */
 export class SearchReplaceModel extends VDomModel {
-  constructor() {
+  constructor(options: { serverSettings?: ServerConnection.ISettings } = {}) {
     super();
+    this._serverSettings =
+      options.serverSettings ?? ServerConnection.makeSettings();
     this._errorMsg = null;
     this._isLoading = false;
     this._searchQuery = '';
@@ -231,12 +234,16 @@ export class SearchReplaceModel extends VDomModel {
    */
   async replace(matches: SearchReplace.IFileReplacement[]): Promise<void> {
     try {
-      await requestAPI<void>(this.path, {
-        method: 'POST',
-        body: JSON.stringify({
-          matches
-        })
-      });
+      await requestAPI<void>(
+        this.path,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            matches
+          })
+        },
+        this._serverSettings
+      );
       this._errorMsg = null;
     } catch (reason) {
       console.error(`Failed to replace some matches.\n${reason}`);
@@ -288,7 +295,8 @@ export class SearchReplaceModel extends VDomModel {
         path + '?' + new URLSearchParams(queryArgs).toString(),
         {
           method: 'GET'
-        }
+        },
+        this._serverSettings
       );
       this._queryResults = data.matches;
       this._errorMsg = null;
@@ -361,6 +369,7 @@ export class SearchReplaceModel extends VDomModel {
     }
   }
 
+  private _serverSettings: ServerConnection.ISettings;
   private _errorMsg: string | null;
   private _isLoading: boolean;
   private _searchQuery: string;
