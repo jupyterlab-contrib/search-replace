@@ -64,6 +64,9 @@
         "watch:src": "tsc -w --sourceMap"
     },
     "packageManager": "yarn@3.5.0",
+    "resolutions": {
+        "@microsoft/fast-foundation": "2.49.4"
+    },
     "dependencies": {
         "@codemirror/state": "^6.2.1",
         "@jupyter-notebook/tree": "^7.0.4",
