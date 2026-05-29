@@ -1402,22 +1402,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@microsoft/fast-element@npm:^1.14.0":
-  version: 1.14.0
-  resolution: "@microsoft/fast-element@npm:1.14.0"
-  checksum: 58765739492997a5c51f7841cf6f334e2d2c4ad2365db4a228c07df1c89d139b026abf6afc6691ac48066070d3c94d09afdea2929bdca25842f778293e19892d
-  languageName: node
-  linkType: hard
-
-"@microsoft/fast-foundation@npm:^2.49.4":
-  version: 2.50.0
-  resolution: "@microsoft/fast-foundation@npm:2.50.0"
+"@microsoft/fast-foundation@npm:2.49.4":
+  version: 2.49.4
+  resolution: "@microsoft/fast-foundation@npm:2.49.4"
   dependencies:
-    "@microsoft/fast-element": ^1.14.0
+    "@microsoft/fast-element": ^1.12.0
     "@microsoft/fast-web-utilities": ^5.4.1
     tabbable: ^5.2.0
     tslib: ^1.13.0
-  checksum: 651501eb8cd5a3e583638f70a4e7c0ad30952fe12adedd5c4c24861515d0aaeec0e83d1f1cd25dece899d2fa1614b415001c461f76bb84b20e1a8e18a3fcf219
+  checksum: e979cd500aaba28090e8d9cdc6192933db01803c13288c11aded89aa54da6f0a70256ff2f249754b1c95d9abad369a18401e1df98d672e2823b83cf4cd88ad55
   languageName: node
   linkType: hard
 
