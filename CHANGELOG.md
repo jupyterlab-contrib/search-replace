@@ -2,6 +2,30 @@
 
 <!-- <START NEW CHANGELOG ENTRY> -->
 
+## 1.1.3
+
+([Full Changelog](https://github.com/jupyterlab-contrib/search-replace/compare/v1.1.2...036667137e0670ef2199582e50ef84965155386b))
+
+### Bugs fixed
+
+- fix: pin @microsoft/fast-foundation to 2.49.4 to avoid infinite recursion at startup [#148](https://github.com/jupyterlab-contrib/search-replace/pull/148) ([@margueritevial](https://github.com/margueritevial), [@brichet](https://github.com/brichet), [@jtpio](https://github.com/jtpio))
+- fix: only detect missing matches via matches entry [#143](https://github.com/jupyterlab-contrib/search-replace/pull/143) ([@agoose77](https://github.com/agoose77))
+
+### Maintenance and upkeep improvements
+
+- Update snapshots bot checkout and permission check [#139](https://github.com/jupyterlab-contrib/search-replace/pull/139) ([@martinRenou](https://github.com/martinRenou), [@krassowski](https://github.com/krassowski))
+
+### Contributors to this release
+
+The following people contributed discussions, new ideas, code and documentation contributions, and review.
+See [our definition of contributors](https://github-activity.readthedocs.io/en/latest/use/#how-does-this-tool-define-contributions-in-the-reports).
+
+([GitHub contributors page for this release](https://github.com/jupyterlab-contrib/search-replace/graphs/contributors?from=2026-01-22&to=2026-05-29&type=c))
+
+@agoose77 ([activity](https://github.com/search?q=repo%3Ajupyterlab-contrib%2Fsearch-replace+involves%3Aagoose77+updated%3A2026-01-22..2026-05-29&type=Issues)) | @brichet ([activity](https://github.com/search?q=repo%3Ajupyterlab-contrib%2Fsearch-replace+involves%3Abrichet+updated%3A2026-01-22..2026-05-29&type=Issues)) | @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlab-contrib%2Fsearch-replace+involves%3Ajtpio+updated%3A2026-01-22..2026-05-29&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab-contrib%2Fsearch-replace+involves%3Akrassowski+updated%3A2026-01-22..2026-05-29&type=Issues)) | @margueritevial ([activity](https://github.com/search?q=repo%3Ajupyterlab-contrib%2Fsearch-replace+involves%3Amargueritevial+updated%3A2026-01-22..2026-05-29&type=Issues)) | @martinRenou ([activity](https://github.com/search?q=repo%3Ajupyterlab-contrib%2Fsearch-replace+involves%3AmartinRenou+updated%3A2026-01-22..2026-05-29&type=Issues))
+
+<!-- <END NEW CHANGELOG ENTRY> -->
+
 ## 1.1.2
 
 ([Full Changelog](https://github.com/jupyterlab-contrib/search-replace/compare/v1.1.1...bf87f4ee9c84ff18387d4bf2c87f000f2eca1cd1))
@@ -18,8 +42,6 @@ See [our definition of contributors](https://github-activity.readthedocs.io/en/l
 ([GitHub contributors page for this release](https://github.com/jupyterlab-contrib/search-replace/graphs/contributors?from=2026-01-07&to=2026-01-22&type=c))
 
 @jtpio ([activity](https://github.com/search?q=repo%3Ajupyterlab-contrib%2Fsearch-replace+involves%3Ajtpio+updated%3A2026-01-07..2026-01-22&type=Issues)) | @krassowski ([activity](https://github.com/search?q=repo%3Ajupyterlab-contrib%2Fsearch-replace+involves%3Akrassowski+updated%3A2026-01-07..2026-01-22&type=Issues))
-
-<!-- <END NEW CHANGELOG ENTRY> -->
 
 ## 1.1.1
 
